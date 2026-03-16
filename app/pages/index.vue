@@ -1,76 +1,66 @@
+<script setup lang="ts">
+useSeoMeta({
+  title: 'Sistema Académico - Inicio',
+  description: 'Plataforma de gestión académica integral para instituciones educativas'
+})
+
+const features = [
+  {
+    title: 'Gestión de Usuarios',
+    description: 'Administra estudiantes, docentes y personal administrativo con roles y permisos definidos.',
+    icon: 'i-lucide-users'
+  },
+  {
+    title: 'Control Académico',
+    description: 'Gestiona matrículas, horarios, calificaciones y reportes académicos.',
+    icon: 'i-lucide-book-open'
+  },
+  {
+    title: 'Seguridad Avanzada',
+    description: 'Autenticación de dos factores, control de acceso y auditoría completa.',
+    icon: 'i-lucide-shield-check'
+  },
+  {
+    title: 'Interfaz Moderna',
+    description: 'Diseño responsive y amigable construido con Nuxt UI y Tailwind CSS.',
+    icon: 'i-lucide-layout-template'
+  }
+]
+</script>
+
 <template>
   <div>
-    <UPageHero
-      title="Nuxt Starter Template"
-      description="A production-ready starter template powered by Nuxt UI. Build beautiful, accessible, and performant applications in minutes, not hours."
-      :links="[{
-        label: 'Get started',
-        to: 'https://ui.nuxt.com/docs/getting-started/installation/nuxt',
-        target: '_blank',
-        trailingIcon: 'i-lucide-arrow-right',
-        size: 'xl'
-      }, {
-        label: 'Use this template',
-        to: 'https://github.com/nuxt-ui-templates/starter',
-        target: '_blank',
-        icon: 'i-simple-icons-github',
-        size: 'xl',
-        color: 'neutral',
-        variant: 'subtle'
-      }]"
-    />
+    <section class="py-20 text-center">
+      <h1 class="text-5xl font-bold mb-6">
+        Sistema Académico <span class="text-primary-500">Integral</span>
+      </h1>
+      <p class="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+        La plataforma definitiva para gestionar todos los aspectos de tu institución educativa.
+        Desde estudiantes hasta calificaciones, todo en un solo lugar.
+      </p>
+      <div class="flex gap-4 justify-center">
+        <UButton to="/auth/register" size="lg" icon="i-lucide-user-plus">
+          Comenzar Ahora
+        </UButton>
+        <UButton to="/auth/login" size="lg" variant="outline" icon="i-lucide-log-in">
+          Iniciar Sesión
+        </UButton>
+      </div>
+    </section>
 
-    <UPageSection
-      id="features"
-      title="Everything you need to build modern Nuxt apps"
-      description="Start with a solid foundation. This template includes all the essentials for building production-ready applications with Nuxt UI's powerful component system."
-      :features="[{
-        icon: 'i-lucide-rocket',
-        title: 'Production-ready from day one',
-        description: 'Pre-configured with TypeScript, ESLint, Tailwind CSS, and all the best practices. Focus on building features, not setting up tooling.'
-      }, {
-        icon: 'i-lucide-palette',
-        title: 'Beautiful by default',
-        description: 'Leveraging Nuxt UI\'s design system with automatic dark mode, consistent spacing, and polished components that look great out of the box.'
-      }, {
-        icon: 'i-lucide-zap',
-        title: 'Lightning fast',
-        description: 'Optimized for performance with SSR/SSG support, automatic code splitting, and edge-ready deployment. Your users will love the speed.'
-      }, {
-        icon: 'i-lucide-blocks',
-        title: '100+ components included',
-        description: 'Access Nuxt UI\'s comprehensive component library. From forms to navigation, everything is accessible, responsive, and customizable.'
-      }, {
-        icon: 'i-lucide-code-2',
-        title: 'Developer experience first',
-        description: 'Auto-imports, hot module replacement, and TypeScript support. Write less boilerplate and ship more features.'
-      }, {
-        icon: 'i-lucide-shield-check',
-        title: 'Built for scale',
-        description: 'Enterprise-ready architecture with proper error handling, SEO optimization, and security best practices built-in.'
-      }]"
-    />
-
-    <UPageSection>
-      <UPageCTA
-        title="Ready to build your next Nuxt app?"
-        description="Join thousands of developers building with Nuxt and Nuxt UI. Get this template and start shipping today."
-        variant="subtle"
-        :links="[{
-          label: 'Start building',
-          to: 'https://ui.nuxt.com/docs/getting-started/installation/nuxt',
-          target: '_blank',
-          trailingIcon: 'i-lucide-arrow-right',
-          color: 'neutral'
-        }, {
-          label: 'View on GitHub',
-          to: 'https://github.com/nuxt-ui-templates/starter',
-          target: '_blank',
-          icon: 'i-simple-icons-github',
-          color: 'neutral',
-          variant: 'outline'
-        }]"
-      />
-    </UPageSection>
+    <section class="py-16 bg-muted/50">
+      <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-12">
+          Características Principales
+        </h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <UCard v-for="feature in features" :key="feature.title" class="text-center">
+            <UIcon :name="feature.icon" class="w-12 h-12 text-primary-500 mb-4" />
+            <h3 class="text-xl font-semibold mb-2">{{ feature.title }}</h3>
+            <p class="text-muted-foreground">{{ feature.description }}</p>
+          </UCard>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
