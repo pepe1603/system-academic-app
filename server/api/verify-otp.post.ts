@@ -2,7 +2,7 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const config = useRuntimeConfig()
 
-  console.log('[PROXY] 🔑 POST /api/reset-password')
+  console.log('[PROXY] 🔐 POST /api/verify-otp')
   console.log('[PROXY] 📥 Body:', body)
 
   if (!config.public.apiBaseUrl) {
@@ -13,12 +13,12 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const response = await $fetch(`${config.public.apiBaseUrl}/auth/reset-password`, {
+    const response = await $fetch(`${config.public.apiBaseUrl}/auth/verify-otp`, {
       method: 'POST',
       body: {
         email: body.email,
-        token: body.token,
-        newPassword: body.newPassword
+        code: body.code,
+        purpose: body.purpose || 'PASSWORD_RECOVERY'
       }
     })
     return response
@@ -29,8 +29,8 @@ export default defineEventHandler(async (event) => {
       data?: { message?: string }
     }
     throw createError({
-      statusCode: err.statusCode || 500,
-      message: err.data?.message || err.message || 'Error al restablecer contraseña'
+      statusCode: err.statusCode || 400,
+      message: err.data?.message || err.message || 'Código inválido'
     })
   }
 })
