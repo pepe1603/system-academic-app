@@ -4,12 +4,12 @@ useSeoMeta({
 })
 
 definePageMeta({
-  layout: 'cPanel'
+  layout: 'c-panel'
 })
 
 const stats = [
   { label: 'Estudiantes', value: '1,234', icon: 'i-lucide-users', color: 'primary' },
-  { label: 'Docentes', value: '89', icon: 'i-lucide-chalkboard-teacher', color: 'green' },
+  { label: 'Docentes', value: '89', icon: 'i-lucide-graduation-cap', color: 'green' },
   { label: 'Cursos Activos', value: '45', icon: 'i-lucide-book-open', color: 'amber' },
   { label: 'Matrículas', value: '567', icon: 'i-lucide-clipboard-list', color: 'purple' }
 ]
@@ -65,7 +65,7 @@ const recentActivity = [
           <UButton to="/cpanel/students" variant="soft" color="primary" icon="i-lucide-user-round" block>
             Estudiantes
           </UButton>
-          <UButton to="/cpanel/teachers" variant="soft" color="green" icon="i-lucide-chalkboard-teacher" block>
+          <UButton to="/cpanel/teachers" variant="soft" color="green" icon="i-lucide-graduation-cap" block>
             Docentes
           </UButton>
           <UButton to="/cpanel/users" variant="soft" color="amber" icon="i-lucide-users" block>

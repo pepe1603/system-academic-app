@@ -10,11 +10,19 @@ definePageMeta({
 const email = ref('')
 const loading = ref(false)
 const submitted = ref(false)
+const errorMessage = ref('')
 
 const handleReset = async () => {
   loading.value = true
+  errorMessage.value = ''
   try {
+    await $fetch('/api/auth/recovery', {
+      method: 'POST',
+      body: { email: email.value }
+    })
     submitted.value = true
+  } catch (error: any) {
+    errorMessage.value = error.data?.message || 'Error al solicitar recuperación'
   } finally {
     loading.value = false
   }
@@ -28,6 +36,10 @@ const handleReset = async () => {
       <p class="text-muted-foreground text-center mb-6">
         Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.
       </p>
+      
+      <UAlert v-if="errorMessage" color="error" variant="soft" class="mb-4">
+        {{ errorMessage }}
+      </UAlert>
       
       <UForm @submit.prevent="handleReset" class="space-y-4">
         <UFormField label="Correo Electrónico" name="email">

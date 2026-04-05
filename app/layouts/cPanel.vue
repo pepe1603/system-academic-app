@@ -25,7 +25,7 @@ const navigation = computed(() => {
     {
       title: 'Docentes',
       to: '/cpanel/teachers',
-      icon: 'i-lucide-chalkboard-teacher',
+      icon: 'i-lucide-graduation-cap',
       permission: 'teachers.read'
     },
     {

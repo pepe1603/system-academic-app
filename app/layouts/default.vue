@@ -25,7 +25,7 @@ const items = [
 
       <template #right>
         <UColorModeButton />
-        <UButtonGroup>
+        <div class="flex items-center gap-1">
           <UButton
             v-for="item in items"
             :key="item.to"
@@ -36,7 +36,7 @@ const items = [
           >
             {{ item.label }}
           </UButton>
-        </UButtonGroup>
+        </div>
       </template>
     </UHeader>
 

@@ -4,7 +4,7 @@ useSeoMeta({
 })
 
 definePageMeta({
-  layout: 'cPanel'
+  layout: 'c-panel'
 })
 </script>
 
@@ -17,7 +17,7 @@ definePageMeta({
 
     <UCard>
       <div class="text-center py-12 text-muted-foreground">
-        <UIcon name="i-lucide-chalkboard-teacher" class="w-16 h-16 mb-4 opacity-50" />
+        <UIcon name="i-lucide-graduation-cap" class="w-16 h-16 mb-4 opacity-50" />
         <p>Módulo de gestión de docentes en desarrollo</p>
       </div>
     </UCard>

@@ -1,9 +1,3 @@
-<script setup lang="ts">
-definePageMeta({
-  layout: false
-})
-</script>
-
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900 dark:to-primary-950">
     <div class="w-full max-w-md p-8">

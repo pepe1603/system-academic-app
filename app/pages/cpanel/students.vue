@@ -4,7 +4,7 @@ useSeoMeta({
 })
 
 definePageMeta({
-  layout: 'cPanel'
+  layout: 'c-panel'
 })
 </script>
 

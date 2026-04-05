@@ -10,6 +10,12 @@ export default defineNuxtConfig({
     'nuxt-lucide-icons'
   ],
 
+  runtimeConfig: {
+    public: {
+      apiBaseUrl: '' // Se carga desde .env automáticamente
+    }
+  },
+
   devtools: {
     enabled: true
   },
