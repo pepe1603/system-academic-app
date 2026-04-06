@@ -1,7 +1,18 @@
 <script setup lang="ts">
 const route = useRoute()
+const { user, logout } = useAuth()
 
 const isCollapsed = ref(false)
+
+const handleLogout = async () => {
+  await logout()
+  await navigateTo('/auth/login')
+}
+
+const userMenuItems = [
+  { label: 'Perfil', icon: 'i-lucide-user' },
+  { label: 'Cerrar Sesión', icon: 'i-lucide-log-out', onClick: handleLogout }
+]
 
 const navigation = computed(() => {
   return [
@@ -61,9 +72,9 @@ const breadcrumbs = computed(() => {
 
       <template #right>
         <UColorModeButton />
-        <UDropdown :items="[{ label: 'Perfil', icon: 'i-lucide-user' }, { label: 'Cerrar Sesión', icon: 'i-lucide-log-out' }]">
+        <UDropdown :items="[userMenuItems]">
           <UButton icon="i-lucide-user" color="neutral" variant="ghost">
-            Admin
+            {{ user?.username || 'Usuario' }}
           </UButton>
         </UDropdown>
       </template>
