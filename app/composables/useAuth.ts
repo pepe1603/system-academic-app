@@ -76,6 +76,9 @@ export const useAuth = () => {
         const cookie = useCookie('auth_token')
         cookie.value = data.accessToken
         console.log('[AUTH] 💾 Token guardado en cookie')
+
+        const { startMonitoring } = useServerStatus()
+        startMonitoring()
       }
 
       return response as LoginResponse
@@ -185,6 +188,11 @@ export const useAuth = () => {
 
     const cookie = useCookie('auth_token')
     cookie.value = null
+
+    const { stopMonitoring, destroy } = useServerStatus()
+    stopMonitoring()
+    destroy()
+
     console.log('[AUTH] ✅ Estado de auth limpiado')
   }
 
