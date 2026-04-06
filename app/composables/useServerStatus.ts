@@ -6,6 +6,8 @@ interface ServerStatus {
     database: boolean | null
     redis: boolean | null
   }
+  isMonitoring: boolean
+  isDestroyed: boolean
 }
 
 const HEALTH_CHECK_INTERVAL = 30000
@@ -20,14 +22,16 @@ export const useServerStatus = () => {
     services: {
       database: null,
       redis: null
-    }
+    },
+    isMonitoring: false,
+    isDestroyed: false
   }))
 
   let checkInterval: ReturnType<typeof setInterval> | null = null
-  let isDestroyed = false
 
   const checkHealth = async (): Promise<boolean> => {
     if (status.value.isChecking) return status.value.isOnline
+    if (status.value.isDestroyed) return false
 
     status.value.isChecking = true
 
@@ -40,7 +44,7 @@ export const useServerStatus = () => {
       status.value.isOnline = response.status === 'UP'
       status.value.lastChecked = new Date()
 
-      if (status.value.isOnline) {
+      if (status.value.isOnline && !status.value.isDestroyed) {
         await checkMonitor()
       }
 
@@ -55,6 +59,8 @@ export const useServerStatus = () => {
   }
 
   const checkMonitor = async (): Promise<void> => {
+    if (status.value.isDestroyed) return
+
     try {
       const { accessToken } = useAuth()
 
@@ -84,12 +90,13 @@ export const useServerStatus = () => {
   }
 
   const startMonitoring = () => {
-    if (checkInterval || isDestroyed) return
+    if (status.value.isMonitoring || status.value.isDestroyed) return
 
+    status.value.isMonitoring = true
     checkHealth()
 
     checkInterval = setInterval(() => {
-      if (!isDestroyed) {
+      if (!status.value.isDestroyed && status.value.isMonitoring) {
         checkHealth()
       }
     }, HEALTH_CHECK_INTERVAL)
@@ -100,6 +107,13 @@ export const useServerStatus = () => {
       clearInterval(checkInterval)
       checkInterval = null
     }
+    status.value.isMonitoring = false
+  }
+
+  const destroy = () => {
+    status.value.isDestroyed = true
+    stopMonitoring()
+    status.value.isOnline = true
   }
 
   const waitForServer = async (maxAttempts = 10, interval = 5000): Promise<boolean> => {
@@ -108,11 +122,6 @@ export const useServerStatus = () => {
       await new Promise(resolve => setTimeout(resolve, interval))
     }
     return false
-  }
-
-  const destroy = () => {
-    isDestroyed = true
-    stopMonitoring()
   }
 
   return {
