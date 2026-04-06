@@ -1,14 +1,14 @@
 export default defineNuxtRouteMiddleware((to) => {
-  const { accessToken, isAuthenticated } = useAuth()
+  const authCookie = useCookie('auth_token')
 
   const isAuthPage = to.path.startsWith('/auth')
-  const isPublicPage = ['/auth/login', '/auth/register', '/auth/reset-password'].some(p => to.path.startsWith(p))
+  const isProtectedPage = to.path.startsWith('/cpanel')
 
-  if (!isAuthenticated.value && !isAuthPage) {
+  if (isProtectedPage && !authCookie.value) {
     return navigateTo('/auth/login')
   }
 
-  if (isAuthenticated.value && isPublicPage) {
+  if (isAuthPage && authCookie.value) {
     return navigateTo('/cpanel')
   }
 })
