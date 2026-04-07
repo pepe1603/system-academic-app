@@ -12,7 +12,7 @@ export default defineEventHandler(async () => {
 
   try {
     const response = await $fetch<{ status: string; timestamp: string }>(
-      `${config.public.apiBaseUrl}/health`,
+      `${config.public.apiBaseUrl}/server/health`,
       {
         method: 'GET',
         timeout: 5000

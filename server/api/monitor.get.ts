@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
       status: string
       timestamp: string
       services: { database: string; redis: string }
-    }>(`${config.public.apiBaseUrl}/monitor`, {
+    }>(`${config.public.apiBaseUrl}/server/monitor`, {
       method: 'GET',
       headers: {
         Authorization: authHeader
