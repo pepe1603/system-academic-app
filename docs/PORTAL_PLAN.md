@@ -35,18 +35,19 @@
 
 ---
 
-## Fase 2: Composables
-**Rama:** `feature/portal-composables`
+## Fase 2: Composables ✅ COMPLETADO
+**Rama:** `feature/portal-publico`
+**Fecha:** 2026-04-15
 
-### Archivos a crear en `app/composables/`:
-- [ ] `usePortal.ts` - Métodos públicos (sin auth)
+### Archivos creados en `app/composables/`:
+- [x] `usePortal.ts` - Métodos públicos (sin auth)
   - getInstitution()
-  - getNews(), getNewsPaged()
-  - getEvents(), getEventsPaged()
+  - getNews(), getNewsById()
+  - getEvents(), getEventById()
   - getAds(), getAdsByPosition()
   - sendContactMessage()
 
-- [ ] `usePortalAdmin.ts` - Métodos ADMIN (con auth)
+- [x] `usePortalAdmin.ts` - Métodos ADMIN (con auth)
   - updateInstitution()
   - createNews(), updateNews(), deleteNews()
   - createEvent(), updateEvent(), deleteEvent()
@@ -56,34 +57,38 @@
 
 ---
 
-## Fase 3: Pages Públicas
-**Rama:** `feature/portal-pages`
+## Fase 3: Pages Públicas ✅ COMPLETADO
+**Rama:** `feature/portal-publico`
+**Fecha:** 2026-04-15
 
-### Archivos a crear en `app/pages/portal/`:
-- [ ] `index.vue` - Home del portal (hero, info institucional, ads, noticias destacadas, eventos)
-- [ ] `noticias/index.vue` - Lista de noticias
-- [ ] `noticias/[id].vue` - Detalle de noticia
-- [ ] `eventos/index.vue` - Lista de eventos
-- [ ] `eventos/[id].vue` - Detalle de evento
-- [ ] `contacto.vue` - Formulario de contacto
+### Archivos creados en `app/pages/portal/`:
+- [x] `index.vue` - Home del portal
+- [x] `noticias/index.vue` - Lista de noticias
+- [x] `noticias/[id].vue` - Detalle de noticia
+- [x] `eventos/index.vue` - Lista de eventos
+- [x] `eventos/[id].vue` - Detalle de evento
+- [x] `contacto.vue` - Formulario de contacto
 
 ### Layout:
-- [ ] `app/layouts/portal.vue` - Layout público del portal
+- [x] `app/layouts/portal.vue` - Layout público del portal
 
 ---
 
-## Fase 4: Panel Admin
-**Rama:** `feature/portal-admin`
+## Fase 4: Panel Admin ✅ COMPLETADO
+**Rama:** `feature/portal-publico`
+**Fecha:** 2026-04-15
 
-### Archivos a crear en `app/pages/admin/portal/`:
-- [ ] `index.vue` - Dashboard del módulo portal
-- [ ] `noticias/index.vue` - Gestión de noticias
-- [ ] `noticias/[id].vue` - Editar noticia
-- [ ] `eventos/index.vue` - Gestión de eventos
-- [ ] `eventos/[id].vue` - Editar evento
-- [ ] `anuncios/index.vue` - Gestión de anuncios
-- [ ] `anuncios/[id].vue` - Editar anuncio
-- [ ] `mensajes/index.vue` - Bandeja de mensajes de contacto
+### Archivos creados en `app/pages/cpanel/portal/`:
+- [x] `index.vue` - Dashboard del módulo portal
+- [x] `noticias.vue` - Gestión de noticias
+- [x] `eventos.vue` - Gestión de eventos
+- [x] `anuncios.vue` - Gestión de anuncios
+- [x] `mensajes.vue` - Bandeja de mensajes de contacto
+- [x] `institucion.vue` - Editar información institucional
+
+---
+
+## 🎉 MÓDULO COMPLETADO
 
 ---
 
