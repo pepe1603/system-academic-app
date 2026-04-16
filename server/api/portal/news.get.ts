@@ -1,6 +1,8 @@
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const config = useRuntimeConfig()
+  const headers = getHeaders(event)
+  const authHeader = headers.authorization
 
   const page = query.page || 0
   const size = query.size || 10
@@ -21,7 +23,8 @@ export default defineEventHandler(async (event) => {
       : `${config.public.apiBaseUrl}/portal/news`
 
     const response = await $fetch(endpoint, {
-      method: 'GET'
+      method: 'GET',
+      headers: authHeader ? { Authorization: authHeader } : {}
     })
     return response
   } catch (error: unknown) {

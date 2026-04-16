@@ -18,6 +18,18 @@ const navigation = [
     icon: 'i-lucide-layout-dashboard'
   },
   {
+    title: 'Portal',
+    to: '/cpanel/portal',
+    icon: 'i-lucide-globe',
+    children: [
+      { title: 'Noticias', to: '/cpanel/portal/noticias', icon: 'i-lucide-newspaper' },
+      { title: 'Eventos', to: '/cpanel/portal/eventos', icon: 'i-lucide-calendar' },
+      { title: 'Anuncios', to: '/cpanel/portal/anuncios', icon: 'i-lucide-megaphone' },
+      { title: 'Mensajes', to: '/cpanel/portal/mensajes', icon: 'i-lucide-mail' },
+      { title: 'Institución', to: '/cpanel/portal/institucion', icon: 'i-lucide-building-2' }
+    ]
+  },
+  {
     title: 'Usuarios',
     to: '/cpanel/users',
     icon: 'i-lucide-users'
@@ -38,6 +50,17 @@ const navigation = [
     icon: 'i-lucide-settings'
   }
 ]
+
+const portalOpen = ref(false)
+
+const notifications = ref([
+  { id: 1, title: 'Nuevo mensaje', description: 'Tienes un nuevo mensaje de contacto', time: '5 min', read: false, icon: 'i-lucide-mail' },
+  { id: 2, title: 'Alumno matriculado', description: 'Nuevo estudiante matriculado', time: '1 hora', read: true, icon: 'i-lucide-user-plus' },
+  { id: 3, title: 'Evento próximo', description: 'Evento "Graduación 2024" mañana', time: '2 horas', read: false, icon: 'i-lucide-calendar' }
+])
+
+const showNotifications = ref(false)
+const unreadCount = computed(() => notifications.value.filter(n => !n.read).length)
 
 const breadcrumbs = computed(() => {
   const crumbs = [{ label: 'Panel de Control', to: '/cpanel', icon: 'i-lucide-home' }]
@@ -62,6 +85,61 @@ const isActive = (path: string) => route.path === path
 
       <div class="flex items-center gap-2">
         <UColorModeButton />
+
+        <div class="relative">
+          <UButton
+            icon="i-lucide-bell"
+            color="neutral"
+            variant="ghost"
+            @click="showNotifications = !showNotifications"
+          >
+            <template #icon>
+              <div class="relative">
+                <UIcon name="i-lucide-bell" class="w-5 h-5" />
+                <span
+                  v-if="unreadCount > 0"
+                  class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"
+                >
+                  {{ unreadCount }}
+                </span>
+              </div>
+            </template>
+          </UButton>
+
+          <div
+            v-if="showNotifications"
+            class="absolute right-0 mt-2 w-80 bg-background border border-default rounded-lg shadow-lg z-50"
+          >
+            <div class="p-3 border-b border-default">
+              <h3 class="font-semibold">Notificaciones</h3>
+            </div>
+            <div class="max-h-80 overflow-y-auto">
+              <div
+                v-for="notif in notifications"
+                :key="notif.id"
+                class="p-3 border-b border-default hover:bg-muted/50 cursor-pointer"
+                :class="{ 'bg-primary/5': !notif.read }"
+              >
+                <div class="flex gap-3">
+                  <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <UIcon :name="notif.icon" class="w-4 h-4 text-primary" />
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium">{{ notif.title }}</p>
+                    <p class="text-xs text-muted-foreground line-clamp-1">{{ notif.description }}</p>
+                    <p class="text-xs text-muted-foreground mt-1">{{ notif.time }}</p>
+                  </div>
+                  <div v-if="!notif.read" class="w-2 h-2 rounded-full bg-primary shrink-0 mt-2" />
+                </div>
+              </div>
+            </div>
+            <div class="p-3 border-t border-default">
+              <UButton variant="ghost" block size="sm">
+                Ver todas las notificaciones
+              </UButton>
+            </div>
+          </div>
+        </div>
 
         <div class="relative">
           <UButton
@@ -108,24 +186,48 @@ const isActive = (path: string) => route.path === path
         :class="isCollapsed ? 'w-16' : 'w-64'"
       >
         <nav class="p-2">
-          <div
-            v-for="item in navigation"
-            :key="item.to"
-            class="mb-1"
-          >
-            <NuxtLink
-              :to="item.to"
-              class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors"
-              :class="[
-                isActive(item.to)
-                  ? 'bg-primary text-primary-foreground'
-                  : 'hover:bg-gray-100 dark:hover:bg-gray-800'
-              ]"
-            >
-              <UIcon :name="item.icon" class="w-5 h-5 shrink-0" />
-              <span v-if="!isCollapsed" class="text-sm font-medium">{{ item.title }}</span>
-            </NuxtLink>
-          </div>
+          <template v-for="item in navigation" :key="item.to">
+            <div v-if="item.children" class="mb-1">
+              <button
+                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+                @click="portalOpen = !portalOpen"
+              >
+                <UIcon :name="item.icon" class="w-5 h-5 shrink-0" />
+                <span v-if="!isCollapsed" class="text-sm font-medium flex-1 text-left">{{ item.title }}</span>
+                <UIcon v-if="!isCollapsed" :name="portalOpen ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'" class="w-4 h-4" />
+              </button>
+              <div v-if="portalOpen && !isCollapsed" class="ml-6 mt-1 space-y-1">
+                <NuxtLink
+                  v-for="child in item.children"
+                  :key="child.to"
+                  :to="child.to"
+                  class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors"
+                  :class="[
+                    isActive(child.to)
+                      ? 'bg-primary/10 text-primary'
+                      : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-muted-foreground'
+                  ]"
+                >
+                  <UIcon :name="child.icon" class="w-4 h-4" />
+                  {{ child.title }}
+                </NuxtLink>
+              </div>
+            </div>
+            <div v-else class="mb-1">
+              <NuxtLink
+                :to="item.to"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors"
+                :class="[
+                  isActive(item.to)
+                    ? 'bg-primary text-primary-foreground'
+                    : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                ]"
+              >
+                <UIcon :name="item.icon" class="w-5 h-5 shrink-0" />
+                <span v-if="!isCollapsed" class="text-sm font-medium">{{ item.title }}</span>
+              </NuxtLink>
+            </div>
+          </template>
         </nav>
       </aside>
 
@@ -135,9 +237,9 @@ const isActive = (path: string) => route.path === path
     </div>
 
     <div
-      v-if="isDropdownOpen"
+      v-if="isDropdownOpen || showNotifications"
       class="fixed inset-0 z-40"
-      @click="isDropdownOpen = false"
+      @click="isDropdownOpen = false; showNotifications = false"
     />
   </UApp>
 </template>

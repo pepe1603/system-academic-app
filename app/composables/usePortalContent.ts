@@ -94,7 +94,7 @@ export interface ContactForm {
   message: string
 }
 
-export const usePortal = () => {
+export const usePortalContent = () => {
   const loading = useState<boolean>('portalLoading', () => false)
   const error = useState<string | null>('portalError', () => null)
 

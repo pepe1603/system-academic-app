@@ -38,12 +38,15 @@ const features = [
         La plataforma definitiva para gestionar todos los aspectos de tu institución educativa.
         Desde estudiantes hasta calificaciones, todo en un solo lugar.
       </p>
-      <div class="flex gap-4 justify-center">
+      <div class="flex flex-wrap gap-4 justify-center">
         <UButton to="/auth/register" size="lg" icon="i-lucide-user-plus">
           Comenzar Ahora
         </UButton>
         <UButton to="/auth/login" size="lg" variant="outline" icon="i-lucide-log-in">
           Iniciar Sesión
+        </UButton>
+        <UButton to="/portal" size="lg" variant="soft" color="secondary" icon="i-lucide-school">
+          Ver Portal Público
         </UButton>
       </div>
     </section>

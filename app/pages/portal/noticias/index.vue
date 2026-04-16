@@ -8,16 +8,16 @@ definePageMeta({
   layout: 'portal'
 })
 
-const { getNews } = usePortal()
+const { getNews } = usePortalContent()
 const { data } = await useAsyncData('news', () => getNews(false))
 const news = computed(() => data.value || [])
 </script>
 
 <template>
-  <div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8">Noticias</h1>
+  <div class="container mx-auto px-6 py-12">
+    <h1 class="text-4xl font-bold mb-10">Noticias</h1>
     
-    <div v-if="news.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div v-if="news.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       <UCard v-for="item in news" :key="item.id" class="hover:shadow-lg transition-shadow">
         <template #header>
           <h2 class="font-semibold text-xl line-clamp-2">{{ item.title }}</h2>
@@ -36,9 +36,9 @@ const news = computed(() => data.value || [])
       </UCard>
     </div>
     
-    <div v-else class="text-center py-12">
+    <div v-else class="text-center py-16">
       <UIcon name="i-lucide-newspaper" class="w-16 h-16 text-muted-foreground mb-4" />
-      <p class="text-muted-foreground">No hay noticias disponibles</p>
+      <p class="text-muted-foreground text-lg">No hay noticias disponibles</p>
     </div>
   </div>
 </template>

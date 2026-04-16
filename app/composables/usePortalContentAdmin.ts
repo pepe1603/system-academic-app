@@ -1,4 +1,4 @@
-import type { Institution, News, Event, Ad, ContactMessage } from './usePortal'
+import type { Institution, ContactMessage, News, Event, Ad } from './usePortalContent'
 
 interface NewsInput {
   title: string
@@ -27,7 +27,7 @@ interface AdInput {
   endDate?: string
 }
 
-export const usePortalAdmin = () => {
+export const usePortalContentAdmin = () => {
   const { accessToken } = useAuth()
   const loading = useState<boolean>('portalAdminLoading', () => false)
   const error = useState<string | null>('portalAdminError', () => null)
@@ -37,6 +37,114 @@ export const usePortalAdmin = () => {
       throw new Error('No hay sesión activa')
     }
     return { Authorization: `Bearer ${accessToken.value}` }
+  }
+
+  const getAllNews = async (includeUnpublished = true): Promise<News[]> => {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await $fetch<{ success: boolean; data: News[] }>('/api/portal/news', {
+        method: 'GET',
+        headers: getAuthHeaders()
+      })
+      return response.data || []
+    } catch (err: unknown) {
+      const e = err as { message?: string }
+      error.value = e.message || 'Error al obtener noticias'
+      return []
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const getNewsById = async (id: string): Promise<News | null> => {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await $fetch<{ success: boolean; data: News }>(`/api/portal/news/${id}`, {
+        method: 'GET',
+        headers: getAuthHeaders()
+      })
+      return response.data || null
+    } catch (err: unknown) {
+      const e = err as { message?: string }
+      error.value = e.message || 'Error al obtener noticia'
+      return null
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const getAllEvents = async (includeUnpublished = true): Promise<Event[]> => {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await $fetch<{ success: boolean; data: Event[] }>('/api/portal/events', {
+        method: 'GET',
+        headers: getAuthHeaders()
+      })
+      return response.data || []
+    } catch (err: unknown) {
+      const e = err as { message?: string }
+      error.value = e.message || 'Error al obtener eventos'
+      return []
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const getEventById = async (id: string): Promise<Event | null> => {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await $fetch<{ success: boolean; data: Event }>(`/api/portal/events/${id}`, {
+        method: 'GET',
+        headers: getAuthHeaders()
+      })
+      return response.data || null
+    } catch (err: unknown) {
+      const e = err as { message?: string }
+      error.value = e.message || 'Error al obtener evento'
+      return null
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const getAllAds = async (): Promise<Ad[]> => {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await $fetch<{ success: boolean; data: Ad[] }>('/api/portal/ads', {
+        method: 'GET',
+        headers: getAuthHeaders()
+      })
+      return response.data || []
+    } catch (err: unknown) {
+      const e = err as { message?: string }
+      error.value = e.message || 'Error al obtener anuncios'
+      return []
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const getAdById = async (id: string): Promise<Ad | null> => {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await $fetch<{ success: boolean; data: Ad }>(`/api/portal/ads/${id}`, {
+        method: 'GET',
+        headers: getAuthHeaders()
+      })
+      return response.data || null
+    } catch (err: unknown) {
+      const e = err as { message?: string }
+      error.value = e.message || 'Error al obtener anuncio'
+      return null
+    } finally {
+      loading.value = false
+    }
   }
 
   const updateInstitution = async (data: Partial<Institution>): Promise<boolean> => {
@@ -305,13 +413,19 @@ export const usePortalAdmin = () => {
   return {
     loading: readonly(loading),
     error: readonly(error),
+    getAllNews,
+    getNewsById,
     updateInstitution,
     createNews,
     updateNews,
     deleteNews,
+    getAllEvents,
+    getEventById,
     createEvent,
     updateEvent,
     deleteEvent,
+    getAllAds,
+    getAdById,
     createAd,
     updateAd,
     deleteAd,

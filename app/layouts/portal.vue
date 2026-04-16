@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { getInstitution, getAds } = usePortal()
+const { getInstitution, getAds } = usePortalContent()
 
 const { data: institution } = await useAsyncData('institution', () => getInstitution())
 const { data: ads } = await useAsyncData('ads', () => getAds())
@@ -10,10 +10,10 @@ const sidebarAds = computed(() => ads.value?.filter(a => a.position === 'SIDEBAR
 
 <template>
   <div>
-    <section v-if="institution" class="py-12 bg-gradient-to-r from-primary/10 to-primary/5">
-      <div class="container mx-auto px-4 text-center">
-        <h1 class="text-4xl font-bold mb-4">{{ institution.name }}</h1>
-        <p class="text-lg text-muted-foreground max-w-2xl mx-auto">{{ institution.mission }}</p>
+    <section v-if="institution" class="py-16 bg-gradient-to-r from-primary/10 to-primary/5">
+      <div class="container mx-auto px-6 text-center">
+        <h1 class="text-5xl font-bold mb-6">{{ institution.name }}</h1>
+        <p class="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">{{ institution.mission }}</p>
         <div class="mt-4 flex justify-center gap-4 text-sm text-muted-foreground">
           <span v-if="institution.phone">
             <UIcon name="i-lucide-phone" class="w-4 h-4 inline mr-1" />
@@ -27,9 +27,9 @@ const sidebarAds = computed(() => ads.value?.filter(a => a.position === 'SIDEBAR
       </div>
     </section>
 
-    <section v-if="banners.length" class="py-8 bg-muted/30">
-      <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <section v-if="banners.length" class="py-12 bg-muted/30">
+      <div class="container mx-auto px-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <a
             v-for="banner in banners"
             :key="banner.id"

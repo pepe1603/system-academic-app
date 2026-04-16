@@ -54,23 +54,23 @@ const filteredSections = computed(() =>
 
 <template>
   <div>
-    <h1 class="text-3xl font-bold mb-2">Portal Público</h1>
-    <p class="text-muted-foreground mb-8">Gestiona el contenido del portal público</p>
+    <h1 class="text-3xl font-bold mb-3">Portal Público</h1>
+    <p class="text-muted-foreground mb-10">Gestiona el contenido del portal público</p>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       <NuxtLink
         v-for="section in filteredSections"
         :key="section.to"
         :to="section.to"
-        class="block p-6 border rounded-lg hover:border-primary hover:shadow-md transition-all"
+        class="block p-8 border rounded-lg hover:border-primary hover:shadow-lg transition-all"
       >
-        <div class="flex items-center gap-4">
-          <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-            <UIcon :name="section.icon" class="w-6 h-6 text-primary" />
+        <div class="flex items-center gap-5">
+          <div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
+            <UIcon :name="section.icon" class="w-7 h-7 text-primary" />
           </div>
           <div>
-            <h3 class="font-semibold text-lg">{{ section.title }}</h3>
-            <p class="text-sm text-muted-foreground">{{ section.description }}</p>
+            <h3 class="font-semibold text-xl">{{ section.title }}</h3>
+            <p class="text-muted-foreground mt-1">{{ section.description }}</p>
           </div>
         </div>
       </NuxtLink>

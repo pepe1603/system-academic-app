@@ -8,7 +8,7 @@ definePageMeta({
   layout: 'portal'
 })
 
-const { sendContactMessage, loading } = usePortal()
+const { sendContactMessage, loading } = usePortalContent()
 
 const form = ref({
   fullName: '',
@@ -34,17 +34,17 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <div class="container mx-auto px-4 py-8 max-w-2xl">
-    <h1 class="text-3xl font-bold mb-2">Contacto</h1>
-    <p class="text-muted-foreground mb-8">
+  <div class="container mx-auto px-6 py-12 max-w-2xl">
+    <h1 class="text-4xl font-bold mb-4">Contacto</h1>
+    <p class="text-muted-foreground text-lg mb-10">
       ¿Tienes alguna pregunta? ¡Escríbenos! Notre equipo te responderá pronto.
     </p>
 
-    <UAlert v-if="success" color="success" variant="soft" class="mb-6" title="Mensaje enviado correctamente" />
+    <UAlert v-if="success" color="success" variant="soft" class="mb-8" title="Mensaje enviado correctamente" />
 
-    <UAlert v-if="errorMessage" color="error" variant="soft" class="mb-6" :title="errorMessage" />
+    <UAlert v-if="errorMessage" color="error" variant="soft" class="mb-8" :title="errorMessage" />
 
-    <UForm v-if="!success" @submit.prevent="handleSubmit" class="space-y-4">
+    <UForm v-if="!success" @submit.prevent="handleSubmit" class="space-y-6">
       <UFormField label="Nombre completo" name="fullName" required>
         <UInput v-model="form.fullName" placeholder="Juan Pérez" size="lg" />
       </UFormField>
@@ -62,7 +62,7 @@ const handleSubmit = async () => {
       </UFormField>
 
       <UFormField label="Mensaje" name="message" required>
-        <UTextarea v-model="form.message" placeholder="Escribe tu mensaje..." :rows="5" />
+        <UTextarea v-model="form.message" placeholder="Escribe tu mensaje..." :rows="6" />
       </UFormField>
 
       <UButton type="submit" size="lg" block :loading="loading">
