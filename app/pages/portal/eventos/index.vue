@@ -12,6 +12,16 @@ const { getEvents } = usePortalContent()
 const { data } = await useAsyncData('events', () => getEvents(false))
 const events = computed(() => data.value || [])
 
+const selectedEvent = ref<any>(null)
+
+const openEventModal = (event: any) => {
+  selectedEvent.value = event
+}
+
+const closeEventModal = () => {
+  selectedEvent.value = null
+}
+
 const formatDate = (date: string) => {
   return new Date(date).toLocaleDateString('es-MX', { 
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
@@ -30,9 +40,9 @@ const formatDate = (date: string) => {
       <article 
         v-for="event in events" 
         :key="event.id"
-        class="group"
+        class="group cursor-pointer"
       >
-        <UCard class="hover:shadow-xl transition-all duration-300 overflow-hidden">
+        <UCard class="hover:shadow-xl transition-all duration-300 overflow-hidden" @click="openEventModal(event)">
           <div class="flex flex-col lg:flex-row">
             <div class="lg:w-40 p-6 bg-primary/10 flex flex-col items-center justify-center">
               <span class="text-4xl font-bold text-primary">
@@ -64,7 +74,7 @@ const formatDate = (date: string) => {
                     </span>
                   </div>
                 </div>
-                <UButton variant="outline" :to="`/portal/eventos/${event.id}`" class="shrink-0">
+                <UButton variant="outline" class="shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
                   Ver detalles <UIcon name="i-lucide-arrow-right" class="w-4 h-4 ml-2" />
                 </UButton>
               </div>
@@ -79,4 +89,50 @@ const formatDate = (date: string) => {
       <p class="text-muted-foreground text-lg">No hay eventos programados</p>
     </div>
   </div>
+
+  <!-- Event Modal -->
+  <Teleport to="body">
+    <div v-if="selectedEvent" class="fixed inset-0 z-[100] flex items-center justify-center p-4" @click.self="closeEventModal">
+      <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeEventModal" />
+      <div class="relative bg-background rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto">
+        <button @click="closeEventModal" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center">
+          <UIcon name="i-lucide-x" class="w-5 h-5" />
+        </button>
+        
+        <div class="bg-primary/10 p-8 text-center">
+          <span class="text-5xl font-bold text-primary">
+            {{ new Date(selectedEvent.eventDate).getDate() }}
+          </span>
+          <div class="text-xl text-muted-foreground uppercase">
+            {{ new Date(selectedEvent.eventDate).toLocaleDateString('es-MX', { month: 'long' }) }}
+          </div>
+        </div>
+        
+        <div class="p-8">
+          <h2 class="text-3xl font-bold mb-4">{{ selectedEvent.title }}</h2>
+          
+          <div class="flex flex-wrap gap-6 text-muted-foreground mb-6">
+            <span class="flex items-center gap-2">
+              <UIcon name="i-lucide-calendar" class="w-5 h-5" />
+              {{ formatDate(selectedEvent.eventDate) }}
+            </span>
+            <span class="flex items-center gap-2">
+              <UIcon name="i-lucide-map-pin" class="w-5 h-5" />
+              {{ selectedEvent.location }}
+            </span>
+          </div>
+          
+          <div class="prose dark:prose-invert max-w-none">
+            <p class="text-lg leading-relaxed whitespace-pre-wrap">{{ selectedEvent.description }}</p>
+          </div>
+          
+          <div class="mt-8 pt-6 border-t flex justify-end">
+            <UButton variant="outline" @click="closeEventModal">
+              Cerrar
+            </UButton>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Teleport>
 </template>
