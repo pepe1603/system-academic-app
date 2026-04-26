@@ -47,6 +47,13 @@ const getLinkRel = (url: string) => {
   return url.startsWith('/') ? undefined : 'noopener noreferrer'
 }
 
+const getFullUrl = (url: string) => {
+  if (!url) return '#'
+  if (url.startsWith('/')) return url
+  if (url.startsWith('http://') || url.startsWith('https://')) return url
+  return 'https://' + url
+}
+
 onMounted(() => {
   if (ads.value.length > 1) {
     interval = setInterval(nextSlide, 5000)
@@ -154,7 +161,7 @@ onUnmounted(() => {
             <h2 class="text-2xl md:text-3xl font-bold mb-4">{{ selectedAd.title }}</h2>
             <p class="text-muted-foreground text-lg mb-6 whitespace-pre-wrap">{{ selectedAd.description }}</p>
             <div v-if="selectedAd.linkUrl" class="flex gap-3">
-              <a :href="selectedAd.linkUrl" :target="getLinkTarget(selectedAd.linkUrl)" :rel="getLinkRel(selectedAd.linkUrl)" class="inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/90">
+              <a :href="getFullUrl(selectedAd.linkUrl)" :target="getLinkTarget(selectedAd.linkUrl)" :rel="getLinkRel(selectedAd.linkUrl)" class="inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/90">
                 <UIcon name="i-lucide-external-link" class="w-4 h-4 mr-2" />
                 Ver página completa
               </a>
