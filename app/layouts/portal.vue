@@ -8,6 +8,7 @@ const { data: adsList } = await useAsyncData('portal-ads', () => getAllAds())
 const ads = computed(() => adsList.value?.filter(a => a.isPublished) || [])
 
 const currentIndex = ref(0)
+const selectedAd = ref<any>(null)
 let interval: NodeJS.Timeout | null = null
 
 const nextSlide = () => {
@@ -24,6 +25,14 @@ const prevSlide = () => {
 
 const goToSlide = (index: number) => {
   currentIndex.value = index
+}
+
+const openAdModal = (ad: any) => {
+  selectedAd.value = ad
+}
+
+const closeAdModal = () => {
+  selectedAd.value = null
 }
 
 onMounted(() => {
@@ -91,7 +100,7 @@ onUnmounted(() => {
               <p class="text-lg md:text-xl opacity-90 mb-4 line-clamp-2">
                 {{ ad.description }}
               </p>
-              <UButton v-if="ad.linkUrl" size="lg" :to="ad.linkUrl">
+              <UButton v-if="ad.linkUrl" size="lg" @click="openAdModal(ad)">
                 Ver más <UIcon name="i-lucide-arrow-right" class="w-4 h-4 ml-2" />
               </UButton>
             </div>
@@ -108,7 +117,43 @@ onUnmounted(() => {
           :class="currentIndex === index ? 'bg-white w-6' : 'bg-white/50'"
         />
       </div>
+
+      <!-- Click whole slide to open modal -->
+      <button
+        v-if="ads[currentIndex]?.linkUrl"
+        @click="openAdModal(ads[currentIndex])"
+        class="absolute inset-0 z-10 cursor-pointer"
+        aria-label="Ver más información"
+      />
     </section>
+
+    <!-- Ad Modal -->
+    <Teleport to="body">
+      <div v-if="selectedAd" class="fixed inset-0 z-[100] flex items-center justify-center p-4" @click.self="closeAdModal">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeAdModal" />
+        <div class="relative bg-background rounded-2xl shadow-2xl max-w-3xl w-full max-h-[85vh] overflow-hidden">
+          <button @click="closeAdModal" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white">
+            <UIcon name="i-lucide-x" class="w-6 h-6" />
+          </button>
+          <div v-if="selectedAd.imageUrl" class="h-64 md:h-80">
+            <img :src="selectedAd.imageUrl" :alt="selectedAd.title" class="w-full h-full object-cover" />
+          </div>
+          <div class="p-6 md:p-8">
+            <h2 class="text-2xl md:text-3xl font-bold mb-4">{{ selectedAd.title }}</h2>
+            <p class="text-muted-foreground text-lg mb-6 whitespace-pre-wrap">{{ selectedAd.description }}</p>
+            <div v-if="selectedAd.linkUrl" class="flex gap-3">
+              <UButton size="lg" :to="selectedAd.linkUrl">
+                <UIcon name="i-lucide-external-link" class="w-4 h-4 mr-2" />
+                Ver página completa
+              </UButton>
+              <UButton variant="outline" @click="closeAdModal">
+                Cerrar
+              </UButton>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
 
     <!-- Fallback -->
     <section v-if="ads.length === 0" class="h-[30vh] bg-gradient-to-br from-primary to-primary/80 flex items-center">
