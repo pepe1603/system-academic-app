@@ -18,6 +18,8 @@ const { data: adsList } = await useAsyncData('ads-all', () => getAllAds())
 const news = computed(() => newsData.value?.slice(0, 3) || [])
 const events = computed(() => eventsData.value?.slice(0, 3) || [])
 const filteredAds = computed(() => adsList.value?.filter(a => a.isPublished) || [])
+const primaryAd = computed(() => filteredAds.value[0] || null)
+const otherAds = computed(() => filteredAds.value.slice(1) || [])
 
 const navItems = [
   { label: 'Inicio', to: '/', icon: 'i-lucide-home' },
@@ -61,11 +63,11 @@ const navItems = [
       </div>
     </nav>
 
-    <section v-if="filteredAds.length" class="relative h-72 md:h-96 overflow-hidden">
+    <section v-if="primaryAd" class="relative h-72 md:h-96 overflow-hidden">
       <div class="absolute inset-0">
         <img
-          v-if="filteredAds[0]?.imageUrl"
-          :src="filteredAds[0].imageUrl"
+          v-if="primaryAd.imageUrl"
+          :src="primaryAd.imageUrl"
           class="w-full h-full object-cover"
         />
         <div v-else class="w-full h-full bg-gradient-to-r from-primary to-primary/70" />
@@ -74,13 +76,13 @@ const navItems = [
       <div class="relative z-20 container mx-auto px-6 h-full flex items-center">
         <div class="text-white max-w-3xl">
           <h1 class="text-4xl md:text-5xl font-bold mb-4">
-            {{ filteredAds[0]?.title || 'Bienvenido a nuestro Portal' }}
+            {{ primaryAd.title || 'Bienvenido a nuestro Portal' }}
           </h1>
           <p class="text-lg md:text-xl opacity-90 mb-6 line-clamp-3">
-            {{ filteredAds[0]?.description || 'Instituto educativo de excelencia' }}
+            {{ primaryAd.description || 'Instituto educativo de excelencia' }}
           </p>
-          <div v-if="filteredAds[0]?.linkUrl" class="mt-6">
-            <UButton size="xl" :to="filteredAds[0].linkUrl">
+          <div v-if="primaryAd.linkUrl" class="mt-6">
+            <UButton size="xl" :to="primaryAd.linkUrl">
               Ver más <UIcon name="i-lucide-arrow-right" class="w-5 h-5 ml-2" />
             </UButton>
           </div>
@@ -168,14 +170,14 @@ const navItems = [
       </div>
     </section>
 
-    <section v-if="filteredAds?.length" class="py-16 bg-muted/30">
+    <section v-if="otherAds.length > 0" class="py-16 bg-muted/30">
       <div class="container mx-auto px-6">
         <div class="flex justify-between items-center mb-10">
           <h2 class="text-4xl font-bold">Anuncios</h2>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div 
-            v-for="ad in filteredAds" 
+            v-for="ad in otherAds" 
             :key="ad.id"
             class="relative h-56 rounded-xl overflow-hidden cursor-pointer group"
           >
@@ -251,25 +253,33 @@ const navItems = [
       <div class="container mx-auto px-6">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
           <div>
-            <h3 class="font-bold text-xl mb-4">{{ institution?.name || 'ENEZ' }}</h3>
-            <p class="text-lg opacity-80">{{ institution?.address }}</p>
-          </div>
-          <div>
-            <h3 class="font-bold text-xl mb-4">Contacto</h3>
-            <p class="text-lg opacity-80">{{ institution?.phone }}</p>
-            <p class="text-lg opacity-80">{{ institution?.email }}</p>
-          </div>
-          <div>
             <h3 class="font-bold text-xl mb-4">Enlaces Rápidos</h3>
             <div class="flex flex-col gap-3 text-lg">
               <NuxtLink to="/portal/nosotros" class="opacity-80 hover:opacity-100">Nosotros</NuxtLink>
               <NuxtLink to="/portal/noticias" class="opacity-80 hover:opacity-100">Noticias</NuxtLink>
+              <NuxtLink to="/portal/eventos" class="opacity-80 hover:opacity-100">Eventos</NuxtLink>
               <NuxtLink to="/portal/servicios" class="opacity-80 hover:opacity-100">Servicios</NuxtLink>
+              <NuxtLink to="/portal/contacto" class="opacity-80 hover:opacity-100">Contacto</NuxtLink>
+            </div>
+          </div>
+          <div>
+            <h3 class="font-bold text-xl mb-4">Síguenos</h3>
+            <div class="flex gap-4">
+              <UButton variant="ghost" icon="i-lucide-facebook" />
+              <UButton variant="ghost" icon="i-lucide-twitter" />
+              <UButton variant="ghost" icon="i-lucide-instagram" />
+            </div>
+          </div>
+          <div>
+            <h3 class="font-bold text-xl mb-4">Legal</h3>
+            <div class="flex flex-col gap-3 text-lg">
+              <NuxtLink to="/portal/privacidad" class="opacity-80 hover:opacity-100">Política de Privacidad</NuxtLink>
+              <NuxtLink to="/portal/terminos" class="opacity-80 hover:opacity-100">Términos y Condiciones</NuxtLink>
             </div>
           </div>
         </div>
         <div class="border-t border-primary-foreground/20 mt-10 pt-8 text-center text-lg opacity-60">
-          © {{ new Date().getFullYear() }} {{ institution?.name || 'Escuela Normal Emiliano Zapata' }}. Todos los derechos reservados.
+          © {{ new Date().getFullYear() }} {{ institution?.name || 'Institución Educativa' }}. Todos los derechos reservados.
         </div>
       </div>
     </footer>
