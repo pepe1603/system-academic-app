@@ -23,6 +23,12 @@ const items = [
         </NuxtLink>
       </template>
 
+      <template #center>
+        <UButton to="/portal" variant="ghost" color="secondary" icon="i-lucide-school">
+          Portal Público
+        </UButton>
+      </template>
+
       <template #right>
         <UColorModeButton />
         <div class="flex items-center gap-1">
