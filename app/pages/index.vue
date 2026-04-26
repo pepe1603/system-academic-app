@@ -131,7 +131,7 @@ const events = computed(() => eventsData.value?.slice(0, 3) || [])
     <!-- Footer -->
     <footer class="bg-slate-950 text-slate-400 py-12 md:py-16 lg:py-20">
       <div class="container mx-auto px-6 max-w-6xl">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 lg:gap-12 text-center md:text-left">
           <div>
             <h3 class="font-bold text-white mb-3">{{ institution?.name || 'ENEZ' }}</h3>
             <p class="text-sm opacity-70">{{ institution?.address }}</p>
