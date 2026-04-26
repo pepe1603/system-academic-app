@@ -194,20 +194,35 @@ export const usePortalContent = () => {
     }
   }
 
-  const getAdsByPosition = async (position: string): Promise<Ad[]> => {
-    loading.value = true
-    error.value = null
-    try {
-      const response = await $fetch<{ success: boolean; data: Ad[] }>(`/api/portal/ads/${position}`)
-      return response.data || []
-    } catch (err: unknown) {
-      const e = err as { message?: string }
-      error.value = e.message || 'Error al obtener anuncios'
-      return []
-    } finally {
-      loading.value = false
-    }
+const getAdsByPosition = async (position: string): Promise<Ad[]> => {
+  loading.value = true
+  error.value = null
+  try {
+    const response = await $fetch<{ success: boolean; data: Ad[] }>(`/api/portal/ads/${position}`)
+    return response.data || []
+  } catch (err: unknown) {
+    const e = err as { message?: string }
+    error.value = e.message || 'Error al obtener anuncios'
+    return []
+  } finally {
+    loading.value = false
   }
+}
+
+const getAllAds = async (): Promise<Ad[]> => {
+  loading.value = true
+  error.value = null
+  try {
+    const response = await $fetch<{ success: boolean; data: Ad[] }>('/api/portal/ads')
+    return response.data || []
+  } catch (err: unknown) {
+    const e = err as { message?: string }
+    error.value = e.message || 'Error al obtener anuncios'
+    return []
+  } finally {
+    loading.value = false
+  }
+}
 
   const sendContactMessage = async (data: ContactForm): Promise<boolean> => {
     loading.value = true
@@ -237,6 +252,7 @@ export const usePortalContent = () => {
     getEventById,
     getAds,
     getAdsByPosition,
+    getAllAds,
     sendContactMessage
   }
 }

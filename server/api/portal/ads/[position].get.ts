@@ -1,6 +1,9 @@
 export default defineEventHandler(async (event) => {
   const position = getRouterParam(event, 'position')
   const config = useRuntimeConfig()
+  const headers = getHeaders(event)
+  const authHeader = headers.authorization
+
   console.log(`[PROXY] 📢 GET /api/portal/ads/${position}`)
 
   if (!config.public.apiBaseUrl) {
@@ -8,7 +11,10 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const response = await $fetch(`${config.public.apiBaseUrl}/portal/ads/${position}`, { method: 'GET' })
+    const response = await $fetch(`${config.public.apiBaseUrl}/portal/ads/${position}`, {
+      method: 'GET',
+      headers: authHeader ? { Authorization: authHeader } : {}
+    })
     return response
   } catch (error: unknown) {
     const err = error as { statusCode?: number, message?: string }

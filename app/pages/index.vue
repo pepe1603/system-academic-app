@@ -8,17 +8,16 @@ definePageMeta({
   layout: 'portal'
 })
 
-const { getInstitution, getNews, getEvents, getAdsByPosition } = usePortalContent()
+const { getInstitution, getNews, getEvents, getAllAds } = usePortalContent()
 
 const { data: institution } = await useAsyncData('institution-home', () => getInstitution())
 const { data: newsData } = await useAsyncData('news-home', () => getNews(false))
 const { data: eventsData } = await useAsyncData('events-home', () => getEvents(false))
-const { data: banners } = await useAsyncData('banners-home', () => getAdsByPosition('BANNER'))
+const { data: adsList } = await useAsyncData('ads-all', () => getAllAds())
 
 const news = computed(() => newsData.value?.slice(0, 3) || [])
 const events = computed(() => eventsData.value?.slice(0, 3) || [])
-const activeBanners = computed(() => banners.value?.filter(b => b.isPublished) || [])
-const ads = computed(() => banners.value || [])
+const filteredAds = computed(() => ads.value?.filter(a => a.isPublished) || [])
 
 const navItems = [
   { label: 'Inicio', to: '/', icon: 'i-lucide-home' },
@@ -62,11 +61,11 @@ const navItems = [
       </div>
     </nav>
 
-    <section v-if="activeBanners.length" class="relative h-72 md:h-96 overflow-hidden">
+    <section v-if="filteredAds.length" class="relative h-72 md:h-96 overflow-hidden">
       <div class="absolute inset-0">
         <img
-          v-if="activeBanners[0]?.imageUrl"
-          :src="activeBanners[0].imageUrl"
+          v-if="filteredAds[0]?.imageUrl"
+          :src="filteredAds[0].imageUrl"
           class="w-full h-full object-cover"
         />
         <div v-else class="w-full h-full bg-gradient-to-r from-primary to-primary/70" />
@@ -75,13 +74,13 @@ const navItems = [
       <div class="relative z-20 container mx-auto px-6 h-full flex items-center">
         <div class="text-white max-w-3xl">
           <h1 class="text-4xl md:text-5xl font-bold mb-4">
-            {{ activeBanners[0]?.title || 'Bienvenido a nuestro Portal' }}
+            {{ filteredAds[0]?.title || 'Bienvenido a nuestro Portal' }}
           </h1>
           <p class="text-lg md:text-xl opacity-90 mb-6 line-clamp-3">
-            {{ activeBanners[0]?.description || 'Instituto educativo de excelencia' }}
+            {{ filteredAds[0]?.description || 'Instituto educativo de excelencia' }}
           </p>
-          <div v-if="activeBanners[0]?.linkUrl" class="mt-6">
-            <UButton size="xl" :to="activeBanners[0].linkUrl">
+          <div v-if="filteredAds[0]?.linkUrl" class="mt-6">
+            <UButton size="xl" :to="filteredAds[0].linkUrl">
               Ver más <UIcon name="i-lucide-arrow-right" class="w-5 h-5 ml-2" />
             </UButton>
           </div>
@@ -169,12 +168,14 @@ const navItems = [
       </div>
     </section>
 
-    <section v-if="ads?.length" class="py-16 bg-muted/30">
+    <section v-if="filteredAds?.length" class="py-16 bg-muted/30">
       <div class="container mx-auto px-6">
-        <h2 class="text-4xl font-bold mb-10">Anuncios</h2>
+        <div class="flex justify-between items-center mb-10">
+          <h2 class="text-4xl font-bold">Anuncios</h2>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div 
-            v-for="ad in ads" 
+            v-for="ad in filteredAds" 
             :key="ad.id"
             class="relative h-56 rounded-xl overflow-hidden cursor-pointer group"
           >
