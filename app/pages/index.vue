@@ -17,7 +17,7 @@ const { data: adsList } = await useAsyncData('ads-all', () => getAllAds())
 
 const news = computed(() => newsData.value?.slice(0, 3) || [])
 const events = computed(() => eventsData.value?.slice(0, 3) || [])
-const filteredAds = computed(() => ads.value?.filter(a => a.isPublished) || [])
+const filteredAds = computed(() => adsList.value?.filter(a => a.isPublished) || [])
 
 const navItems = [
   { label: 'Inicio', to: '/', icon: 'i-lucide-home' },
