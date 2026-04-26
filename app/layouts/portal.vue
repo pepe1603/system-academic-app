@@ -141,15 +141,9 @@ onUnmounted(() => {
           <div class="p-6 md:p-8">
             <h2 class="text-2xl md:text-3xl font-bold mb-4">{{ selectedAd.title }}</h2>
             <p class="text-muted-foreground text-lg mb-6 whitespace-pre-wrap">{{ selectedAd.description }}</p>
-            <div class="flex gap-3">
-              <NuxtLink :to="`/portal/anuncios/${selectedAd.id}`" class="inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/90">
-                <UIcon name="i-lucide-arrow-right" class="w-4 h-4 mr-2" />
-                Ver página completa
-              </NuxtLink>
-              <UButton variant="outline" @click="closeAdModal">
-                Cerrar
-              </UButton>
-            </div>
+            <UButton variant="outline" @click="closeAdModal">
+              Cerrar
+            </UButton>
           </div>
         </div>
       </div>
