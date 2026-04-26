@@ -18,6 +18,7 @@ const { data: banners } = await useAsyncData('banners-home', () => getAdsByPosit
 const news = computed(() => newsData.value?.slice(0, 3) || [])
 const events = computed(() => eventsData.value?.slice(0, 3) || [])
 const activeBanners = computed(() => banners.value?.filter(b => b.isPublished) || [])
+const ads = computed(() => banners.value || [])
 
 const navItems = [
   { label: 'Inicio', to: '/', icon: 'i-lucide-home' },
@@ -164,6 +165,42 @@ const navItems = [
               </div>
             </template>
           </UCard>
+        </div>
+      </div>
+    </section>
+
+    <section v-if="ads?.length" class="py-16 bg-muted/30">
+      <div class="container mx-auto px-6">
+        <h2 class="text-4xl font-bold mb-10">Anuncios</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div 
+            v-for="ad in ads" 
+            :key="ad.id"
+            class="relative h-56 rounded-xl overflow-hidden cursor-pointer group"
+          >
+            <div v-if="ad.imageUrl" class="absolute inset-0">
+              <img :src="ad.imageUrl" :alt="ad.title" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+            </div>
+            <div v-else class="absolute inset-0 bg-gradient-to-r from-primary to-primary/70" />
+            
+            <div class="absolute bottom-0 left-0 right-0 p-5" :class="ad.imageUrl ? 'text-white' : ''">
+              <h3 class="font-bold text-xl mb-1">{{ ad.title }}</h3>
+              <p class="text-sm line-clamp-2" :class="ad.imageUrl ? 'text-white/80' : 'text-muted-foreground'">
+                {{ ad.description }}
+              </p>
+            </div>
+            
+            <NuxtLink 
+              v-if="ad.linkUrl" 
+              :to="ad.linkUrl"
+              class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30"
+            >
+              <UButton variant="solid" size="lg">
+                Ver más <UIcon name="i-lucide-arrow-right" class="w-4 h-4 ml-2" />
+              </UButton>
+            </NuxtLink>
+          </div>
         </div>
       </div>
     </section>
