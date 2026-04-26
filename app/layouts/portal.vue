@@ -41,7 +41,7 @@ onUnmounted(() => {
   <div>
     <!-- Navbar -->
     <nav class="border-b bg-background/80 backdrop-blur sticky top-0 z-50">
-      <div class="container mx-auto px-6">
+      <div class="container mx-auto px-6 max-w-6xl">
         <div class="flex items-center justify-between h-16">
           <NuxtLink to="/" class="flex items-center gap-2 font-semibold">
             <UIcon name="i-lucide-graduation-cap" class="w-7 h-7 text-primary" />
@@ -65,7 +65,7 @@ onUnmounted(() => {
     </nav>
 
     <!-- Carousel Banner -->
-    <section v-if="ads.length > 0" class="relative h-[45vh] md:h-[55vh] overflow-hidden">
+    <section v-if="ads.length > 0" class="relative h-[40vh] md:h-[50vh] lg:h-[55vh] overflow-hidden">
       <transition-group name="fade" tag="div">
         <div
           v-for="(ad, index) in ads"
@@ -83,7 +83,7 @@ onUnmounted(() => {
             <div v-else class="w-full h-full bg-gradient-to-br from-primary via-primary/80 to-primary/60" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
           </div>
-          <div class="relative z-10 container mx-auto px-6 h-full flex items-center">
+          <div class="relative z-10 container mx-auto px-6 max-w-6xl h-full flex items-center">
             <div class="text-white max-w-3xl">
               <h1 class="text-3xl md:text-5xl font-bold mb-3">
                 {{ ad.title }}
@@ -112,7 +112,7 @@ onUnmounted(() => {
 
     <!-- Fallback -->
     <section v-if="ads.length === 0" class="h-[30vh] bg-gradient-to-br from-primary to-primary/80 flex items-center">
-      <div class="container mx-auto px-6 text-white text-center">
+      <div class="container mx-auto px-6 max-w-6xl text-white text-center">
         <h1 class="text-3xl md:text-4xl font-bold">Portal Educativo</h1>
       </div>
     </section>

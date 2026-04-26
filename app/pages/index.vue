@@ -21,8 +21,8 @@ const events = computed(() => eventsData.value?.slice(0, 3) || [])
 <template>
   <div>
     <!-- Quick Contact -->
-    <section class="py-6 bg-primary/5 border-b">
-      <div class="container mx-auto px-6">
+    <section class="py-8 md:py-10 bg-primary/5 border-b">
+      <div class="container mx-auto px-6 max-w-6xl">
         <div class="flex flex-wrap justify-center gap-6 text-sm">
           <a v-if="institution?.phone" :href="`tel:${institution.phone}`" class="flex items-center gap-2 text-muted-foreground hover:text-primary">
             <UIcon name="i-lucide-phone" class="w-4 h-4" />
@@ -37,19 +37,19 @@ const events = computed(() => eventsData.value?.slice(0, 3) || [])
     </section>
 
     <!-- Latest News - Parallax Cards -->
-    <section class="py-16">
-      <div class="container mx-auto px-6">
-        <div class="flex justify-between items-end mb-10">
+    <section class="py-12 md:py-20 lg:py-24">
+      <div class="container mx-auto px-6 max-w-6xl">
+        <div class="flex justify-between items-end mb-12">
           <div>
-            <h2 class="text-3xl font-bold">Últimas Noticias</h2>
-            <p class="text-muted-foreground mt-1">Mantente informado</p>
+            <h2 class="text-3xl md:text-4xl font-bold">Últimas Noticias</h2>
+            <p class="text-muted-foreground mt-2">Mantente informado</p>
           </div>
           <UButton to="/portal/noticias" variant="ghost">
             Ver todas <UIcon name="i-lucide-arrow-right" class="w-4 h-4 ml-2" />
           </UButton>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 lg:gap-10">
           <div 
             v-for="(item, index) in news" 
             :key="item.id"
@@ -83,19 +83,19 @@ const events = computed(() => eventsData.value?.slice(0, 3) || [])
     </section>
 
     <!-- Upcoming Events -->
-    <section class="py-16 bg-slate-50 dark:bg-slate-900">
-      <div class="container mx-auto px-6">
-        <div class="flex justify-between items-end mb-10">
+    <section class="py-12 md:py-20 lg:py-24 bg-slate-50 dark:bg-slate-900">
+      <div class="container mx-auto px-6 max-w-6xl">
+        <div class="flex justify-between items-end mb-12">
           <div>
-            <h2 class="text-3xl font-bold">Próximos Eventos</h2>
-            <p class="text-muted-foreground mt-1">No te pierdas nada</p>
+            <h2 class="text-3xl md:text-4xl font-bold">Próximos Eventos</h2>
+            <p class="text-muted-foreground mt-2">No te pierdas nada</p>
           </div>
           <UButton to="/portal/eventos" variant="ghost">
             Ver todos <UIcon name="i-lucide-arrow-right" class="w-4 h-4 ml-2" />
           </UButton>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 lg:gap-10">
           <UCard v-for="event in events" :key="event.id" class="hover:shadow-lg transition-all group">
             <div class="flex items-start gap-4">
               <div class="w-16 h-16 rounded-xl bg-primary/10 flex flex-col items-center justify-center shrink-0">
@@ -117,8 +117,8 @@ const events = computed(() => eventsData.value?.slice(0, 3) || [])
     </section>
 
     <!-- CTA -->
-    <section class="py-20 bg-gradient-to-r from-primary to-primary/80 text-white">
-      <div class="container mx-auto px-6 text-center">
+    <section class="py-16 md:py-24 lg:py-28 bg-gradient-to-r from-primary to-primary/80 text-white">
+      <div class="container mx-auto px-6 max-w-4xl text-center">
         <h2 class="text-2xl md:text-3xl font-bold mb-4">¿Tienes alguna duda?</h2>
         <p class="opacity-90 mb-6 max-w-xl mx-auto">Escríbenos y nuestro equipo te contactará pronto</p>
         <UButton to="/portal/contacto" size="lg" class="bg-white text-primary hover:bg-white/90">
@@ -129,8 +129,8 @@ const events = computed(() => eventsData.value?.slice(0, 3) || [])
     </section>
 
     <!-- Footer -->
-    <footer class="bg-slate-950 text-slate-400 py-12">
-      <div class="container mx-auto px-6">
+    <footer class="bg-slate-950 text-slate-400 py-12 md:py-16 lg:py-20">
+      <div class="container mx-auto px-6 max-w-6xl">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
           <div>
             <h3 class="font-bold text-white mb-3">{{ institution?.name || 'ENEZ' }}</h3>
