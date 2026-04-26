@@ -130,26 +130,8 @@ export const usePortalContentAdmin = () => {
   }
 
   const getAdById = async (id: string): Promise<Ad | null> => {
-    loading.value = true
-    error.value = null
-    try {
-      const authHeaders = getAuthHeaders()
-      console.log('[DEBUG] getAdById called with id:', id, 'headers:', authHeaders)
-      
-      const response = await $fetch<{ success: boolean; data: Ad }>(`/api/portal/ads/${id}`, {
-        method: 'GET',
-        headers: { ...authHeaders, 'Content-Type': 'application/json' }
-      })
-      console.log('[DEBUG] getAdById response:', response)
-      return response.data || null
-    } catch (err: unknown) {
-      const e = err as { message?: string }
-      error.value = e.message || 'Error al obtener anuncio'
-      console.error('[DEBUG] getAdById error:', e)
-      return null
-    } finally {
-      loading.value = false
-    }
+    const allAds = await getAllAds()
+    return allAds.find(a => a.id === id) || null
   }
 
   const updateInstitution = async (data: Partial<Institution>): Promise<boolean> => {

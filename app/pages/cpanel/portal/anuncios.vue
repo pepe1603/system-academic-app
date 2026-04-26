@@ -77,11 +77,9 @@ const handleSubmit = async () => {
 }
 
 const handleEdit = async (id: string) => {
-  console.log('[DEBUG-anuncios] handleEdit CLICKED, id:', id, 'accessToken exists:', !!useAuth().accessToken.value)
   formLoading.value = true
   try {
-    const ad = await getAdById(id)
-    console.log('[DEBUG] getAdById result:', ad, 'error:', error.value)
+    const ad = adsList.value?.find(a => a.id === id)
     if (ad) {
       form.value = {
         title: ad.title,
