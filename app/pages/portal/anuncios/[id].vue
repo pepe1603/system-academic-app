@@ -1,4 +1,8 @@
 <script setup lang="ts">
+definePageMeta({
+  layout: 'portal'
+})
+
 const route = useRoute()
 const { getAdById } = usePortalContent()
 
