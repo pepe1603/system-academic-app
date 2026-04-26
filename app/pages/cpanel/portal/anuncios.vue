@@ -188,32 +188,55 @@ const getPositionLabel = (pos: string) => {
       <UIcon name="i-lucide-loader-2" class="w-8 h-8 animate-spin" />
     </div>
 
-    <div v-else-if="adsList?.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <UCard v-for="ad in adsList" :key="ad.id">
-        <div v-if="ad.imageUrl" class="mb-4">
-          <img :src="ad.imageUrl" :alt="ad.title" class="w-full h-32 object-cover rounded-lg" />
-        </div>
-        
-        <div class="flex items-center gap-2 mb-3">
-          <UBadge :color="ad.isPublished ? 'success' : 'warning'">
-            {{ ad.isPublished ? 'Publicado' : 'Borrador' }}
-          </UBadge>
-          <UBadge variant="soft">{{ getPositionLabel(ad.position) }}</UBadge>
-          <span class="text-xs text-muted-foreground">Orden: {{ ad.displayOrder }}</span>
-        </div>
+<div v-else-if="adsList?.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <UCard 
+        v-for="ad in adsList" 
+        :key="ad.id" 
+        class="group relative overflow-hidden"
+        :class="ad.imageUrl ? 'h-64' : 'h-auto'"
+      >
+        <template v-if="ad.imageUrl">
+          <div class="absolute inset-0">
+            <img :src="ad.imageUrl" :alt="ad.title" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+            <UBadge :color="ad.isPublished ? 'success' : 'warning'" class="mb-2">
+              {{ ad.isPublished ? 'Publicado' : 'Borrador' }}
+            </UBadge>
+            <h3 class="font-semibold text-xl mb-1">{{ ad.title }}</h3>
+            <p class="text-sm text-white/80 line-clamp-2">{{ ad.description }}</p>
+          </div>
+          <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <UButton variant="solid" size="sm" @click="handleEdit(ad.id)">
+              <UIcon name="i-lucide-pencil" class="w-4 h-4" />
+            </UButton>
+            <UButton variant="solid" size="sm" color="error" @click="handleDelete(ad.id)">
+              <UIcon name="i-lucide-trash-2" class="w-4 h-4" />
+            </UButton>
+          </div>
+        </template>
 
-        <h3 class="font-semibold text-lg mb-2">{{ ad.title }}</h3>
-        <p class="text-muted-foreground text-sm line-clamp-2 mb-4">{{ ad.description }}</p>
-
-        <div class="flex gap-2">
-          <UButton variant="outline" size="sm" @click="handleEdit(ad.id)">
-            <UIcon name="i-lucide-pencil" class="w-4 h-4 mr-1" />
-            Editar
-          </UButton>
-          <UButton variant="outline" size="sm" color="error" @click="handleDelete(ad.id)">
-            <UIcon name="i-lucide-trash-2" class="w-4 h-4" />
-          </UButton>
-        </div>
+        <template v-else>
+          <div class="flex items-center gap-2 mb-3">
+            <UBadge :color="ad.isPublished ? 'success' : 'warning'">
+              {{ ad.isPublished ? 'Publicado' : 'Borrador' }}
+            </UBadge>
+            <UBadge variant="soft">{{ getPositionLabel(ad.position) }}</UBadge>
+            <span class="text-xs text-muted-foreground">Orden: {{ ad.displayOrder }}</span>
+          </div>
+          <h3 class="font-semibold text-lg mb-2">{{ ad.title }}</h3>
+          <p class="text-muted-foreground text-sm mb-4">{{ ad.description }}</p>
+          <div class="flex gap-2">
+            <UButton variant="outline" size="sm" @click="handleEdit(ad.id)">
+              <UIcon name="i-lucide-pencil" class="w-4 h-4 mr-1" />
+              Editar
+            </UButton>
+            <UButton variant="outline" size="sm" color="error" @click="handleDelete(ad.id)">
+              <UIcon name="i-lucide-trash-2" class="w-4 h-4" />
+            </UButton>
+          </div>
+        </template>
       </UCard>
     </div>
 
