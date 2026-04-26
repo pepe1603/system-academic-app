@@ -145,7 +145,7 @@ const getPositionLabel = (pos: string) => {
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <UFormField label="Posición" name="position">
-            <USelect v-model="form.position" :items="positionOptions" size="lg" />
+            <USelect v-model="form.position" :items="positionOptions" size="lg" :leading-icon="undefined" />
           </UFormField>
 
           <UFormField label="Orden de visualización" name="displayOrder">

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 useSeoMeta({
-  title: 'Escuela Normal Emiliano Zapata - Portal Público',
+  title: 'Escuela Normal Emiliano Zapata - Portal',
   description: 'Portal público de la Escuela Normal Emiliano Zapata'
 })
 
