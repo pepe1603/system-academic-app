@@ -77,9 +77,9 @@ const navItems = [
             {{ activeBanners[0]?.description || 'Instituto educativo de excelencia' }}
           </p>
           <div v-if="activeBanners[0]?.linkUrl" class="mt-8">
-            <UButton size="xl" :to="activeBanners[0].linkUrl">
+            <a :href="activeBanners[0].linkUrl" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center px-8 py-4 text-lg font-medium rounded-lg bg-white text-primary hover:bg-white/90">
               Ver más <UIcon name="i-lucide-arrow-right" class="w-5 h-5 ml-2" />
-            </UButton>
+            </a>
           </div>
         </div>
       </div>

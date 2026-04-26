@@ -35,10 +35,10 @@ useSeoMeta({
       </div>
 
       <div v-if="ad.linkUrl" class="flex gap-4">
-        <UButton size="lg" :to="ad.linkUrl">
+        <a :href="ad.linkUrl" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center px-6 py-3 text-base font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/90">
           <UIcon name="i-lucide-external-link" class="w-4 h-4 mr-2" />
           Visitar página
-        </UButton>
+        </a>
       </div>
     </article>
   </div>
