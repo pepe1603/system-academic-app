@@ -11,6 +11,16 @@ definePageMeta({
 const { getNews } = usePortalContent()
 const { data } = await useAsyncData('news', () => getNews(false))
 const news = computed(() => data.value || [])
+
+const selectedNews = ref<any>(null)
+
+const openNewsModal = (item: any) => {
+  selectedNews.value = item
+}
+
+const closeNewsModal = () => {
+  selectedNews.value = null
+}
 </script>
 
 <template>
@@ -25,6 +35,7 @@ const news = computed(() => data.value || [])
         v-for="(item, index) in news" 
         :key="item.id"
         class="group cursor-pointer"
+        @click="openNewsModal(item)"
       >
         <div class="relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col bg-card border hover:border-primary/50">
           <div class="relative h-48 overflow-hidden">
@@ -55,7 +66,7 @@ const news = computed(() => data.value || [])
               <span class="text-xs text-muted-foreground">
                 {{ new Date(item.createdAt).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' }) }}
               </span>
-              <UButton :to="`/portal/noticias/${item.id}`" variant="ghost" size="sm" class="group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+              <UButton variant="ghost" size="sm" class="group-hover:bg-primary group-hover:text-white transition-colors duration-300">
                 Leer más <UIcon name="i-lucide-arrow-right" class="w-4 h-4 ml-2" />
               </UButton>
             </div>
@@ -69,4 +80,39 @@ const news = computed(() => data.value || [])
       <p class="text-muted-foreground text-lg">No hay noticias disponibles</p>
     </div>
   </div>
+
+  <!-- News Modal -->
+  <Teleport to="body">
+    <div v-if="selectedNews" class="fixed inset-0 z-[100] flex items-center justify-center p-4" @click.self="closeNewsModal">
+      <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeNewsModal" />
+      <div class="relative bg-background rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto">
+        <button @click="closeNewsModal" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center">
+          <UIcon name="i-lucide-x" class="w-5 h-5" />
+        </button>
+        
+        <div v-if="selectedNews.imageUrl" class="h-64 overflow-hidden rounded-t-2xl">
+          <img :src="selectedNews.imageUrl" :alt="selectedNews.title" class="w-full h-full object-cover" />
+        </div>
+        
+        <div class="p-8">
+          <UBadge color="primary" class="mb-4">
+            <UIcon name="i-lucide-calendar" class="w-3 h-3 mr-1" />
+            {{ new Date(selectedNews.createdAt).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' }) }}
+          </UBadge>
+          
+          <h2 class="text-3xl font-bold mb-4">{{ selectedNews.title }}</h2>
+          
+          <div class="prose dark:prose-invert max-w-none">
+            <p class="text-lg leading-relaxed whitespace-pre-wrap">{{ selectedNews.content }}</p>
+          </div>
+          
+          <div class="mt-8 pt-6 border-t flex justify-end">
+            <UButton variant="outline" @click="closeNewsModal">
+              Cerrar
+            </UButton>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Teleport>
 </template>
