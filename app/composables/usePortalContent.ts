@@ -224,6 +224,21 @@ const getAllAds = async (): Promise<Ad[]> => {
   }
 }
 
+const getAdById = async (id: string): Promise<Ad | null> => {
+  loading.value = true
+  error.value = null
+  try {
+    const response = await $fetch<{ success: boolean; data: Ad }>(`/api/portal/ads/${id}`)
+    return response.data || null
+  } catch (err: unknown) {
+    const e = err as { message?: string }
+    error.value = e.message || 'Anuncio no encontrado'
+    return null
+  } finally {
+    loading.value = false
+  }
+}
+
   const sendContactMessage = async (data: ContactForm): Promise<boolean> => {
     loading.value = true
     error.value = null
@@ -253,6 +268,7 @@ const getAllAds = async (): Promise<Ad[]> => {
     getAds,
     getAdsByPosition,
     getAllAds,
+    getAdById,
     sendContactMessage
   }
 }
