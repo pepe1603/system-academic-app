@@ -39,8 +39,33 @@ onUnmounted(() => {
 
 <template>
   <div>
+    <!-- Navbar -->
+    <nav class="border-b bg-background/80 backdrop-blur sticky top-0 z-50">
+      <div class="container mx-auto px-6">
+        <div class="flex items-center justify-between h-16">
+          <NuxtLink to="/" class="flex items-center gap-2 font-semibold">
+            <UIcon name="i-lucide-graduation-cap" class="w-7 h-7 text-primary" />
+            <span class="hidden sm:inline">ENEZ</span>
+          </NuxtLink>
+          
+          <div class="hidden md:flex items-center gap-1">
+            <UButton to="/" variant="ghost" size="sm">Inicio</UButton>
+            <UButton to="/portal/nosotros" variant="ghost" size="sm">Nosotros</UButton>
+            <UButton to="/portal/noticias" variant="ghost" size="sm">Noticias</UButton>
+            <UButton to="/portal/eventos" variant="ghost" size="sm">Eventos</UButton>
+            <UButton to="/portal/servicios" variant="ghost" size="sm">Servicios</UButton>
+            <UButton to="/portal/contacto" variant="ghost" size="sm">Contacto</UButton>
+          </div>
+          
+          <UButton to="/cpanel" variant="outline" size="sm">
+            <UIcon name="i-lucide-settings" class="w-4 h-4" />
+          </UButton>
+        </div>
+      </div>
+    </nav>
+
     <!-- Carousel Banner -->
-    <section v-if="ads.length > 0" class="relative h-[50vh] md:h-[60vh] overflow-hidden">
+    <section v-if="ads.length > 0" class="relative h-[45vh] md:h-[55vh] overflow-hidden">
       <transition-group name="fade" tag="div">
         <div
           v-for="(ad, index) in ads"
@@ -74,43 +99,21 @@ onUnmounted(() => {
         </div>
       </transition-group>
 
-      <!-- Controls -->
-      <div v-if="ads.length > 1" class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+      <div v-if="ads.length > 1" class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
         <button
           v-for="(ad, index) in ads"
           :key="ad.id"
           @click="goToSlide(index)"
-          class="w-3 h-3 rounded-full transition-all"
-          :class="currentIndex === index ? 'bg-white w-8' : 'bg-white/50 hover:bg-white/70'"
+          class="w-2 h-2 rounded-full transition-all"
+          :class="currentIndex === index ? 'bg-white w-6' : 'bg-white/50'"
         />
       </div>
-
-      <button
-        v-if="ads.length > 1"
-        @click="prevSlide"
-        class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 text-white flex items-center justify-center hover:bg-black/50 transition-colors"
-      >
-        <UIcon name="i-lucide-chevron-left" class="w-6 h-6" />
-      </button>
-
-      <button
-        v-if="ads.length > 1"
-        @click="nextSlide"
-        class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 text-white flex items-center justify-center hover:bg-black/50 transition-colors"
-      >
-        <UIcon name="i-lucide-chevron-right" class="w-6 h-6" />
-      </button>
     </section>
 
-    <!-- Fallback when no ads -->
-    <section v-else class="relative h-[40vh] bg-gradient-to-br from-primary to-primary/80 text-white flex items-center">
-      <div class="container mx-auto px-6 text-center">
-        <h1 class="text-4xl md:text-5xl font-bold mb-4">
-          Portal Educativo
-        </h1>
-        <p class="text-xl opacity-90">
-          Bienvenido a nuestro sitio web
-        </p>
+    <!-- Fallback -->
+    <section v-if="ads.length === 0" class="h-[30vh] bg-gradient-to-br from-primary to-primary/80 flex items-center">
+      <div class="container mx-auto px-6 text-white text-center">
+        <h1 class="text-3xl md:text-4xl font-bold">Portal Educativo</h1>
       </div>
     </section>
 
@@ -119,12 +122,6 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
+.fade-enter-active, .fade-leave-active { transition: opacity 0.5s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>
