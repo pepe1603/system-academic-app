@@ -65,7 +65,7 @@ onUnmounted(() => {
     </nav>
 
     <!-- Carousel Banner -->
-    <section v-if="ads.length > 0" class="relative h-[40vh] md:h-[50vh] lg:h-[55vh] overflow-hidden">
+    <section v-if="ads.length > 0" class="relative h-[50vh] md:h-[60vh] lg:h-[65vh] overflow-hidden">
       <transition-group name="fade" tag="div">
         <div
           v-for="(ad, index) in ads"

@@ -10,9 +10,9 @@ definePageMeta({
 
 const { getInstitution, getNews, getEvents } = usePortalContent()
 
-const { data: institution } = await useAsyncData('institution-home', () => getInstitution())
 const { data: newsData } = await useAsyncData('news-home', () => getNews(false))
 const { data: eventsData } = await useAsyncData('events-home', () => getEvents(false))
+const { data: institution } = await useAsyncData('institution-footer', () => getInstitution())
 
 const news = computed(() => newsData.value?.slice(0, 3) || [])
 const events = computed(() => eventsData.value?.slice(0, 3) || [])
@@ -20,22 +20,6 @@ const events = computed(() => eventsData.value?.slice(0, 3) || [])
 
 <template>
   <div>
-    <!-- Quick Contact -->
-    <section class="py-8 md:py-10 bg-primary/5 border-b">
-      <div class="container mx-auto px-6 max-w-6xl">
-        <div class="flex flex-wrap justify-center gap-6 text-sm">
-          <a v-if="institution?.phone" :href="`tel:${institution.phone}`" class="flex items-center gap-2 text-muted-foreground hover:text-primary">
-            <UIcon name="i-lucide-phone" class="w-4 h-4" />
-            {{ institution.phone }}
-          </a>
-          <a v-if="institution?.email" :href="`mailto:${institution.email}`" class="flex items-center gap-2 text-muted-foreground hover:text-primary">
-            <UIcon name="i-lucide-mail" class="w-4 h-4" />
-            {{ institution.email }}
-          </a>
-        </div>
-      </div>
-    </section>
-
     <!-- Latest News - Parallax Cards -->
     <section class="py-12 md:py-20 lg:py-24">
       <div class="container mx-auto px-6 max-w-6xl">
@@ -53,8 +37,7 @@ const events = computed(() => eventsData.value?.slice(0, 3) || [])
           <div 
             v-for="(item, index) in news" 
             :key="item.id"
-            class="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer"
-            :class="index === 0 ? 'md:row-span-2' : ''"
+            class="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer h-[280px] md:h-[320px]"
           >
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10" />
             <img
@@ -62,9 +45,8 @@ const events = computed(() => eventsData.value?.slice(0, 3) || [])
               :src="item.imageUrl"
               :alt="item.title"
               class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-              :class="index === 0 ? 'md:h-full' : 'h-48'"
             />
-            <div v-else class="w-full h-48 md:h-full bg-gradient-to-br from-primary/60 to-primary/30" />
+            <div v-else class="w-full h-full bg-gradient-to-br from-primary/60 to-primary/30" />
             <div class="absolute bottom-0 left-0 right-0 p-5 z-20">
               <UBadge color="white" variant="solid" class="mb-2">
                 {{ new Date(item.createdAt).toLocaleDateString('es-MX', { month: 'short', day: 'numeric' }) }}
