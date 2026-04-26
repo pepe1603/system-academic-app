@@ -26,7 +26,7 @@ const news = computed(() => data.value || [])
         :key="item.id"
         class="group cursor-pointer"
       >
-        <div class="relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col bg-card border">
+        <div class="relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col bg-card border hover:border-primary/50">
           <div class="relative h-48 overflow-hidden">
             <img
               v-if="item.imageUrl"
@@ -45,15 +45,20 @@ const news = computed(() => data.value || [])
             </div>
           </div>
           <div class="p-5 flex-1 flex flex-col">
-            <h2 class="font-bold text-xl mb-3 line-clamp-2 group-hover:text-primary transition-colors">
+            <h2 class="font-bold text-xl mb-3 line-clamp-2 group-hover:text-primary transition-colors duration-300">
               {{ item.title }}
             </h2>
             <p class="text-muted-foreground line-clamp-3 mb-4 flex-1">
               {{ item.content }}
             </p>
-            <UButton :to="`/portal/noticias/${item.id}`" variant="ghost" size="sm" class="self-start">
-              Leer más <UIcon name="i-lucide-arrow-right" class="w-4 h-4 ml-2" />
-            </UButton>
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-muted-foreground">
+                {{ new Date(item.createdAt).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' }) }}
+              </span>
+              <UButton :to="`/portal/noticias/${item.id}`" variant="ghost" size="sm" class="group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                Leer más <UIcon name="i-lucide-arrow-right" class="w-4 h-4 ml-2" />
+              </UButton>
+            </div>
           </div>
         </div>
       </article>
