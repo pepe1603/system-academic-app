@@ -62,21 +62,24 @@ const navItems = [
     </nav>
 
     <section v-if="activeBanners.length" class="relative h-72 md:h-96 overflow-hidden">
-      <div class="absolute inset-0 bg-gradient-to-r from-primary/80 to-primary/40 z-10" />
-      <img
-        v-if="activeBanners[0]?.imageUrl"
-        :src="activeBanners[0].imageUrl"
-        class="absolute inset-0 w-full h-full object-cover"
-      />
+      <div class="absolute inset-0">
+        <img
+          v-if="activeBanners[0]?.imageUrl"
+          :src="activeBanners[0].imageUrl"
+          class="w-full h-full object-cover"
+        />
+        <div v-else class="w-full h-full bg-gradient-to-r from-primary to-primary/70" />
+        <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
+      </div>
       <div class="relative z-20 container mx-auto px-6 h-full flex items-center">
         <div class="text-white max-w-3xl">
-          <h1 class="text-5xl md:text-6xl font-bold mb-6">
+          <h1 class="text-4xl md:text-5xl font-bold mb-4">
             {{ activeBanners[0]?.title || 'Bienvenido a nuestro Portal' }}
           </h1>
-          <p class="text-xl md:text-2xl opacity-90">
+          <p class="text-lg md:text-xl opacity-90 mb-6 line-clamp-3">
             {{ activeBanners[0]?.description || 'Instituto educativo de excelencia' }}
           </p>
-          <div v-if="activeBanners[0]?.linkUrl" class="mt-8">
+          <div v-if="activeBanners[0]?.linkUrl" class="mt-6">
             <UButton size="xl" :to="activeBanners[0].linkUrl">
               Ver más <UIcon name="i-lucide-arrow-right" class="w-5 h-5 ml-2" />
             </UButton>
