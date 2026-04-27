@@ -154,17 +154,6 @@ const isDarkMode = computed(() => colorMode.value === 'dark')
               <UIcon name="i-lucide-log-in" class="w-5 h-5" />
             </NuxtLink>
           </div>
-            <button 
-              @click="showThemeDropdown = !showThemeDropdown"
-              class="p-2 rounded-lg hover:bg-muted transition-colors"
-              :class="isDarkMode ? 'text-amber-400' : 'text-slate-600'"
-            >
-              <UIcon :name="isDarkMode ? 'i-lucide-moon' : 'i-lucide-sun'" class="w-5 h-5" />
-            </button>
-            <NuxtLink :to="isAuthenticated ? '/cpanel' : '/auth/login'" class="p-2 rounded-lg hover:bg-muted transition-colors">
-              <UIcon name="i-lucide-log-in" class="w-5 h-5" />
-            </NuxtLink>
-          </div>
         </div>
       </div>
     </nav>
