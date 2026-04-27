@@ -65,7 +65,7 @@ const isDarkMode = computed(() => colorMode.value === 'dark')
 <template>
   <div>
     <!-- Navbar Minimal con Dropdowns -->
-    <nav class="border-b bg-background/80 backdrop-blur sticky top-0 z-50" @mouseleave="closeMenus">
+    <nav class="border-b bg-background/80 backdrop-blur sticky top-0 z-50">
       <div class="container mx-auto px-6 max-w-6xl">
         <div class="flex items-center justify-between h-16">
           <NuxtLink to="/" class="flex items-center gap-3 font-semibold">
