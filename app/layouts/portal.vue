@@ -151,7 +151,6 @@ const isDarkMode = computed(() => colorMode.value === 'dark')
             </div>
 
             <NuxtLink :to="isAuthenticated ? '/cpanel' : '/auth/login'" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary transition-colors">
-              <UIcon :name="isAuthenticated ? 'i-lucide-layout-dashboard' : 'i-lucide-log-in'" class="w-4 h-4" />
               <span class="text-sm font-medium">
                 {{ isAuthenticated ? 'Dashboard' : 'Iniciar sesión' }}
               </span>
