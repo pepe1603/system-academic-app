@@ -13,76 +13,132 @@ const { data: institution } = await useAsyncData('institution', () => getInstitu
 </script>
 
 <template>
-  <div class="container mx-auto px-6 py-12">
-    <h1 class="text-4xl font-bold text-center mb-12">Nosotros</h1>
+  <div class="container mx-auto px-6 py-12 md:py-16 lg:py-20 max-w-6xl">
+    <div class="text-center mb-16">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">Nosotros</h1>
+      <p class="text-muted-foreground text-lg md:text-xl">Conoce más sobre nuestra institución</p>
+    </div>
 
-    <div v-if="institution" class="space-y-20">
-      <section class="max-w-3xl mx-auto">
-        <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-          <UIcon name="i-lucide-book-open" class="w-7 h-7 text-primary" />
-          Historia
-        </h2>
-        <p class="text-muted-foreground leading-8 text-lg">
-          {{ institution.history || 'Próximamente...' }}
-        </p>
-      </section>
+    <div v-if="institution" class="space-y-16">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <UCard class="hover:shadow-xl transition-all duration-500 group">
+          <template #header>
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                <UIcon name="i-lucide-book-open" class="w-6 h-6 text-primary" />
+              </div>
+              <h2 class="text-2xl font-bold">Historia</h2>
+            </div>
+          </template>
+          <p class="text-muted-foreground leading-relaxed">
+            {{ institution.history || 'Próximamente...' }}
+          </p>
+        </UCard>
 
-      <section class="max-w-3xl mx-auto">
-        <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-          <UIcon name="i-lucide-target" class="w-7 h-7 text-primary" />
-          Misión
-        </h2>
-        <p class="text-muted-foreground leading-8 text-lg">
-          {{ institution.mission || 'Próximamente...' }}
-        </p>
-      </section>
+        <UCard class="hover:shadow-xl transition-all duration-500 group">
+          <template #header>
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                <UIcon name="i-lucide-target" class="w-6 h-6 text-primary" />
+              </div>
+              <h2 class="text-2xl font-bold">Misión</h2>
+            </div>
+          </template>
+          <p class="text-muted-foreground leading-relaxed">
+            {{ institution.mission || 'Próximamente...' }}
+          </p>
+        </UCard>
 
-      <section class="max-w-3xl mx-auto">
-        <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-          <UIcon name="i-lucide-eye" class="w-7 h-7 text-primary" />
-          Visión
-        </h2>
-        <p class="text-muted-foreground leading-8 text-lg">
-          {{ institution.vision || 'Próximamente...' }}
-        </p>
-      </section>
+        <UCard class="hover:shadow-xl transition-all duration-500 group">
+          <template #header>
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                <UIcon name="i-lucide-eye" class="w-6 h-6 text-primary" />
+              </div>
+              <h2 class="text-2xl font-bold">Visión</h2>
+            </div>
+          </template>
+          <p class="text-muted-foreground leading-relaxed">
+            {{ institution.vision || 'Próximamente...' }}
+          </p>
+        </UCard>
 
-      <section class="max-w-3xl mx-auto">
-        <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-          <UIcon name="i-lucide-heart" class="w-7 h-7 text-primary" />
-          Valores
-        </h2>
-        <p class="text-muted-foreground leading-8 text-lg">
-          {{ institution.values || 'Próximamente...' }}
-        </p>
-      </section>
+        <UCard class="hover:shadow-xl transition-all duration-500 group">
+          <template #header>
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                <UIcon name="i-lucide-heart" class="w-6 h-6 text-primary" />
+              </div>
+              <h2 class="text-2xl font-bold">Valores</h2>
+            </div>
+          </template>
+          <p class="text-muted-foreground leading-relaxed">
+            {{ institution.values || 'Próximamente...' }}
+          </p>
+        </UCard>
+      </div>
 
-      <section class="max-w-3xl mx-auto bg-muted/30 p-8 rounded-lg">
-        <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-          <UIcon name="i-lucide-building-2" class="w-7 h-7 text-primary" />
-          Nuestra Institución
-        </h2>
-        <div class="grid gap-6">
+      <UCard class="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-primary/20 overflow-hidden">
+        <template #header>
           <div class="flex items-center gap-3">
-            <UIcon name="i-lucide-map-pin" class="w-5 h-5 text-muted-foreground" />
-            <span class="text-lg">{{ institution.address || 'Dirección no disponible' }}</span>
+            <div class="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center">
+              <UIcon name="i-lucide-building-2" class="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <h2 class="text-2xl font-bold">{{ institution.name || 'Nuestra Institución' }}</h2>
+              <p class="text-muted-foreground text-sm">Información de contacto</p>
+            </div>
           </div>
-          <div class="flex items-center gap-3">
-            <UIcon name="i-lucide-phone" class="w-5 h-5 text-muted-foreground" />
-            <span class="text-lg">{{ institution.phone || 'Teléfono no disponible' }}</span>
+        </template>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="flex items-start gap-4 p-4 rounded-xl bg-background/50 hover:bg-background transition-colors">
+            <div class="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
+              <UIcon name="i-lucide-map-pin" class="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p class="text-sm text-muted-foreground mb-1">Dirección</p>
+              <p class="font-medium">{{ institution.address || 'No disponible' }}</p>
+            </div>
           </div>
-          <div class="flex items-center gap-3">
-            <UIcon name="i-lucide-mail" class="w-5 h-5 text-muted-foreground" />
-            <span class="text-lg">{{ institution.email || 'Email no disponible' }}</span>
+
+          <div class="flex items-start gap-4 p-4 rounded-xl bg-background/50 hover:bg-background transition-colors">
+            <div class="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
+              <UIcon name="i-lucide-phone" class="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p class="text-sm text-muted-foreground mb-1">Teléfono</p>
+              <a :href="`tel:${institution.phone}`" class="font-medium hover:text-primary transition-colors">
+                {{ institution.phone || 'No disponible' }}
+              </a>
+            </div>
           </div>
-          <div v-if="institution.website" class="flex items-center gap-3">
-            <UIcon name="i-lucide-globe" class="w-5 h-5 text-muted-foreground" />
-            <a :href="institution.website" target="_blank" class="text-primary hover:underline text-lg">
-              {{ institution.website }}
-            </a>
+
+          <div class="flex items-start gap-4 p-4 rounded-xl bg-background/50 hover:bg-background transition-colors">
+            <div class="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
+              <UIcon name="i-lucide-mail" class="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p class="text-sm text-muted-foreground mb-1">Correo electrónico</p>
+              <a :href="`mailto:${institution.email}`" class="font-medium hover:text-primary transition-colors text-sm">
+                {{ institution.email || 'No disponible' }}
+              </a>
+            </div>
+          </div>
+
+          <div v-if="institution.website" class="flex items-start gap-4 p-4 rounded-xl bg-background/50 hover:bg-background transition-colors">
+            <div class="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
+              <UIcon name="i-lucide-globe" class="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p class="text-sm text-muted-foreground mb-1">Sitio web</p>
+              <a :href="institution.website" target="_blank" class="font-medium hover:text-primary transition-colors text-sm">
+                Visitar sitio
+              </a>
+            </div>
           </div>
         </div>
-      </section>
+      </UCard>
     </div>
 
     <div v-else class="text-center py-16">
