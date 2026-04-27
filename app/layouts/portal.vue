@@ -11,6 +11,14 @@ const currentIndex = ref(0)
 const selectedAd = ref<any>(null)
 let interval: NodeJS.Timeout | null = null
 
+const openAdModal = (ad: any) => {
+  selectedAd.value = ad
+}
+
+const closeAdModal = () => {
+  selectedAd.value = null
+}
+
 const nextSlide = () => {
   if (ads.value.length > 0) {
     currentIndex.value = (currentIndex.value + 1) % ads.value.length
@@ -27,14 +35,6 @@ const goToSlide = (index: number) => {
   currentIndex.value = index
 }
 
-const openAdModal = (ad: any) => {
-  selectedAd.value = ad
-}
-
-const closeAdModal = () => {
-  selectedAd.value = null
-}
-
 onMounted(() => {
   if (ads.value.length > 1) {
     interval = setInterval(nextSlide, 5000)
@@ -44,12 +44,27 @@ onMounted(() => {
 onUnmounted(() => {
   if (interval) clearInterval(interval)
 })
+
+const openMenu = ref<string | null>(null)
+
+const toggleMenu = (menu: string) => {
+  openMenu.value = openMenu.value === menu ? null : menu
+}
+
+const closeMenus = () => {
+  openMenu.value = null
+}
+</script>
+
+onUnmounted(() => {
+  if (interval) clearInterval(interval)
+})
 </script>
 
 <template>
   <div>
-    <!-- Navbar Minimal -->
-    <nav class="border-b bg-background/80 backdrop-blur sticky top-0 z-50">
+    <!-- Navbar Minimal con Dropdowns -->
+    <nav class="border-b bg-background/80 backdrop-blur sticky top-0 z-50" @mouseleave="closeMenus">
       <div class="container mx-auto px-6 max-w-6xl">
         <div class="flex items-center justify-between h-16">
           <NuxtLink to="/" class="flex items-center gap-3 font-semibold">
@@ -57,22 +72,72 @@ onUnmounted(() => {
             <span class="hidden sm:inline text-lg">ENEZ</span>
           </NuxtLink>
           
-          <div class="hidden md:flex items-center gap-6">
-            <NuxtLink to="/portal/nosotros" class="text-sm text-muted-foreground hover:text-primary transition-colors">
-              Nosotros
+          <div class="hidden md:flex items-center gap-2">
+            <NuxtLink to="/" class="text-sm text-muted-foreground hover:text-primary transition-colors px-3 py-2">
+              Inicio
             </NuxtLink>
-            <NuxtLink to="/portal/noticias" class="text-sm text-muted-foreground hover:text-primary transition-colors">
+            
+            <div class="relative">
+              <button 
+                @click="toggleMenu('nosotros')" 
+                @mouseenter="openMenu = 'nosotros'"
+                class="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors px-3 py-2"
+              >
+                Nosotros
+                <UIcon name="i-lucide-chevron-down" class="w-3 h-3 transition-transform" :class="openMenu === 'nosotros' ? 'rotate-180' : ''" />
+              </button>
+              <div 
+                v-if="openMenu === 'nosotros'" 
+                class="absolute top-full left-0 mt-1 w-48 bg-background border rounded-lg shadow-xl py-2 z-50"
+              >
+                <NuxtLink to="/portal/nosotros" class="block px-4 py-2 text-sm hover:bg-muted transition-colors">
+                  Historia
+                </NuxtLink>
+                <NuxtLink to="/portal/nosotros" class="block px-4 py-2 text-sm hover:bg-muted transition-colors">
+                  Misión
+                </NuxtLink>
+                <NuxtLink to="/portal/nosotros" class="block px-4 py-2 text-sm hover:bg-muted transition-colors">
+                  Visión
+                </NuxtLink>
+              </div>
+            </div>
+            
+            <NuxtLink to="/portal/noticias" class="text-sm text-muted-foreground hover:text-primary transition-colors px-3 py-2">
               Noticias
             </NuxtLink>
-            <NuxtLink to="/portal/eventos" class="text-sm text-muted-foreground hover:text-primary transition-colors">
+            
+            <NuxtLink to="/portal/eventos" class="text-sm text-muted-foreground hover:text-primary transition-colors px-3 py-2">
               Eventos
             </NuxtLink>
-            <NuxtLink to="/portal/servicios" class="text-sm text-muted-foreground hover:text-primary transition-colors">
+            
+            <NuxtLink to="/portal/servicios" class="text-sm text-muted-foreground hover:text-primary transition-colors px-3 py-2">
               Servicios
             </NuxtLink>
-            <NuxtLink to="/portal/contacto" class="text-sm text-muted-foreground hover:text-primary transition-colors">
-              Contacto
-            </NuxtLink>
+            
+            <div class="relative">
+              <button 
+                @click="toggleMenu('contacto')" 
+                @mouseenter="openMenu = 'contacto'"
+                class="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors px-3 py-2"
+              >
+                Contacto
+                <UIcon name="i-lucide-chevron-down" class="w-3 h-3 transition-transform" :class="openMenu === 'contacto' ? 'rotate-180' : ''" />
+              </button>
+              <div 
+                v-if="openMenu === 'contacto'" 
+                class="absolute top-full right-0 mt-1 w-48 bg-background border rounded-lg shadow-xl py-2 z-50"
+              >
+                <NuxtLink to="/portal/contacto" class="block px-4 py-2 text-sm hover:bg-muted transition-colors">
+                  Enviar mensaje
+                </NuxtLink>
+                <NuxtLink to="/portal/contacto" class="block px-4 py-2 text-sm hover:bg-muted transition-colors">
+                  Ubicación
+                </NuxtLink>
+                <NuxtLink to="/portal/contacto" class="block px-4 py-2 text-sm hover:bg-muted transition-colors">
+                  Directorio
+                </NuxtLink>
+              </div>
+            </div>
           </div>
           
           <UButton to="/cpanel" variant="outline" size="sm">
