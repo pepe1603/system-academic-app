@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 
+const colorMode = useColorMode()
 const { getAllAds } = usePortalContent()
 
 const { data: adsList } = await useAsyncData('portal-ads', () => getAllAds())
@@ -54,6 +55,11 @@ const toggleMenu = (menu: string) => {
 const closeMenus = () => {
   openMenu.value = null
 }
+
+const showAdminDropdown = ref(false)
+const showThemeDropdown = ref(false)
+
+const isDarkMode = computed(() => colorMode.value === 'dark')
 </script>
 
 <template>
@@ -107,10 +113,88 @@ const closeMenus = () => {
             </NuxtLink>
           </div>
           
-          <UButton to="/cpanel" variant="outline" size="sm">
-            <UIcon name="i-lucide-settings" class="w-4 h-4" />
-            <span class="hidden lg:inline ml-2">Admin</span>
-          </UButton>
+          <div class="hidden lg:flex items-center gap-3">
+            <div class="relative">
+              <button 
+                @click="showThemeDropdown = !showThemeDropdown" 
+                @mouseenter="showThemeDropdown = true"
+                @mouseleave="showThemeDropdown = false"
+                class="group flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted transition-colors"
+                :class="isDarkMode ? 'text-amber-400' : 'text-slate-600'"
+              >
+                <UIcon :name="isDarkMode ? 'i-lucide-moon' : 'i-lucide-sun'" class="w-5 h-5" />
+                <span class="text-xs font-medium whitespace-nowrap overflow-hidden max-w-0 group-hover:max-w-20 transition-all duration-300">
+                  {{ isDarkMode ? 'Oscuro' : 'Claro' }}
+                </span>
+              </button>
+              <div 
+                v-if="showThemeDropdown" 
+                class="absolute top-full right-0 mt-1 w-40 bg-background border rounded-lg shadow-xl py-2 z-50"
+              >
+                <button @click="colorMode.preference = 'light'; showThemeDropdown = false" class="flex items-center justify-between w-full px-4 py-2 hover:bg-muted transition-colors">
+                  <span class="flex items-center gap-2">
+                    <UIcon name="i-lucide-sun" class="w-4 h-4" />
+                    Claro
+                  </span>
+                  <UIcon v-if="colorMode.preference === 'light'" name="i-lucide-check" class="w-4 h-4 text-amber-500" />
+                </button>
+                <button @click="colorMode.preference = 'dark'; showThemeDropdown = false" class="flex items-center justify-between w-full px-4 py-2 hover:bg-muted transition-colors">
+                  <span class="flex items-center gap-2">
+                    <UIcon name="i-lucide-moon" class="w-4 h-4" />
+                    Oscuro
+                  </span>
+                  <UIcon v-if="colorMode.preference === 'dark'" name="i-lucide-check" class="w-4 h-4 text-amber-500" />
+                </button>
+                <button @click="colorMode.preference = 'system'; showThemeDropdown = false" class="flex items-center justify-between w-full px-4 py-2 hover:bg-muted transition-colors">
+                  <span class="flex items-center gap-2">
+                    <UIcon name="i-lucide-monitor" class="w-4 h-4" />
+                    Sistema
+                  </span>
+                  <UIcon v-if="colorMode.preference === 'system'" name="i-lucide-check" class="w-4 h-4 text-amber-500" />
+                </button>
+              </div>
+            </div>
+
+            <div class="relative">
+              <button 
+                @click="showAdminDropdown = !showAdminDropdown" 
+                @mouseenter="showAdminDropdown = true"
+                @mouseleave="showAdminDropdown = false"
+                class="group flex items-center gap-2 px-3 py-2 rounded-lg border hover:border-primary hover:text-primary transition-all"
+              >
+                <UIcon name="i-lucide-settings" class="w-5 h-5" />
+                <span class="text-sm font-medium whitespace-nowrap overflow-hidden max-w-0 group-hover:max-w-16 transition-all duration-300">
+                  Admin
+                </span>
+              </button>
+              <div 
+                v-if="showAdminDropdown" 
+                class="absolute top-full right-0 mt-1 w-36 bg-background border rounded-lg shadow-xl py-2 z-50"
+              >
+                <NuxtLink to="/cpanel" class="flex items-center gap-2 px-4 py-2 hover:bg-muted transition-colors">
+                  <UIcon name="i-lucide-layout-dashboard" class="w-4 h-4" />
+                  Dashboard
+                </NuxtLink>
+                <NuxtLink to="/cpanel/portal" class="flex items-center gap-2 px-4 py-2 hover:bg-muted transition-colors">
+                  <UIcon name="i-lucide-settings" class="w-4 h-4" />
+                  Portal
+                </NuxtLink>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:hidden flex items-center gap-2">
+            <button 
+              @click="showThemeDropdown = !showThemeDropdown"
+              class="p-2 rounded-lg hover:bg-muted transition-colors"
+              :class="isDarkMode ? 'text-amber-400' : 'text-slate-600'"
+            >
+              <UIcon :name="isDarkMode ? 'i-lucide-moon' : 'i-lucide-sun'" class="w-5 h-5" />
+            </button>
+            <UButton to="/cpanel" variant="outline" size="sm">
+              <UIcon name="i-lucide-settings" class="w-4 h-4" />
+            </UButton>
+          </div>
         </div>
       </div>
     </nav>
