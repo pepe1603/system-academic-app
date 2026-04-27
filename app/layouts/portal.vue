@@ -153,7 +153,6 @@ const isDarkMode = computed(() => colorMode.value === 'dark')
               <UIcon name="i-lucide-settings" class="w-5 h-5" />
             </NuxtLink>
           </div>
-          </div>
 
           <div class="lg:hidden flex items-center gap-2">
             <button 
