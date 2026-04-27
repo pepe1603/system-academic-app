@@ -56,11 +56,6 @@ const closeMenus = () => {
 }
 </script>
 
-onUnmounted(() => {
-  if (interval) clearInterval(interval)
-})
-</script>
-
 <template>
   <div>
     <!-- Navbar Minimal con Dropdowns -->
