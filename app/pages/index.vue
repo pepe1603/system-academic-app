@@ -113,24 +113,49 @@ const events = computed(() => eventsData.value?.slice(0, 3) || [])
     <!-- Footer -->
     <footer class="bg-slate-950 text-slate-400 py-12 md:py-16 lg:py-20">
       <div class="container mx-auto px-6 max-w-6xl">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 lg:gap-12 text-center md:text-left">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-10 lg:gap-12 text-center md:text-left">
           <div>
-            <h3 class="font-bold text-white mb-3">{{ institution?.name || 'ENEZ' }}</h3>
+            <h3 class="font-bold text-white text-lg mb-3 flex items-center gap-2">
+              <UIcon name="i-lucide-graduation-cap" class="w-5 h-5 text-primary" />
+              {{ institution?.name || 'ENEZ' }}
+            </h3>
             <p class="text-sm opacity-70">{{ institution?.address }}</p>
           </div>
           <div>
             <h3 class="font-bold text-white mb-3">Enlaces</h3>
             <div class="flex flex-col gap-1 text-sm">
-              <NuxtLink to="/portal/nosotros" class="hover:text-white">Nosotros</NuxtLink>
-              <NuxtLink to="/portal/noticias" class="hover:text-white">Noticias</NuxtLink>
-              <NuxtLink to="/portal/eventos" class="hover:text-white">Eventos</NuxtLink>
-              <NuxtLink to="/portal/servicios" class="hover:text-white">Servicios</NuxtLink>
+              <NuxtLink to="/portal/nosotros" class="hover:text-white transition-colors">Nosotros</NuxtLink>
+              <NuxtLink to="/portal/noticias" class="hover:text-white transition-colors">Noticias</NuxtLink>
+              <NuxtLink to="/portal/eventos" class="hover:text-white transition-colors">Eventos</NuxtLink>
+              <NuxtLink to="/portal/servicios" class="hover:text-white transition-colors">Servicios</NuxtLink>
             </div>
           </div>
           <div>
             <h3 class="font-bold text-white mb-3">Contacto</h3>
-            <p class="text-sm opacity-70">{{ institution?.phone }}</p>
-            <p class="text-sm opacity-70">{{ institution?.email }}</p>
+            <div class="space-y-2 text-sm">
+              <p class="opacity-70">{{ institution?.phone }}</p>
+              <p class="opacity-70">{{ institution?.email }}</p>
+              <a v-if="institution?.website" :href="institution.website" target="_blank" class="text-primary hover:text-white transition-colors block">
+                {{ institution.website }}
+              </a>
+            </div>
+          </div>
+          <div>
+            <h3 class="font-bold text-white mb-3">Síguenos</h3>
+            <div class="flex gap-3">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-primary flex items-center justify-center transition-colors">
+                <UIcon name="i-lucide-facebook" class="w-5 h-5" />
+              </a>
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-primary flex items-center justify-center transition-colors">
+                <UIcon name="i-lucide-twitter" class="w-5 h-5" />
+              </a>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-primary flex items-center justify-center transition-colors">
+                <UIcon name="i-lucide-instagram" class="w-5 h-5" />
+              </a>
+              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-primary flex items-center justify-center transition-colors">
+                <UIcon name="i-lucide-youtube" class="w-5 h-5" />
+              </a>
+            </div>
           </div>
         </div>
         <div class="border-t border-slate-800 mt-8 pt-6 text-center text-xs opacity-50">
