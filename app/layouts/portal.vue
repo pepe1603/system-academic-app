@@ -112,23 +112,18 @@ const isDarkMode = computed(() => colorMode.value === 'dark')
             </NuxtLink>
           </div>
           
-          <div class="hidden lg:flex items-center gap-1">
+          <div class="hidden lg:flex items-center gap-3">
             <div class="relative">
               <button 
                 @click="showThemeDropdown = !showThemeDropdown" 
-                @mouseenter="showThemeDropdown = true"
-                @mouseleave="showThemeDropdown = false"
-                class="group flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted transition-colors"
+                class="p-2 rounded-lg hover:bg-muted transition-colors"
                 :class="isDarkMode ? 'text-amber-400' : 'text-slate-600'"
               >
                 <UIcon :name="isDarkMode ? 'i-lucide-moon' : 'i-lucide-sun'" class="w-5 h-5" />
-                <span class="text-xs font-medium whitespace-nowrap overflow-hidden max-w-0 group-hover:max-w-20 transition-all duration-300">
-                  {{ isDarkMode ? 'Oscuro' : 'Claro' }}
-                </span>
               </button>
               <div 
                 v-if="showThemeDropdown" 
-                class="absolute top-full right-0 mt-1 w-40 bg-background/95 backdrop-blur-sm border rounded-lg shadow-xl py-2 z-50"
+                class="absolute top-full right-0 mt-2 w-40 bg-background/95 backdrop-blur-sm border rounded-lg shadow-xl py-2 z-50"
               >
                 <button @click="colorMode.preference = 'light'; showThemeDropdown = false" class="flex items-center justify-between w-full px-4 py-2 hover:bg-muted transition-colors">
                   <span class="flex items-center gap-2">
@@ -154,14 +149,10 @@ const isDarkMode = computed(() => colorMode.value === 'dark')
               </div>
             </div>
 
-            <button 
-              class="group flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-muted transition-colors"
-            >
+            <NuxtLink to="/cpanel" class="p-2 rounded-lg hover:bg-muted transition-colors">
               <UIcon name="i-lucide-settings" class="w-5 h-5" />
-              <span class="text-sm font-medium whitespace-nowrap overflow-hidden max-w-0 group-hover:max-w-16 transition-all duration-300">
-                Admin
-              </span>
-            </button>
+            </NuxtLink>
+          </div>
           </div>
 
           <div class="lg:hidden flex items-center gap-2">
@@ -172,7 +163,7 @@ const isDarkMode = computed(() => colorMode.value === 'dark')
             >
               <UIcon :name="isDarkMode ? 'i-lucide-moon' : 'i-lucide-sun'" class="w-5 h-5" />
             </button>
-            <NuxtLink to="/cpanel" class="p-2 rounded-lg hover:bg-muted">
+            <NuxtLink to="/cpanel" class="p-2 rounded-lg hover:bg-muted transition-colors">
               <UIcon name="i-lucide-settings" class="w-5 h-5" />
             </NuxtLink>
           </div>
