@@ -8,14 +8,14 @@ definePageMeta({
   layout: 'portal'
 })
 
-const { getInstitution, getNews, getEvents } = usePortalContent()
+const { getInstitution, getNews, getUpcomingEvents } = usePortalContent()
 
 const { data: newsData } = await useAsyncData('news-home', () => getNews(false))
-const { data: eventsData } = await useAsyncData('events-home', () => getEvents(false))
+const { data: eventsData } = await useAsyncData('events-home', () => getUpcomingEvents(3))
 const { data: institution } = await useAsyncData('institution-footer', () => getInstitution())
 
 const news = computed(() => newsData.value?.slice(0, 3) || [])
-const events = computed(() => eventsData.value?.slice(0, 3) || [])
+const events = computed(() => eventsData.value || [])
 </script>
 
 <template>

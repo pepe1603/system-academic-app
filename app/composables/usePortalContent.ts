@@ -164,6 +164,28 @@ export const usePortalContent = () => {
     }
   }
 
+  const getUpcomingEvents = async (limit = 3): Promise<Event[]> => {
+    const events = await getEvents(false)
+    if (!events) return []
+    const now = new Date()
+    const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate())
+    return (events as Event[])
+      .filter(e => new Date(e.eventDate) >= oneYearAgo)
+      .sort((a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime())
+      .slice(0, limit)
+  }
+
+  const getPastEvents = async (limit = 20): Promise<Event[]> => {
+    const events = await getEvents(false)
+    if (!events) return []
+    const now = new Date()
+    const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate())
+    return (events as Event[])
+      .filter(e => new Date(e.eventDate) < oneYearAgo)
+      .sort((a, b) => new Date(b.eventDate).getTime() - new Date(a.eventDate).getTime())
+      .slice(0, limit)
+  }
+
   const getEventById = async (id: string): Promise<Event | null> => {
     loading.value = true
     error.value = null
@@ -265,6 +287,8 @@ const getAdById = async (id: string): Promise<Ad | null> => {
     getNewsById,
     getEvents,
     getEventById,
+    getUpcomingEvents,
+    getPastEvents,
     getAds,
     getAdsByPosition,
     getAllAds,

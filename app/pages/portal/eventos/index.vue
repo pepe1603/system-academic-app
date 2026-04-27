@@ -8,11 +8,12 @@ definePageMeta({
   layout: 'portal'
 })
 
-const { getEvents } = usePortalContent()
-const { data } = await useAsyncData('events', () => getEvents(false))
-const events = computed(() => data.value || [])
+const { getUpcomingEvents, getPastEvents } = usePortalContent()
+const { data: upcomingEvents } = await useAsyncData('events-upcoming', () => getUpcomingEvents(50))
+const { data: pastEvents } = await useAsyncData('events-past', () => getPastEvents(20))
 
 const selectedEvent = ref<any>(null)
+const showPastEvents = ref(false)
 
 const openEventModal = (event: any) => {
   selectedEvent.value = event
@@ -36,9 +37,13 @@ const formatDate = (date: string) => {
       <p class="text-muted-foreground text-lg md:text-xl">No te pierdas ninguna actividad</p>
     </div>
     
-    <div v-if="events.length" class="space-y-6">
+    <div v-if="upcomingEvents?.length" class="space-y-6">
+      <h2 class="text-2xl font-bold flex items-center gap-2">
+        <UIcon name="i-lucide-calendar-check" class="w-6 h-6 text-primary" />
+        Próximos Eventos
+      </h2>
       <article 
-        v-for="event in events" 
+        v-for="event in upcomingEvents" 
         :key="event.id"
         class="group cursor-pointer"
       >
@@ -84,13 +89,59 @@ const formatDate = (date: string) => {
       </article>
     </div>
     
-    <div v-else class="text-center py-16">
-      <UIcon name="i-lucide-calendar" class="w-16 h-16 text-muted-foreground mb-4" />
-      <p class="text-muted-foreground text-lg">No hay eventos programados</p>
+    <div v-if="!upcomingEvents?.length" class="text-center py-12 mb-12">
+      <UIcon name="i-lucide-calendar-x" class="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+      <p class="text-muted-foreground text-lg">No hay eventos próximos</p>
+    </div>
+
+    <div v-if="pastEvents?.length" class="mt-16 border-t pt-12">
+      <button 
+        @click="showPastEvents = !showPastEvents"
+        class="flex items-center justify-between w-full text-2xl font-bold hover:text-primary transition-colors py-4"
+      >
+        <span class="flex items-center gap-2">
+          <UIcon name="i-lucide-history" class="w-6 h-6" />
+          Eventos Pasados
+          <UBadge variant="soft" class="ml-2">{{ pastEvents.length }}</UBadge>
+        </span>
+        <UIcon :name="showPastEvents ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'" class="w-6 h-6 transition-transform" />
+      </button>
+      
+      <div v-if="showPastEvents" class="mt-8 space-y-4">
+        <UCard v-for="event in pastEvents" :key="event.id" class="opacity-70 hover:opacity-100 transition-opacity">
+          <div class="flex flex-col lg:flex-row">
+            <div class="lg:w-32 p-4 bg-muted flex flex-col items-center justify-center">
+              <span class="text-2xl font-bold text-muted-foreground">
+                {{ new Date(event.eventDate).getDate() }}
+              </span>
+              <span class="text-sm text-muted-foreground uppercase">
+                {{ new Date(event.eventDate).toLocaleDateString('es-MX', { month: 'short' }) }}
+              </span>
+              <span class="text-xs text-muted-foreground">
+                {{ new Date(event.eventDate).getFullYear() }}
+              </span>
+            </div>
+            
+            <div class="flex-1 p-4">
+              <h3 class="font-bold mb-2">{{ event.title }}</h3>
+              <p class="text-sm text-muted-foreground line-clamp-2">{{ event.description }}</p>
+              <div class="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                <span class="flex items-center gap-1">
+                  <UIcon name="i-lucide-calendar" class="w-3 h-3" />
+                  {{ formatDate(event.eventDate) }}
+                </span>
+                <span class="flex items-center gap-1">
+                  <UIcon name="i-lucide-map-pin" class="w-3 h-3" />
+                  {{ event.location }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </UCard>
+      </div>
     </div>
   </div>
 
-  <!-- Event Modal -->
   <Teleport to="body">
     <div v-if="selectedEvent" class="fixed inset-0 z-[100] flex items-center justify-center p-4" @click.self="closeEventModal">
       <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="closeEventModal" />
