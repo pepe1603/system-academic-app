@@ -48,26 +48,36 @@ onUnmounted(() => {
 
 <template>
   <div>
-    <!-- Navbar -->
+    <!-- Navbar Minimal -->
     <nav class="border-b bg-background/80 backdrop-blur sticky top-0 z-50">
       <div class="container mx-auto px-6 max-w-6xl">
         <div class="flex items-center justify-between h-16">
-          <NuxtLink to="/" class="flex items-center gap-2 font-semibold">
+          <NuxtLink to="/" class="flex items-center gap-3 font-semibold">
             <UIcon name="i-lucide-graduation-cap" class="w-7 h-7 text-primary" />
-            <span class="hidden sm:inline">ENEZ</span>
+            <span class="hidden sm:inline text-lg">ENEZ</span>
           </NuxtLink>
           
-          <div class="hidden md:flex items-center gap-1">
-            <UButton to="/" variant="ghost" size="sm">Inicio</UButton>
-            <UButton to="/portal/nosotros" variant="ghost" size="sm">Nosotros</UButton>
-            <UButton to="/portal/noticias" variant="ghost" size="sm">Noticias</UButton>
-            <UButton to="/portal/eventos" variant="ghost" size="sm">Eventos</UButton>
-            <UButton to="/portal/servicios" variant="ghost" size="sm">Servicios</UButton>
-            <UButton to="/portal/contacto" variant="ghost" size="sm">Contacto</UButton>
+          <div class="hidden md:flex items-center gap-6">
+            <NuxtLink to="/portal/nosotros" class="text-sm text-muted-foreground hover:text-primary transition-colors">
+              Nosotros
+            </NuxtLink>
+            <NuxtLink to="/portal/noticias" class="text-sm text-muted-foreground hover:text-primary transition-colors">
+              Noticias
+            </NuxtLink>
+            <NuxtLink to="/portal/eventos" class="text-sm text-muted-foreground hover:text-primary transition-colors">
+              Eventos
+            </NuxtLink>
+            <NuxtLink to="/portal/servicios" class="text-sm text-muted-foreground hover:text-primary transition-colors">
+              Servicios
+            </NuxtLink>
+            <NuxtLink to="/portal/contacto" class="text-sm text-muted-foreground hover:text-primary transition-colors">
+              Contacto
+            </NuxtLink>
           </div>
           
           <UButton to="/cpanel" variant="outline" size="sm">
             <UIcon name="i-lucide-settings" class="w-4 h-4" />
+            <span class="hidden lg:inline ml-2">Admin</span>
           </UButton>
         </div>
       </div>
