@@ -79,25 +79,22 @@ onUnmounted(() => {
             
             <div class="relative">
               <button 
-                @click="toggleMenu('nosotros')" 
-                @mouseenter="openMenu = 'nosotros'"
+                @click="toggleMenu('institucion')" 
+                @mouseenter="openMenu = 'institucion'"
                 class="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors px-3 py-2"
               >
-                Nosotros
-                <UIcon name="i-lucide-chevron-down" class="w-3 h-3 transition-transform" :class="openMenu === 'nosotros' ? 'rotate-180' : ''" />
+                Institución
+                <UIcon name="i-lucide-chevron-down" class="w-3 h-3 transition-transform" :class="openMenu === 'institucion' ? 'rotate-180' : ''" />
               </button>
               <div 
-                v-if="openMenu === 'nosotros'" 
+                v-if="openMenu === 'institucion'" 
                 class="absolute top-full left-0 mt-1 w-48 bg-background border rounded-lg shadow-xl py-2 z-50"
               >
                 <NuxtLink to="/portal/nosotros" class="block px-4 py-2 text-sm hover:bg-muted transition-colors">
-                  Historia
+                  Nosotros
                 </NuxtLink>
-                <NuxtLink to="/portal/nosotros" class="block px-4 py-2 text-sm hover:bg-muted transition-colors">
-                  Misión
-                </NuxtLink>
-                <NuxtLink to="/portal/nosotros" class="block px-4 py-2 text-sm hover:bg-muted transition-colors">
-                  Visión
+                <NuxtLink to="/portal/contacto" class="block px-4 py-2 text-sm hover:bg-muted transition-colors">
+                  Contacto
                 </NuxtLink>
               </div>
             </div>
@@ -113,31 +110,6 @@ onUnmounted(() => {
             <NuxtLink to="/portal/servicios" class="text-sm text-muted-foreground hover:text-primary transition-colors px-3 py-2">
               Servicios
             </NuxtLink>
-            
-            <div class="relative">
-              <button 
-                @click="toggleMenu('contacto')" 
-                @mouseenter="openMenu = 'contacto'"
-                class="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors px-3 py-2"
-              >
-                Contacto
-                <UIcon name="i-lucide-chevron-down" class="w-3 h-3 transition-transform" :class="openMenu === 'contacto' ? 'rotate-180' : ''" />
-              </button>
-              <div 
-                v-if="openMenu === 'contacto'" 
-                class="absolute top-full right-0 mt-1 w-48 bg-background border rounded-lg shadow-xl py-2 z-50"
-              >
-                <NuxtLink to="/portal/contacto" class="block px-4 py-2 text-sm hover:bg-muted transition-colors">
-                  Enviar mensaje
-                </NuxtLink>
-                <NuxtLink to="/portal/contacto" class="block px-4 py-2 text-sm hover:bg-muted transition-colors">
-                  Ubicación
-                </NuxtLink>
-                <NuxtLink to="/portal/contacto" class="block px-4 py-2 text-sm hover:bg-muted transition-colors">
-                  Directorio
-                </NuxtLink>
-              </div>
-            </div>
           </div>
           
           <UButton to="/cpanel" variant="outline" size="sm">
