@@ -2,6 +2,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 
 const colorMode = useColorMode()
+const { isAuthenticated } = useAuth()
 const { getAllAds } = usePortalContent()
 
 const { data: adsList } = await useAsyncData('portal-ads', () => getAllAds())
@@ -123,7 +124,7 @@ const isDarkMode = computed(() => colorMode.value === 'dark')
               </button>
               <div 
                 v-if="showThemeDropdown" 
-                class="absolute top-full right-0 mt-2 w-40 bg-background/95 backdrop-blur-sm border rounded-lg shadow-xl py-2 z-50"
+                class="absolute top-full right-0 mt-2 w-40 bg-background border rounded-lg shadow-xl py-2 z-50"
               >
                 <button @click="colorMode.preference = 'light'; showThemeDropdown = false" class="flex items-center justify-between w-full px-4 py-2 hover:bg-muted transition-colors">
                   <span class="flex items-center gap-2">
@@ -149,12 +150,10 @@ const isDarkMode = computed(() => colorMode.value === 'dark')
               </div>
             </div>
 
-            <NuxtLink to="/cpanel" class="p-2 rounded-lg hover:bg-muted transition-colors">
-              <UIcon name="i-lucide-settings" class="w-5 h-5" />
+            <NuxtLink :to="isAuthenticated ? '/cpanel' : '/auth/login'" class="p-2 rounded-lg hover:bg-muted transition-colors">
+              <UIcon name="i-lucide-log-in" class="w-5 h-5" />
             </NuxtLink>
           </div>
-
-          <div class="lg:hidden flex items-center gap-2">
             <button 
               @click="showThemeDropdown = !showThemeDropdown"
               class="p-2 rounded-lg hover:bg-muted transition-colors"
@@ -162,8 +161,8 @@ const isDarkMode = computed(() => colorMode.value === 'dark')
             >
               <UIcon :name="isDarkMode ? 'i-lucide-moon' : 'i-lucide-sun'" class="w-5 h-5" />
             </button>
-            <NuxtLink to="/cpanel" class="p-2 rounded-lg hover:bg-muted transition-colors">
-              <UIcon name="i-lucide-settings" class="w-5 h-5" />
+            <NuxtLink :to="isAuthenticated ? '/cpanel' : '/auth/login'" class="p-2 rounded-lg hover:bg-muted transition-colors">
+              <UIcon name="i-lucide-log-in" class="w-5 h-5" />
             </NuxtLink>
           </div>
         </div>
