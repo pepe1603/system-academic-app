@@ -57,8 +57,6 @@ const closeMenus = () => {
   openMenu.value = null
 }
 
-const showThemeDropdown = ref(false)
-
 const isDarkMode = computed(() => colorMode.value === 'dark')
 </script>
 
@@ -72,24 +70,24 @@ const isDarkMode = computed(() => colorMode.value === 'dark')
             <UIcon name="i-lucide-graduation-cap" class="w-7 h-7 text-primary" />
             <span class="hidden sm:inline text-lg">ENEZ</span>
           </NuxtLink>
-          
+
           <div class="hidden md:flex items-center gap-2">
             <NuxtLink to="/" class="text-sm text-muted-foreground hover:text-primary transition-colors px-3 py-2">
               Inicio
             </NuxtLink>
-            
+
             <div class="relative">
-              <button 
-                @click="toggleMenu('institucion')" 
+              <button
+                @click="toggleMenu('institucion')"
                 @mouseenter="openMenu = 'institucion'"
                 class="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors px-3 py-2"
               >
                 Institución
                 <UIcon name="i-lucide-chevron-down" class="w-3 h-3 transition-transform" :class="openMenu === 'institucion' ? 'rotate-180' : ''" />
               </button>
-              <div 
-                v-if="openMenu === 'institucion'" 
-                class="absolute top-full left-0 mt-1 w-48 bg-background border rounded-lg shadow-xl py-2 z-50"
+              <div
+                v-if="openMenu === 'institucion'"
+                class="absolute top-full left-0 mt-1 w-48 bg-gray-300 dark:bg-gray-600  rounded-lg shadow-xl py-2 z-50"
               >
                 <NuxtLink to="/portal/nosotros" class="block px-4 py-2 text-sm hover:bg-muted transition-colors">
                   Nosotros
@@ -99,56 +97,40 @@ const isDarkMode = computed(() => colorMode.value === 'dark')
                 </NuxtLink>
               </div>
             </div>
-            
+
             <NuxtLink to="/portal/noticias" class="text-sm text-muted-foreground hover:text-primary transition-colors px-3 py-2">
               Noticias
             </NuxtLink>
-            
+
             <NuxtLink to="/portal/eventos" class="text-sm text-muted-foreground hover:text-primary transition-colors px-3 py-2">
               Eventos
             </NuxtLink>
-            
+
             <NuxtLink to="/portal/servicios" class="text-sm text-muted-foreground hover:text-primary transition-colors px-3 py-2">
               Servicios
             </NuxtLink>
           </div>
-          
+
           <div class="hidden lg:flex items-center gap-3">
-            <div class="relative">
-              <button 
-                @click="showThemeDropdown = !showThemeDropdown" 
-                class="p-2 rounded-lg hover:bg-muted transition-colors"
-                :class="isDarkMode ? 'text-amber-400' : 'text-slate-600'"
-              >
+            <UDropdownMenu>
+              <UDropdownMenuTrigger as="button" :class="isDarkMode ? 'text-amber-400' : 'text-slate-600'">
                 <UIcon :name="isDarkMode ? 'i-lucide-moon' : 'i-lucide-sun'" class="w-5 h-5" />
-              </button>
-              <div 
-                v-if="showThemeDropdown" 
-                class="absolute top-full right-0 mt-2 w-40 bg-background border rounded-lg shadow-xl py-2 z-50"
-              >
-                <button @click="colorMode.preference = 'light'; showThemeDropdown = false" class="flex items-center justify-between w-full px-4 py-2 hover:bg-muted transition-colors">
-                  <span class="flex items-center gap-2">
-                    <UIcon name="i-lucide-sun" class="w-4 h-4" />
-                    Claro
-                  </span>
-                  <UIcon v-if="colorMode.preference === 'light'" name="i-lucide-check" class="w-4 h-4 text-amber-500" />
-                </button>
-                <button @click="colorMode.preference = 'dark'; showThemeDropdown = false" class="flex items-center justify-between w-full px-4 py-2 hover:bg-muted transition-colors">
-                  <span class="flex items-center gap-2">
-                    <UIcon name="i-lucide-moon" class="w-4 h-4" />
-                    Oscuro
-                  </span>
-                  <UIcon v-if="colorMode.preference === 'dark'" name="i-lucide-check" class="w-4 h-4 text-amber-500" />
-                </button>
-                <button @click="colorMode.preference = 'system'; showThemeDropdown = false" class="flex items-center justify-between w-full px-4 py-2 hover:bg-muted transition-colors">
-                  <span class="flex items-center gap-2">
-                    <UIcon name="i-lucide-monitor" class="w-4 h-4" />
-                    Sistema
-                  </span>
-                  <UIcon v-if="colorMode.preference === 'system'" name="i-lucide-check" class="w-4 h-4 text-amber-500" />
-                </button>
-              </div>
-            </div>
+              </UDropdownMenuTrigger>
+              <UDropdownMenuContent>
+                <UDropdownMenuItem @click="colorMode.preference = 'light'">
+                  <UIcon name="i-lucide-sun" class="w-4 h-4 mr-2" />
+                  Claro
+                </UDropdownMenuItem>
+                <UDropdownMenuItem @click="colorMode.preference = 'dark'">
+                  <UIcon name="i-lucide-moon" class="w-4 h-4 mr-2" />
+                  Oscuro
+                </UDropdownMenuItem>
+                <UDropdownMenuItem @click="colorMode.preference = 'system'">
+                  <UIcon name="i-lucide-monitor" class="w-4 h-4 mr-2" />
+                  Sistema
+                </UDropdownMenuItem>
+              </UDropdownMenuContent>
+            </UDropdownMenu>
 
             <NuxtLink :to="isAuthenticated ? '/cpanel' : '/auth/login'" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary transition-colors">
               <span class="text-sm font-medium">
