@@ -7,71 +7,77 @@ definePageMeta({
   layout: 'auth'
 })
 
-const { register, loading } = useRegister()
+const { step, loading, error, initRegistration, verifyRegistration, reset } = useRegistration()
 
 const form = ref({
-  username: '',
-  email: '',
-  password: '',
-  confirmPassword: '',
-  type: 'STUDENT' as 'STUDENT' | 'TEACHER',
   curp: '',
-  enrollmentNumber: '',
-  rfc: '',
-  employeeNumber: ''
+  email: '',
+  otp: ''
 })
 
 const errorMessage = ref('')
 const successMessage = ref('')
-const showConfirmation = ref(false)
 
-const handleRegister = async () => {
+const handleInit = async () => {
   errorMessage.value = ''
-  successMessage.value = ''
-
-  if (form.value.password !== form.value.confirmPassword) {
-    errorMessage.value = 'Las contraseñas no coinciden'
+  
+  if (!form.value.curp || form.value.curp.length !== 18) {
+    errorMessage.value = 'CURP debe tener 18 caracteres'
     return
   }
 
-  if (form.value.type === 'STUDENT' && !form.value.enrollmentNumber) {
-    errorMessage.value = 'Número de matrícula es requerido para estudiantes'
-    return
-  }
-
-  if (form.value.type === 'TEACHER' && !form.value.employeeNumber) {
-    errorMessage.value = 'Número de empleado es requerido para profesores'
+  if (!form.value.email) {
+    errorMessage.value = 'Email es requerido'
     return
   }
 
   try {
-    const payload = {
-      username: form.value.username,
-      email: form.value.email,
-      password: form.value.password,
-      confirmPassword: form.value.confirmPassword,
-      type: form.value.type,
-      curp: form.value.type === 'STUDENT' ? form.value.curp : undefined,
-      enrollmentNumber: form.value.type === 'STUDENT' ? form.value.enrollmentNumber : undefined,
-      rfc: form.value.type === 'TEACHER' ? form.value.rfc : undefined,
-      employeeNumber: form.value.type === 'TEACHER' ? form.value.employeeNumber : undefined
-    }
-
-    const response = await register(payload)
+    const response = await initRegistration({
+      curp: form.value.curp.toUpperCase(),
+      email: form.value.email.toLowerCase()
+    })
 
     if (response.success) {
-      successMessage.value = response.message
-      showConfirmation.value = true
+      errorMessage.value = ''
     }
   } catch (error: any) {
-    errorMessage.value = error.data?.message || 'Error al registrar usuario'
+    errorMessage.value = error.data?.message || 'Error al iniciar registro'
   }
+}
+
+const handleVerify = async () => {
+  errorMessage.value = ''
+  
+  if (!form.value.otp || form.value.otp.length !== 6) {
+    errorMessage.value = 'Código debe tener 6 dígitos'
+    return
+  }
+
+  try {
+    const response = await verifyRegistration({
+      curp: form.value.curp.toUpperCase(),
+      otp: form.value.otp
+    })
+
+    if (response.success) {
+      successMessage.value = response.message || '¡Registro exitoso! Revisa tu email para los datos de acceso.'
+    }
+  } catch (error: any) {
+    errorMessage.value = error.data?.message || 'Error al verificar código'
+  }
+}
+
+const handleReset = () => {
+  form.value = { curp: '', email: '', otp: '' }
+  errorMessage.value = ''
+  successMessage.value = ''
+  reset()
 }
 </script>
 
 <template>
   <div>
-    <h2 class="text-2xl font-bold text-center mb-6">Crear Cuenta</h2>
+    <h2 class="text-2xl font-bold text-center mb-6">Registro en el Sistema</h2>
     
     <UAlert v-if="errorMessage" color="error" variant="soft" class="mb-4">
       {{ errorMessage }}
@@ -81,114 +87,87 @@ const handleRegister = async () => {
       {{ successMessage }}
     </UAlert>
 
-    <div v-if="showConfirmation" class="text-center py-4">
-      <UIcon name="i-lucide-check-circle" class="w-12 h-12 text-green-500 mb-4" />
-      <p class="text-lg mb-4">¡Registro exitoso!</p>
-      <UButton @click="navigateTo('/auth/login')">
-        Ir a Iniciar Sesión
-      </UButton>
-    </div>
+    <!-- Paso 1: Iniciar registro -->
+    <div v-if="step === 1 && !successMessage">
+      <div class="mb-4 p-4 bg-primary/10 rounded-lg">
+        <p class="text-sm text-primary">
+          <UIcon name="i-lucide-info" class="w-4 h-4 inline mr-1" />
+          Paso 1: Inicia tu registro proporcionando tu CURP y correo institucional.
+        </p>
+      </div>
 
-    <UForm v-else @submit.prevent="handleRegister" class="space-y-4">
-      <UFormField label="Usuario" name="username">
-        <UInput
-          v-model="form.username"
-          placeholder="usuario123"
-          icon="i-lucide-user"
-          size="lg"
-        />
-      </UFormField>
-
-      <UFormField label="Correo Electrónico" name="email">
-        <UInput
-          v-model="form.email"
-          type="email"
-          placeholder="correo@institucion.edu"
-          icon="i-lucide-mail"
-          size="lg"
-        />
-      </UFormField>
-
-      <UFormField label="Tipo de Usuario" name="type">
-        <USelect
-          v-model="form.type"
-          :options="[
-            { label: 'Estudiante', value: 'STUDENT' },
-            { label: 'Profesor', value: 'TEACHER' }
-          ]"
-          size="lg"
-        />
-      </UFormField>
-
-      <template v-if="form.type === 'STUDENT'">
+      <UForm @submit.prevent="handleInit" class="space-y-4">
         <UFormField label="CURP" name="curp">
           <UInput
             v-model="form.curp"
             placeholder="XAXX010101HNEXXXX18"
             icon="i-lucide-id-card"
             size="lg"
+            :maxlength="18"
           />
         </UFormField>
 
-        <UFormField label="Número de Matrícula" name="enrollmentNumber">
+        <UFormField label="Correo Institucional" name="email">
           <UInput
-            v-model="form.enrollmentNumber"
-            placeholder="2021001234"
-            icon="i-lucide-graduation-cap"
-            size="lg"
-          />
-        </UFormField>
-      </template>
-
-      <template v-else>
-        <UFormField label="RFC" name="rfc">
-          <UInput
-            v-model="form.rfc"
-            placeholder="XAXX010101XXX"
-            icon="i-lucide-building2"
+            v-model="form.email"
+            type="email"
+            placeholder="tu.email@institucion.edu"
+            icon="i-lucide-mail"
             size="lg"
           />
         </UFormField>
 
-        <UFormField label="Número de Empleado" name="employeeNumber">
+        <UButton type="submit" block size="lg" :loading="loading">
+          Continuar
+        </UButton>
+      </UForm>
+    </div>
+
+    <!-- Paso 2: Verificar código -->
+    <div v-if="step === 2 && !successMessage">
+      <div class="mb-4 p-4 bg-primary/10 rounded-lg">
+        <p class="text-sm text-primary">
+          <UIcon name="i-lucide-mail" class="w-4 h-4 inline mr-1" />
+          Se ha enviado un código de verificaci��n a {{ form.email }}
+        </p>
+      </div>
+
+      <UForm @submit.prevent="handleVerify" class="space-y-4">
+        <UFormField label="Código de Verificación" name="otp">
           <UInput
-            v-model="form.employeeNumber"
-            placeholder="EMP001234"
-            icon="i-lucide-briefcase"
+            v-model="form.otp"
+            placeholder="123456"
+            icon="i-lucide-shield-check"
             size="lg"
+            :maxlength="6"
+            inputmode="numeric"
           />
         </UFormField>
-      </template>
 
-      <UFormField label="Contraseña" name="password">
-        <UInput
-          v-model="form.password"
-          type="password"
-          placeholder="••••••••"
-          icon="i-lucide-lock"
-          size="lg"
-        />
-      </UFormField>
+        <UButton type="submit" block size="lg" :loading="loading">
+          Verificar y Crear Cuenta
+        </UButton>
 
-      <UFormField label="Confirmar Contraseña" name="confirmPassword">
-        <UInput
-          v-model="form.confirmPassword"
-          type="password"
-          placeholder="••••••••"
-          icon="i-lucide-lock"
-          size="lg"
-        />
-      </UFormField>
+        <UButton variant="ghost" block size="sm" @click="handleReset">
+          <UIcon name="i-lucide-arrow-left" class="w-4 h-4 mr-1" />
+          Volver
+        </UButton>
+      </UForm>
+    </div>
 
-      <UButton type="submit" block size="lg" :loading="loading">
-        Crear Cuenta
+    <!-- Éxito -->
+    <div v-if="successMessage" class="text-center py-4">
+      <UIcon name="i-lucide-check-circle" class="w-12 h-12 text-green-500 mb-4" />
+      <p class="text-lg mb-4">¡Registro completado!</p>
+      <UButton @click="navigateTo('/auth/login')">
+        Ir a Iniciar Sesión
       </UButton>
-    </UForm>
+    </div>
 
     <div class="mt-6 text-center">
       <p class="text-muted-foreground">
-        ¿Ya tienes una cuenta?
-        <NuxtLink to="/auth/login" class="text-primary-500 hover:underline">
+        ¿Ya tienes cuenta?
+        <NuxtLink to="/auth/login" class="text-primary hover:underline">
           Inicia sesión
         </NuxtLink>
       </p>
