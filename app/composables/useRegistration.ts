@@ -45,7 +45,7 @@ export const useRegistration = () => {
       
       return response
     } catch (err: unknown) {
-      console.error('[REGISTRATION] ❌ Error:', err)
+      console.error('[REGISTRATION] ❌ Error thrown:', err)
       throw err
     } finally {
       loading.value = false
@@ -67,7 +67,7 @@ export const useRegistration = () => {
       
       return response
     } catch (err: unknown) {
-      console.error('[REGISTRATION] ❌ Error:', err)
+      console.error('[REGISTRATION] ❌ Error thrown:', err)
       throw err
     } finally {
       loading.value = false

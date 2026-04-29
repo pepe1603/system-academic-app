@@ -41,6 +41,7 @@ const handleInit = async () => {
       errorMessage.value = ''
     }
   } catch (error: unknown) {
+    console.log('[REGISTER] ❌ Error completo:', JSON.stringify(error, null, 2))
     const err = error as { 
       statusCode?: number
       statusMessage?: string
@@ -70,6 +71,7 @@ const handleVerify = async () => {
       successMessage.value = response.message || '¡Registro exitoso! Revisa tu email para los datos de acceso.'
     }
   } catch (error: unknown) {
+    console.log('[REGISTER] ❌ Error completo:', JSON.stringify(error, null, 2))
     const err = error as { 
       statusCode?: number
       statusMessage?: string
