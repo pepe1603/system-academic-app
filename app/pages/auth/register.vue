@@ -7,7 +7,7 @@ definePageMeta({
   layout: 'auth'
 })
 
-const { step, loading, error, initRegistration, verifyRegistration, reset } = useRegistration()
+const { step, loading, initRegistration, verifyRegistration, reset } = useRegistration()
 
 const form = ref({
   curp: '',
@@ -40,8 +40,15 @@ const handleInit = async () => {
     if (response.success) {
       errorMessage.value = ''
     }
-  } catch (error: any) {
-    errorMessage.value = error.data?.message || 'Error al iniciar registro'
+  } catch (error: unknown) {
+    const err = error as { 
+      statusCode?: number
+      statusMessage?: string
+      message?: string
+      data?: { message?: string }
+    }
+    const message = err.data?.message || err.message || err.statusMessage || 'Error al iniciar registro'
+    errorMessage.value = message
   }
 }
 
@@ -62,8 +69,15 @@ const handleVerify = async () => {
     if (response.success) {
       successMessage.value = response.message || '¡Registro exitoso! Revisa tu email para los datos de acceso.'
     }
-  } catch (error: any) {
-    errorMessage.value = error.data?.message || 'Error al verificar código'
+  } catch (error: unknown) {
+    const err = error as { 
+      statusCode?: number
+      statusMessage?: string
+      message?: string
+      data?: { message?: string }
+    }
+    const message = err.data?.message || err.message || err.statusMessage || 'Error al verificar código'
+    errorMessage.value = message
   }
 }
 
@@ -79,9 +93,7 @@ const handleReset = () => {
   <div>
     <h2 class="text-2xl font-bold text-center mb-6">Registro en el Sistema</h2>
     
-    <UAlert v-if="errorMessage" color="error" variant="soft" class="mb-4">
-      {{ errorMessage }}
-    </UAlert>
+    <UAlert v-if="errorMessage" color="error" variant="soft" class="mb-4" :title="errorMessage" />
 
     <UAlert v-if="successMessage" color="success" variant="soft" class="mb-4">
       {{ successMessage }}
@@ -128,7 +140,7 @@ const handleReset = () => {
       <div class="mb-4 p-4 bg-primary/10 rounded-lg">
         <p class="text-sm text-primary">
           <UIcon name="i-lucide-mail" class="w-4 h-4 inline mr-1" />
-          Se ha enviado un código de verificaci��n a {{ form.email }}
+          Se ha enviado un código de verificación a {{ form.email }}
         </p>
       </div>
 

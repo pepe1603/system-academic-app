@@ -23,13 +23,11 @@ interface RegistrationResponse {
 
 export const useRegistration = () => {
   const loading = useState<boolean>('registrationLoading', () => false)
-  const error = useState<string | null>('registrationError', () => null)
   const step = useState<number>('registrationStep', () => 1)
   const registrationData = useState<RegistrationResponse['data'] | null>('registrationData', () => null)
 
   const initRegistration = async (data: RegistrationInitData): Promise<RegistrationResponse> => {
     loading.value = true
-    error.value = null
     console.log('[REGISTRATION] 📝 Iniciando registro para CURP:', data.curp, '- Email:', data.email)
 
     try {
@@ -48,8 +46,6 @@ export const useRegistration = () => {
       return response
     } catch (err: unknown) {
       console.error('[REGISTRATION] ❌ Error:', err)
-      const errorObj = err as { data?: { message?: string } }
-      error.value = errorObj.data?.message || 'Error al iniciar registro'
       throw err
     } finally {
       loading.value = false
@@ -58,7 +54,6 @@ export const useRegistration = () => {
 
   const verifyRegistration = async (data: RegistrationVerifyData): Promise<RegistrationResponse> => {
     loading.value = true
-    error.value = null
     console.log('[REGISTRATION] 📝 Verificando registro para CURP:', data.curp)
 
     try {
@@ -73,8 +68,6 @@ export const useRegistration = () => {
       return response
     } catch (err: unknown) {
       console.error('[REGISTRATION] ❌ Error:', err)
-      const errorObj = err as { data?: { message?: string } }
-      error.value = errorObj.data?.message || 'Error al verificar registro'
       throw err
     } finally {
       loading.value = false
@@ -84,12 +77,10 @@ export const useRegistration = () => {
   const reset = () => {
     step.value = 1
     registrationData.value = null
-    error.value = null
   }
 
   return {
     loading,
-    error,
     step,
     registrationData,
     initRegistration,
