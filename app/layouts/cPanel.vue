@@ -8,7 +8,7 @@ const isDropdownOpen = ref(false)
 const handleLogout = async () => {
   isDropdownOpen.value = false
   await logout()
-  await navigateTo('/auth/login')
+  await navigateTo('/auth')
 }
 
 const navigation = [
@@ -64,12 +64,12 @@ const unreadCount = computed(() => notifications.value.filter(n => !n.read).leng
 
 const breadcrumbs = computed(() => {
   const crumbs = [{ label: 'Panel de Control', to: '/cpanel', icon: 'i-lucide-home' }]
-  
+
   const currentNav = navigation.find(n => n.to === route.path)
   if (currentNav && route.path !== '/cpanel') {
     crumbs.push({ label: currentNav.title, to: route.path, icon: currentNav.icon })
   }
-  
+
   return crumbs
 })
 

@@ -1,9 +1,44 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+import type { NavigationMenuItem } from '@nuxt/ui'
 
 const colorMode = useColorMode()
 const { isAuthenticated } = useAuth()
 const { getAllAds } = usePortalContent()
+
+const navItems = ref<NavigationMenuItem[]>([
+  {
+    label: 'Inicio',
+    to: '/'
+  },
+  {
+    label: 'Institución',
+    children: [
+      {
+        label: 'Nosotros',
+        description: 'Conoce nuestra historia y misión',
+        to: '/portal/nosotros'
+      },
+      {
+        label: 'Contacto',
+        description: 'Contáctanos para más información',
+        to: '/portal/contacto'
+      }
+    ]
+  },
+  {
+    label: 'Noticias',
+    to: '/portal/noticias'
+  },
+  {
+    label: 'Eventos',
+    to: '/portal/eventos'
+  },
+  {
+    label: 'Servicios',
+    to: '/portal/servicios'
+  }
+])
 
 const { data: adsList } = await useAsyncData('portal-ads', () => getAllAds())
 
@@ -46,23 +81,11 @@ onMounted(() => {
 onUnmounted(() => {
   if (interval) clearInterval(interval)
 })
-
-const openMenu = ref<string | null>(null)
-
-const toggleMenu = (menu: string) => {
-  openMenu.value = openMenu.value === menu ? null : menu
-}
-
-const closeMenus = () => {
-  openMenu.value = null
-}
-
-const isDarkMode = computed(() => colorMode.value === 'dark')
 </script>
 
 <template>
   <div>
-    <!-- Navbar Minimal con Dropdowns -->
+    <!-- Navbar with NavigationMenu -->
     <nav class="border-b bg-background/80 backdrop-blur sticky top-0 z-50">
       <div class="container mx-auto px-6 max-w-6xl">
         <div class="flex items-center justify-between h-16">
@@ -71,66 +94,12 @@ const isDarkMode = computed(() => colorMode.value === 'dark')
             <span class="hidden sm:inline text-lg">ENEZ</span>
           </NuxtLink>
 
-          <div class="hidden md:flex items-center gap-2">
-            <NuxtLink to="/" class="text-sm text-muted-foreground hover:text-primary transition-colors px-3 py-2">
-              Inicio
-            </NuxtLink>
-
-            <div class="relative">
-              <button
-                @click="toggleMenu('institucion')"
-                @mouseenter="openMenu = 'institucion'"
-                class="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors px-3 py-2"
-              >
-                Institución
-                <UIcon name="i-lucide-chevron-down" class="w-3 h-3 transition-transform" :class="openMenu === 'institucion' ? 'rotate-180' : ''" />
-              </button>
-              <div
-                v-if="openMenu === 'institucion'"
-                class="absolute top-full left-0 mt-1 w-48 bg-gray-300 dark:bg-gray-600  rounded-lg shadow-xl py-2 z-50"
-              >
-                <NuxtLink to="/portal/nosotros" class="block px-4 py-2 text-sm hover:bg-muted transition-colors">
-                  Nosotros
-                </NuxtLink>
-                <NuxtLink to="/portal/contacto" class="block px-4 py-2 text-sm hover:bg-muted transition-colors">
-                  Contacto
-                </NuxtLink>
-              </div>
-            </div>
-
-            <NuxtLink to="/portal/noticias" class="text-sm text-muted-foreground hover:text-primary transition-colors px-3 py-2">
-              Noticias
-            </NuxtLink>
-
-            <NuxtLink to="/portal/eventos" class="text-sm text-muted-foreground hover:text-primary transition-colors px-3 py-2">
-              Eventos
-            </NuxtLink>
-
-            <NuxtLink to="/portal/servicios" class="text-sm text-muted-foreground hover:text-primary transition-colors px-3 py-2">
-              Servicios
-            </NuxtLink>
+          <div class="hidden md:flex items-center gap-1">
+            <UNavigationMenu :items="navItems" />
           </div>
 
           <div class="hidden lg:flex items-center gap-3">
-            <UDropdownMenu>
-              <UDropdownMenuTrigger as="button" :class="isDarkMode ? 'text-amber-400' : 'text-slate-600'">
-                <UIcon :name="isDarkMode ? 'i-lucide-moon' : 'i-lucide-sun'" class="w-5 h-5" />
-              </UDropdownMenuTrigger>
-              <UDropdownMenuContent>
-                <UDropdownMenuItem @click="colorMode.preference = 'light'">
-                  <UIcon name="i-lucide-sun" class="w-4 h-4 mr-2" />
-                  Claro
-                </UDropdownMenuItem>
-                <UDropdownMenuItem @click="colorMode.preference = 'dark'">
-                  <UIcon name="i-lucide-moon" class="w-4 h-4 mr-2" />
-                  Oscuro
-                </UDropdownMenuItem>
-                <UDropdownMenuItem @click="colorMode.preference = 'system'">
-                  <UIcon name="i-lucide-monitor" class="w-4 h-4 mr-2" />
-                  Sistema
-                </UDropdownMenuItem>
-              </UDropdownMenuContent>
-            </UDropdownMenu>
+            <UColorModeSwitch class="text-primary" />
 
             <NuxtLink :to="isAuthenticated ? '/cpanel' : '/auth/login'" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary transition-colors">
               <span class="text-sm font-medium">
