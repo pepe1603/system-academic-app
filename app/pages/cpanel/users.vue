@@ -119,11 +119,11 @@ const roleOptions = [
 
     <UCard>
       <UTable :columns="[
-        { key: 'username', label: 'Usuario' },
-        { key: 'email', label: 'Email' },
-        { key: 'roles', label: 'Roles' },
-        { key: 'isActive', label: 'Estado' },
-        { key: 'actions', label: '' }
+        { id: 'username', key: 'username', label: 'Usuario' },
+        { id: 'email', key: 'email', label: 'Email' },
+        { id: 'roles', key: 'roles', label: 'Roles' },
+        { id: 'isActive', key: 'isActive', label: 'Estado' },
+        { id: 'actions', key: 'actions', label: '' }
       ]" :rows="users" :loading="loading">
         <template #username-row="{ row }">
           <div class="font-medium">{{ row.username }}</div>
