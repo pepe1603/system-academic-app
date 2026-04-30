@@ -1,13 +1,20 @@
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const config = useRuntimeConfig()
+  const cookie = getCookie(event, 'auth_token')
+  const authHeader = cookie ? `Bearer ${cookie}` : null
 
   console.log('[PROXY] 📝 POST /api/users')
+
+  if (!authHeader) {
+    throw createError({ statusCode: 401, message: 'No autorizado' })
+  }
 
   try {
     const response = await $fetch(`${config.public.apiBaseUrl}/users`, {
       method: 'POST',
-      body
+      body,
+      headers: { Authorization: authHeader }
     })
     return response
   } catch (error: unknown) {

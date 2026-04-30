@@ -7,7 +7,7 @@ definePageMeta({
   layout: 'c-panel'
 })
 
-const { users, loading, error, totalElements, currentPage, totalPages, fetchUsers, deleteUser } = useUsers()
+const { users, loading, error, totalElements, currentPage, totalPages, fetchUsers, createUser, updateUser, deleteUser } = useUsers()
 
 const showCreateModal = ref(false)
 const showEditModal = ref(false)
@@ -16,59 +16,89 @@ const selectedUser = ref<any>(null)
 
 const form = ref({
   email: '',
+  hasCurp: false,
   curp: '',
   roles: [] as string[]
 })
 
-const page = ref(0)
-const pageSize = ref(20)
+const formError = ref('')
+const formLoading = ref(false)
 
 onMounted(() => {
-  fetchUsers(page.value, pageSize.value)
+  fetchUsers(0, 20)
 })
 
 const handlePageChange = (newPage: number) => {
-  page.value = newPage
-  fetchUsers(newPage, pageSize.value)
+  fetchUsers(newPage, 20)
 }
 
 const openCreate = () => {
-  form.value = { email: '', curp: '', roles: [] }
+  form.value = { email: '', hasCurp: false, curp: '', roles: [] }
+  formError.value = ''
   showCreateModal.value = true
 }
 
 const handleCreate = async () => {
-  const { createUser } = useUsers()
+  formError.value = ''
+  formLoading.value = true
+
+  if (!form.value.email) {
+    formError.value = 'Email es requerido'
+    formLoading.value = false
+    return
+  }
+
   try {
-    await createUser({
+    const userData: any = {
       email: form.value.email,
-      curp: form.value.curp || undefined,
       roles: form.value.roles.length > 0 ? form.value.roles : undefined
-    })
-    showCreateModal.value = false
-    fetchUsers(page.value, pageSize.value)
-  } catch (e) {
-    // Error manejado en composable
+    }
+
+    if (form.value.hasCurp && form.value.curp) {
+      userData.curp = form.value.curp.toUpperCase()
+    }
+
+    const result = await createUser(userData)
+    if (result) {
+      showCreateModal.value = false
+      fetchUsers(currentPage.value, 20)
+    }
+  } catch (err: unknown) {
+    const e = err as { data?: { message?: string }, message?: string }
+    formError.value = e.data?.message || e.message || 'Error al crear usuario'
+  } finally {
+    formLoading.value = false
   }
 }
 
 const openEdit = (user: any) => {
   selectedUser.value = { ...user }
+  formError.value = ''
   showEditModal.value = true
 }
 
 const handleEdit = async () => {
-  const { updateUser } = useUsers()
+  if (!selectedUser.value) return
+
+  formError.value = ''
+  formLoading.value = true
+
   try {
-    await updateUser(selectedUser.value.id, {
+    const result = await updateUser(selectedUser.value.id, {
       isActive: selectedUser.value.isActive,
       roles: selectedUser.value.roles,
       mustChangePassword: selectedUser.value.mustChangePassword
     })
-    showEditModal.value = false
-    fetchUsers(page.value, pageSize.value)
-  } catch (e) {
-    // Error manejador en composable
+
+    if (result) {
+      showEditModal.value = false
+      fetchUsers(currentPage.value, 20)
+    }
+  } catch (err: unknown) {
+    const e = err as { data?: { message?: string }, message?: string }
+    formError.value = e.data?.message || e.message || 'Error al actualizar usuario'
+  } finally {
+    formLoading.value = false
   }
 }
 
@@ -78,10 +108,22 @@ const confirmDelete = (user: any) => {
 }
 
 const handleDelete = async () => {
-  if (selectedUser.value) {
-    await deleteUser(selectedUser.value.id)
-    showDeleteModal.value = false
-    fetchUsers(page.value, pageSize.value)
+  if (!selectedUser.value) return
+
+  formError.value = ''
+  formLoading.value = true
+
+  try {
+    const result = await deleteUser(selectedUser.value.id)
+    if (result) {
+      showDeleteModal.value = false
+      fetchUsers(currentPage.value, 20)
+    }
+  } catch (err: unknown) {
+    const e = err as { data?: { message?: string }, message?: string }
+    formError.value = e.data?.message || e.message || 'Error al eliminar usuario'
+  } finally {
+    formLoading.value = false
   }
 }
 
@@ -163,14 +205,23 @@ const roleOptions = [
     <!-- Create Modal -->
     <UModal v-model="showCreateModal" title="Crear Usuario">
       <UForm @submit.prevent="handleCreate" class="space-y-4">
-        <UFormField label="Email" name="email">
+        <UAlert v-if="formError" color="error" variant="soft" class="mb-4">
+          {{ formError }}
+        </UAlert>
+
+        <UFormField label="Email" name="email" required>
           <UInput v-model="form.email" type="email" placeholder="email@institucion.edu" required />
         </UFormField>
-        
-        <UFormField label="CURP (opcional)" name="curp">
+
+        <UFormField label="¿Tiene CURP?" name="hasCurp">
+          <USwitch v-model="form.hasCurp" />
+          <span class="ml-2">{{ form.hasCurp ? 'Sí' : 'No' }}</span>
+        </UFormField>
+
+        <UFormField v-if="form.hasCurp" label="CURP" name="curp">
           <UInput v-model="form.curp" placeholder="XAXX010101HNEXXXX18" :maxlength="18" />
         </UFormField>
-        
+
         <UFormField label="Roles" name="roles">
           <div class="flex flex-wrap gap-2">
             <UCheckbox
@@ -183,13 +234,17 @@ const roleOptions = [
           </div>
         </UFormField>
         
-        <UButton type="submit" block>Crear Usuario</UButton>
+        <UButton type="submit" block :loading="formLoading">Crear Usuario</UButton>
       </UForm>
     </UModal>
 
     <!-- Edit Modal -->
     <UModal v-model="showEditModal" title="Editar Usuario">
       <UForm v-if="selectedUser" @submit.prevent="handleEdit" class="space-y-4">
+        <UAlert v-if="formError" color="error" variant="soft" class="mb-4">
+          {{ formError }}
+        </UAlert>
+
         <div class="text-lg font-semibold mb-4">{{ selectedUser.username }}</div>
         
         <UFormField label="Roles" name="roles">
@@ -222,19 +277,23 @@ const roleOptions = [
           <span class="ml-2">{{ selectedUser.mustChangePassword ? 'Sí' : 'No' }}</span>
         </UFormField>
         
-        <UButton type="submit" block>Guardar Cambios</UButton>
+        <UButton type="submit" block :loading="formLoading">Guardar Cambios</UButton>
       </UForm>
     </UModal>
 
     <!-- Delete Modal -->
     <UModal v-model="showDeleteModal" title="Eliminar Usuario">
       <div v-if="selectedUser" class="space-y-4">
+        <UAlert v-if="formError" color="error" variant="soft" class="mb-4">
+          {{ formError }}
+        </UAlert>
+
         <p>¿Estás seguro de eliminar al usuario <strong>{{ selectedUser.username }}</strong>?</p>
         <p class="text-sm text-muted-foreground">Esta acción desactiva el usuario pero no elimina sus datos.</p>
         
         <div class="flex gap-2">
           <UButton variant="ghost" @click="showDeleteModal = false">Cancelar</UButton>
-          <UButton color="error" @click="handleDelete">Eliminar</UButton>
+          <UButton color="error" @click="handleDelete" :loading="formLoading">Eliminar</UButton>
         </div>
       </div>
     </UModal>
