@@ -1,7 +1,8 @@
-interface User {
+export interface User {
   id: string
   username: string
   email: string
+  curp?: string
   isActive: boolean
   isVerified: boolean
   mustChangePassword: boolean
@@ -20,7 +21,9 @@ interface UsersPage {
 }
 
 interface CreateUserData {
+  username: string
   email: string
+  password: string
   curp?: string
   roles?: string[]
 }
@@ -32,6 +35,12 @@ interface UpdateUserData {
 }
 
 interface ApiResponse<T> {
+  success: boolean
+  message: string
+  data?: T
+}
+
+interface ApiResult<T> {
   success: boolean
   message: string
   data?: T
@@ -60,6 +69,7 @@ export const useUsers = () => {
         totalPages.value = response.data.totalPages || 0
         currentPage.value = response.data.number || 0
       }
+      error.value = response.message || null
     } catch (err: unknown) {
       const e = err as { data?: { message?: string } }
       error.value = e.data?.message || 'Error al cargar usuarios'
@@ -84,7 +94,7 @@ export const useUsers = () => {
     }
   }
 
-  const createUser = async (data: CreateUserData): Promise<User | null> => {
+  const createUser = async (data: CreateUserData): Promise<ApiResult<User>> => {
     loading.value = true
     error.value = null
 
@@ -95,19 +105,20 @@ export const useUsers = () => {
       })
 
       if (response.success && response.data) {
-        return response.data
+        return { success: true, message: response.message, data: response.data }
       }
-      return null
+      return { success: false, message: response.message }
     } catch (err: unknown) {
       const e = err as { data?: { message?: string } }
-      error.value = e.data?.message || 'Error al crear usuario'
-      throw err
+      const msg = e.data?.message || 'Error al crear usuario'
+      error.value = msg
+      return { success: false, message: msg }
     } finally {
       loading.value = false
     }
   }
 
-  const updateUser = async (id: string, data: UpdateUserData): Promise<User | null> => {
+  const updateUser = async (id: string, data: UpdateUserData): Promise<ApiResult<User>> => {
     loading.value = true
     error.value = null
 
@@ -118,19 +129,20 @@ export const useUsers = () => {
       })
 
       if (response.success && response.data) {
-        return response.data
+        return { success: true, message: response.message, data: response.data }
       }
-      return null
+      return { success: false, message: response.message }
     } catch (err: unknown) {
       const e = err as { data?: { message?: string } }
-      error.value = e.data?.message || 'Error al actualizar usuario'
-      throw err
+      const msg = e.data?.message || 'Error al actualizar usuario'
+      error.value = msg
+      return { success: false, message: msg }
     } finally {
       loading.value = false
     }
   }
 
-  const deleteUser = async (id: string): Promise<boolean> => {
+  const deleteUser = async (id: string): Promise<ApiResult<void>> => {
     loading.value = true
     error.value = null
 
@@ -138,11 +150,12 @@ export const useUsers = () => {
       const response = await $fetch<ApiResponse<void>>(`/api/cpanel/users/${id}`, {
         method: 'DELETE'
       })
-      return response.success
+      return { success: response.success, message: response.message }
     } catch (err: unknown) {
       const e = err as { data?: { message?: string } }
-      error.value = e.data?.message || 'Error al eliminar usuario'
-      return false
+      const msg = e.data?.message || 'Error al eliminar usuario'
+      error.value = msg
+      return { success: false, message: msg }
     } finally {
       loading.value = false
     }

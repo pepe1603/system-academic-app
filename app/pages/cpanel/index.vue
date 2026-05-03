@@ -51,7 +51,9 @@ const recentActivity = [
               <p class="text-sm">
                 <strong>{{ activity.user }}</strong> {{ activity.action }} <span class="text-primary-500">{{ activity.target }}</span>
               </p>
-              <p class="text-xs text-muted-foreground">{{ activity.time }}</p>
+              <p class="text-xs text-muted-foreground">
+                {{ activity.time }}
+              </p>
             </div>
           </div>
         </div>
@@ -65,13 +67,13 @@ const recentActivity = [
           <UButton to="/cpanel/students" variant="soft" color="primary" icon="i-lucide-user-round" block>
             Estudiantes
           </UButton>
-          <UButton to="/cpanel/teachers" variant="soft" color="green" icon="i-lucide-graduation-cap" block>
+          <UButton to="/cpanel/teachers" variant="soft" color="info" icon="i-lucide-graduation-cap" block>
             Docentes
           </UButton>
-          <UButton to="/cpanel/users" variant="soft" color="amber" icon="i-lucide-users" block>
+          <UButton to="/cpanel/users" variant="soft" color="warning" icon="i-lucide-users" block>
             Usuarios
           </UButton>
-          <UButton to="/cpanel/settings" variant="soft" color="purple" icon="i-lucide-settings" block>
+          <UButton to="/cpanel/settings" variant="soft" color="neutral" icon="i-lucide-settings" block>
             Configuración
           </UButton>
         </div>
