@@ -255,29 +255,25 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
 </script>
 
 <template>
-  <div class="flex gap-6 h-full">
-    <div class="flex-1 min-w-0" :class="{ 'w-2/5': viewMode !== null }">
-      <div class="mb-6 flex items-center justify-between">
-        <div>
-          <h1 class="text-3xl font-bold">Usuarios</h1>
-          <p class="text-muted-foreground">{{ totalElements }} usuarios</p>
-        </div>
-        <UButton @click="openCreate" icon="i-lucide-plus">
-          Nuevo Usuario
-        </UButton>
+  <div class="space-y-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold">Usuarios</h1>
+        <p class="text-muted-foreground">{{ totalElements }} usuarios</p>
       </div>
+      <UButton @click="openCreate" icon="i-lucide-plus">
+        Nuevo Usuario
+      </UButton>
+    </div>
 
-      <UAlert v-if="loading" color="info" variant="soft" class="mb-4" description="Cargando..." />
-      <skeleton v-if="loading" class="p-4 rounded-lg">
-        <skeleton class="rounded-full size-18" />
-        <skeleton class="h-8 w-full rounded-lg" />
-        <skeleton class="h-6 w-full rounded-lg" />
-      </skeleton>
-      <UAlert v-if="error" color="error" variant="soft" class="mb-4" :description="error" />
+    <UAlert v-if="loading" color="info" variant="soft" class="mb-4" description="Cargando..." />
+    <UAlert v-if="error" color="error" variant="soft" class="mb-4" :description="error" />
 
-      <UAlert color="neutral" variant="soft" class="mb-4" icon="i-lucide-info">
-        <template #title>Guía de acciones</template>
-        <template #description>
+    <div class="flex gap-6">
+      <div class="flex-1 min-w-0">
+        <UAlert color="neutral" variant="soft" class="mb-4" icon="i-lucide-info">
+          <template #title>Guía de acciones</template>
+          <template #description>
           <div class="space-y-1 text-sm">
             <p class="flex items-center gap-2">
               <UIcon name="i-lucide-key" class="text-amber-500 size-4" />
@@ -344,15 +340,21 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
       </UPageList>
 
       <div v-if="totalPages > 1" class="flex justify-center mt-6">
-        <UPagination :page="currentPage + 1" :total="totalPages" @change="handlePageChange" />
+        <UPagination 
+          :page="currentPage + 1" 
+          :total="totalElements" 
+          :page-size="20"
+          :items-per-page="20"
+          @change="handlePageChange" 
+        />
       </div>
 
       <div v-if="totalElements > 0" class="text-center text-sm text-muted-foreground mt-2">
-        {{ totalElements }} usuarios · Página {{ currentPage + 1 }}/{{ totalPages }}
+        Mostrando {{ users.length }} de {{ totalElements }} usuarios · Página {{ currentPage + 1 }}/{{ totalPages }}
       </div>
     </div>
 
-    <div v-if="viewMode !== null" class="w-3/5 min-w-[500px] max-w-xl">
+    <div v-if="viewMode !== null" class="w-2/5 min-w-[500px] max-w-xl">
       <UCard>
         <template #header>
           <div class="flex items-center justify-between">
@@ -603,5 +605,11 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
         </template>
       </UCard>
     </div>
+
+    <skeleton v-if="loading" class="p-4 rounded-lg">
+      <skeleton class="rounded-full size-18" />
+      <skeleton class="h-8 w-full rounded-lg" />
+      <skeleton class="h-6 w-full rounded-lg" />
+    </skeleton>
   </div>
 </template>
