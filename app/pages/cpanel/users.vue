@@ -105,6 +105,7 @@ const openEdit = async (user: User) => {
   editForm.roles = [...(fetchedUser?.roles || [])]
   editForm.isActive = fetchedUser?.isActive ?? true
   editForm.mustChangePassword = fetchedUser?.mustChangePassword ?? false
+  editForm.curp = fetchedUser?.curp || ''
   viewMode.value = 'edit'
 }
 
@@ -126,7 +127,8 @@ const createForm = reactive({
 const editForm = reactive({
   roles: [] as string[],
   isActive: true,
-  mustChangePassword: false
+  mustChangePassword: false,
+  curp: ''
 })
 
 const submitting = ref(false)
@@ -164,7 +166,8 @@ const handleUpdateUser = async () => {
   const result = await updateUser(selectedUser.value.id, {
     roles: editForm.roles,
     isActive: editForm.isActive,
-    mustChangePassword: editForm.mustChangePassword
+    mustChangePassword: editForm.mustChangePassword,
+    curp: editForm.curp || undefined
   })
   submitting.value = false
   
@@ -524,7 +527,7 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
               <div class="space-y-4 py-2">
                 <UFormField label="CURP" name="editCurp" description="Clave única de registro de población">
                   <UInput 
-                    :model-value="selectedUser?.curp || ''" 
+                    v-model="editForm.curp"
                     placeholder="Ingresa o modifica la CURP" 
                     icon="i-lucide-id-card" 
                   />

@@ -32,6 +32,7 @@ interface UpdateUserData {
   isActive?: boolean
   roles?: string[]
   mustChangePassword?: boolean
+  curp?: string
 }
 
 interface ApiResponse<T> {
