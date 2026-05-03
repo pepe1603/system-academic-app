@@ -519,8 +519,30 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
 
           <UDivider />
 
+          <UAccordion :items="[{ label: 'Vincular/modificar CURP (opcional)', slot: 'curp-edit' }]">
+            <template #curp-edit>
+              <div class="space-y-4 py-2">
+                <UFormField label="CURP" name="editCurp" description="Clave única de registro de población">
+                  <UInput 
+                    :model-value="selectedUser?.curp || ''" 
+                    placeholder="Ingresa o modifica la CURP" 
+                    icon="i-lucide-id-card" 
+                  />
+                </UFormField>
+                <UAlert color="warning" variant="soft" icon="i-lucide-alert-triangle">
+                  <template #description>
+                    <div class="space-y-1 text-sm">
+                      <p>• Modificar la CURP puede afectar el vínculo con el registro académico.</p>
+                      <p>• <strong>No modifiques</strong> la CURP sin consultar con Control Escolar.</p>
+                    </div>
+                  </template>
+                </UAlert>
+              </div>
+            </template>
+          </UAccordion>
+
           <div v-if="selectedUser.curp">
-            <UAccordion :items="[{ label: 'Información de registro académico', slot: 'curp-info' }]">
+            <UAccordion :items="[{ label: 'Información de registro académico actual', slot: 'curp-info' }]">
               <template #curp-info>
                 <div class="space-y-3 py-2">
                   <div class="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
