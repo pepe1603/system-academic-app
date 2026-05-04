@@ -349,7 +349,7 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
       </div>
 
       <div v-if="totalElements > 0" class="text-center text-sm text-muted-foreground mt-2">
-        Mostrando {{ users.length }} de {{ totalElements }} usuarios · Página {{ pageModel }} de {{ totalPages }}
+        Mostrando {{ users.length }} de {{ totalElements }} usuarios · Página {{ pageModel }} de {{ Math.ceil(totalElements / 5) }}
       </div>
     </div>
 
