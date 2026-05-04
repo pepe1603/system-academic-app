@@ -35,8 +35,11 @@ onMounted(() => {
 })
 
 const handlePageChange = (page: number) => {
+  console.log('[handlePageChange] Called with page:', page)
   pageModel.value = page
+  console.log('[handlePageChange] Calling fetchUsers with:', page - 1, 5)
   fetchUsers(page - 1, 5)
+  console.log('[handlePageChange] fetchUsers called')
 }
 
 const formatDate = (dateStr: string) => {

@@ -62,22 +62,28 @@ export const useUsers = () => {
     console.log('[useUsers] fetchUsers called:', { page, size })
 
     try {
+      console.log('[useUsers] Making API call to /api/cpanel/users with params:', { page, size })
       const response = await $fetch<ApiResponse<UsersPage>>('/api/cpanel/users', {
         params: { page, size }
       })
 
-      console.log('[useUsers] API response:', response)
+      console.log('[useUsers] API response:', JSON.stringify(response, null, 2))
 
       if (response.success && response.data) {
+        console.log('[useUsers] Before update - users.value:', users.value.length)
         users.value = response.data.content || []
         totalElements.value = response.data.totalElements || 0
         totalPages.value = response.data.totalPages || 0
         currentPage.value = response.data.number || 0
+        console.log('[useUsers] After update - users.value:', users.value.length)
         console.log('[useUsers] Data loaded:', { 
           usersCount: users.value.length, 
           totalElements: totalElements.value,
-          currentPage: currentPage.value 
+          currentPage: currentPage.value,
+          totalPages: totalPages.value
         })
+      } else {
+        console.log('[useUsers] Response not successful or no data:', response)
       }
       error.value = response.message || null
     } catch (err: unknown) {
@@ -86,6 +92,7 @@ export const useUsers = () => {
       error.value = e.data?.message || 'Error al cargar usuarios'
     } finally {
       loading.value = false
+      console.log('[useUsers] fetchUsers completed')
     }
   }
 
