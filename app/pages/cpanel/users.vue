@@ -28,22 +28,16 @@ const availableRoles = [
   { label: 'Director', value: 'DIRECTOR' }
 ]
 
+const pageModel = ref(1)
+
 onMounted(() => {
   fetchUsers(0, 5)
 })
 
 const handlePageChange = (page: number) => {
-  currentPageModel.value = page - 1
+  pageModel.value = page
+  fetchUsers(page - 1, 5)
 }
-
-const currentPageModel = computed({
-  get: () => currentPage.value + 1,
-  set: (val: number) => {
-    if (val !== currentPage.value + 1) {
-      fetchUsers(val - 1, 5)
-    }
-  }
-})
 
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr)
@@ -161,7 +155,7 @@ const handleCreateUser = async () => {
     createForm.curp = ''
     createForm.roles = []
     closePanel()
-    fetchUsers(currentPage.value, 5)
+    fetchUsers(pageModel.value - 1, 5)
   } else {
     toast.add({ title: result.message, color: 'error' })
   }
@@ -182,7 +176,7 @@ const handleUpdateUser = async () => {
   if (result.success) {
     toast.add({ title: result.message, color: 'success' })
     closePanel()
-    fetchUsers(currentPage.value, 5)
+    fetchUsers(pageModel.value - 1, 5)
   } else {
     toast.add({ title: result.message, color: 'error' })
   }
@@ -192,7 +186,7 @@ const handleToggleActive = async (user: User) => {
   const result = await updateUser(user.id, { isActive: !user.isActive })
   if (result.success) {
     toast.add({ title: result.message, color: 'success' })
-    fetchUsers(currentPage.value, 5)
+    fetchUsers(pageModel.value - 1, 5)
   } else {
     toast.add({ title: result.message, color: 'error' })
   }
@@ -202,7 +196,7 @@ const handleForcePassword = async (user: User) => {
   const result = await updateUser(user.id, { mustChangePassword: true })
   if (result.success) {
     toast.add({ title: result.message, color: 'success' })
-    fetchUsers(currentPage.value, 5)
+    fetchUsers(pageModel.value - 1, 5)
   } else {
     toast.add({ title: result.message, color: 'error' })
   }
@@ -217,7 +211,7 @@ const handleDelete = async (user: User) => {
     const result = await deleteUser(user.id)
     if (result.success) {
       toast.add({ title: result.message, color: 'success' })
-      fetchUsers(currentPage.value, 5)
+      fetchUsers(pageModel.value - 1, 5)
     } else {
       toast.add({ title: result.message, color: 'error' })
     }
@@ -348,10 +342,10 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
 
       <div class="flex items-center justify-center">
         <UPagination 
-          v-model="currentPageModel" 
+          v-model:page="pageModel" 
           :total="totalElements" 
           :page-size="5"
-          :items-per-page="5"
+          @change="handlePageChange" 
         />
       </div>
 
