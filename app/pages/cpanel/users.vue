@@ -270,10 +270,6 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
 
     <UAlert v-if="loading" color="info" variant="soft" class="mb-4" description="Cargando..." />
     <UAlert v-if="error" color="error" variant="soft" class="mb-4" :description="error" />
-    
-    <div class="text-sm text-muted-foreground mb-4 p-2 bg-muted rounded">
-      Debug: users={{ users.length }}, totalElements={{ totalElements }}, currentPage={{ currentPage }}, pageModel={{ pageModel }}
-    </div>
 
     <div v-if="viewMode === null" class="bg-background border rounded-lg p-6">
       <UAlert color="neutral" variant="soft" class="mb-4" icon="i-lucide-info">
@@ -344,7 +340,7 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
         </UPageCard>
       </UPageList>
 
-      <div class="flex items-center justify-center">
+      <div class="flex items-center justify-center mt-4">
         <UPagination 
           v-model:page="pageModel" 
           :total="totalElements" 
@@ -353,7 +349,7 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
       </div>
 
       <div v-if="totalElements > 0" class="text-center text-sm text-muted-foreground mt-2">
-        Mostrando {{ users.length }} de {{ totalElements }} usuarios · Página {{ currentPage + 1 }}/{{ totalPages }}
+        Mostrando {{ users.length }} de {{ totalElements }} usuarios · Página {{ pageModel }} de {{ totalPages }}
       </div>
     </div>
 

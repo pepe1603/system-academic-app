@@ -48,51 +48,34 @@ interface ApiResult<T> {
 }
 
 export const useUsers = () => {
-  const loading = useState<boolean>('usersLoading', () => false)
-  const error = useState<string | null>('usersError', () => null)
-  const users = useState<User[]>('usersList', () => [])
-  const totalElements = useState<number>('usersTotal', () => 0)
-  const currentPage = useState<number>('usersPage', () => 0)
-  const totalPages = useState<number>('usersTotalPages', () => 0)
+  const loading = ref(false)
+  const error = ref<string | null>(null)
+  const users = ref<User[]>([])
+  const totalElements = ref(0)
+  const currentPage = ref(0)
+  const totalPages = ref(0)
 
   const fetchUsers = async (page = 0, size = 20) => {
     loading.value = true
     error.value = null
 
-    console.log('[useUsers] fetchUsers called:', { page, size })
-
     try {
-      console.log('[useUsers] Making API call to /api/cpanel/users with params:', { page, size })
       const response = await $fetch<ApiResponse<UsersPage>>('/api/cpanel/users', {
         params: { page, size }
       })
 
-      console.log('[useUsers] API response:', JSON.stringify(response, null, 2))
-
       if (response.success && response.data) {
-        console.log('[useUsers] Before update - users.value:', users.value.length)
-        users.value = response.data.content || []
+        users.value = [...(response.data.content || [])]
         totalElements.value = response.data.totalElements || 0
         totalPages.value = response.data.totalPages || 0
         currentPage.value = response.data.number || 0
-        console.log('[useUsers] After update - users.value:', users.value.length)
-        console.log('[useUsers] Data loaded:', { 
-          usersCount: users.value.length, 
-          totalElements: totalElements.value,
-          currentPage: currentPage.value,
-          totalPages: totalPages.value
-        })
-      } else {
-        console.log('[useUsers] Response not successful or no data:', response)
       }
       error.value = response.message || null
     } catch (err: unknown) {
-      console.error('[useUsers] Error:', err)
       const e = err as { data?: { message?: string } }
       error.value = e.data?.message || 'Error al cargar usuarios'
     } finally {
       loading.value = false
-      console.log('[useUsers] fetchUsers completed')
     }
   }
 
