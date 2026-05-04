@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { skeleton } from '#build/ui'
 import type { DropdownMenuItem } from '@nuxt/ui'
 import type { User } from '~/composables/useUsers'
 
@@ -269,11 +268,10 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
     <UAlert v-if="loading" color="info" variant="soft" class="mb-4" description="Cargando..." />
     <UAlert v-if="error" color="error" variant="soft" class="mb-4" :description="error" />
 
-    <div class="flex gap-6">
-      <div class="flex-1 min-w-0">
-        <UAlert color="neutral" variant="soft" class="mb-4" icon="i-lucide-info">
-          <template #title>Guía de acciones</template>
-          <template #description>
+    <div v-if="viewMode === null" class="bg-background border rounded-lg p-6">
+      <UAlert color="neutral" variant="soft" class="mb-4" icon="i-lucide-info">
+        <template #title>Guía de acciones</template>
+        <template #description>
           <div class="space-y-1 text-sm">
             <p class="flex items-center gap-2">
               <UIcon name="i-lucide-key" class="text-amber-500 size-4" />
@@ -522,7 +520,7 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
             </div>
           </div>
 
-          <UDivider />
+          <USeparator />
 
           <UAccordion :items="[{ label: 'Vincular/modificar CURP (opcional)', slot: 'curp-edit' }]">
             <template #curp-edit>
@@ -605,11 +603,5 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
         </template>
       </UCard>
     </div>
-
-    <skeleton v-if="loading" class="p-4 rounded-lg">
-      <skeleton class="rounded-full size-18" />
-      <skeleton class="h-8 w-full rounded-lg" />
-      <skeleton class="h-6 w-full rounded-lg" />
-    </skeleton>
   </div>
 </template>
