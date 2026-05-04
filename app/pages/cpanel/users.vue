@@ -34,13 +34,10 @@ onMounted(() => {
   fetchUsers(0, 5)
 })
 
-const handlePageChange = (page: number) => {
-  console.log('[handlePageChange] Called with page:', page)
-  pageModel.value = page
-  console.log('[handlePageChange] Calling fetchUsers with:', page - 1, 5)
-  fetchUsers(page - 1, 5)
-  console.log('[handlePageChange] fetchUsers called')
-}
+watch(pageModel, (newPage) => {
+  console.log('[watch] pageModel changed to:', newPage)
+  fetchUsers(newPage - 1, 5)
+})
 
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr)
@@ -352,7 +349,6 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
           v-model:page="pageModel" 
           :total="totalElements" 
           :page-size="5"
-          @change="handlePageChange" 
         />
       </div>
 
