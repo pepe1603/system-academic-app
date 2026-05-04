@@ -741,31 +741,33 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
       </div>
     </div>
 
-    <UModal v-model:open="showPermissionsModal" title="Permisos del Rol">
-      <div class="p-4">
-        <div class="mb-4">
-          <UBadge :color="getRoleBadgeColor(selectedRoleForPermissions)" variant="soft" size="lg">
-            {{ availableRoles.find(r => r.value === selectedRoleForPermissions)?.label || selectedRoleForPermissions }}
-          </UBadge>
-        </div>
-        <div v-if="loading" class="text-center py-4">
-          <UIcon name="i-lucide-loader-2" class="animate-spin size-6 mx-auto text-muted-foreground" />
-        </div>
-        <div v-else-if="selectedRolePermissions.length > 0" class="grid grid-cols-2 gap-2">
-          <div
-            v-for="permission in selectedRolePermissions"
-            :key="permission"
-            class="flex items-center gap-2 p-2 bg-muted/50 rounded text-sm"
-          >
-            <UIcon name="i-lucide-check-circle" class="size-4 text-green-600" />
-            <span class="font-mono">{{ permission }}</span>
+    <ClientOnly>
+      <UModal v-model:open="showPermissionsModal" title="Permisos del Rol">
+        <div class="p-4">
+          <div class="mb-4">
+            <UBadge :color="getRoleBadgeColor(selectedRoleForPermissions)" variant="soft" size="lg">
+              {{ availableRoles.find(r => r.value === selectedRoleForPermissions)?.label || selectedRoleForPermissions }}
+            </UBadge>
           </div>
+          <div v-if="loading" class="text-center py-4">
+            <UIcon name="i-lucide-loader-2" class="animate-spin size-6 mx-auto text-muted-foreground" />
+          </div>
+          <div v-else-if="selectedRolePermissions.length > 0" class="grid grid-cols-2 gap-2">
+            <div
+              v-for="permission in selectedRolePermissions"
+              :key="permission"
+              class="flex items-center gap-2 p-2 bg-muted/50 rounded text-sm"
+            >
+              <UIcon name="i-lucide-check-circle" class="size-4 text-green-600" />
+              <span class="font-mono">{{ permission }}</span>
+            </div>
+          </div>
+          <p v-else class="text-muted-foreground text-center py-4">No se encontraron permisos para este rol</p>
         </div>
-        <p v-else class="text-muted-foreground text-center py-4">No se encontraron permisos para este rol</p>
-      </div>
-      <template #footer>
-        <UButton color="neutral" variant="outline" @click="closePermissionsModal">Cerrar</UButton>
-      </template>
-    </UModal>
+        <template #footer>
+          <UButton color="neutral" variant="outline" @click="closePermissionsModal">Cerrar</UButton>
+        </template>
+      </UModal>
+    </ClientOnly>
   </div>
 </template>
