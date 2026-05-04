@@ -341,15 +341,11 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
       </UPageList>
 
       <div class="flex items-center justify-center mt-4">
-        <div class="text-sm text-muted-foreground mb-2">
-          Debug: total={{ totalElements }}, page-size=5, totalPages calc={{ Math.ceil(totalElements / 5) }}
-        </div>
         <UPagination 
           v-model:page="pageModel" 
           :total="totalElements" 
-          :page-size="5"
-          :sibling-count="0"
-          show-edges
+          :items-per-page="5"
+          :sibling-count="1"
         />
       </div>
 
