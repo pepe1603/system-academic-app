@@ -345,6 +345,8 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
           v-model:page="pageModel" 
           :total="totalElements" 
           :page-size="5"
+          :sibling-count="5"
+          show-edges
         />
       </div>
 
