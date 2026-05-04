@@ -18,7 +18,12 @@ type ViewMode = 'create' | 'view' | 'edit' | null
 const viewMode = ref<ViewMode>(null)
 const selectedUser = ref<User | null>(null)
 
-const { users, loading, error, totalElements, currentPage, totalPages, fetchUsers, getUser, createUser, updateUser, deleteUser, revokeSessions, unlockUser, lockUser, banUser } = useUsers()
+const { users, loading, error, totalElements, currentPage, totalPages, fetchUsers, getUser, createUser, updateUser, deleteUser, revokeSessions, unlockUser, lockUser, banUser, fetchDeletedUsers, fetchPermissionsByRole } = useUsers()
+
+const showDeleted = ref(false)
+const selectedRolePermissions = ref<string[]>([])
+const showPermissionsModal = ref(false)
+const selectedRoleForPermissions = ref('')
 
 const availableRoles = [
   { label: 'Administrador', value: 'ADMIN' },
@@ -31,13 +36,41 @@ const availableRoles = [
 const pageModel = ref(1)
 
 onMounted(() => {
-  fetchUsers(0, 5)
+  if (showDeleted.value) {
+    fetchDeletedUsers(0, 5)
+  } else {
+    fetchUsers(0, 5)
+  }
 })
 
 watch(pageModel, (newPage) => {
-  console.log('[watch] pageModel changed to:', newPage)
-  fetchUsers(newPage - 1, 5)
+  if (showDeleted.value) {
+    fetchDeletedUsers(newPage - 1, 5)
+  } else {
+    fetchUsers(newPage - 1, 5)
+  }
 })
+
+watch(showDeleted, (isDeleted) => {
+  pageModel.value = 1
+  if (isDeleted) {
+    fetchDeletedUsers(0, 5)
+  } else {
+    fetchUsers(0, 5)
+  }
+})
+
+const viewPermissions = async (roleName: string) => {
+  selectedRoleForPermissions.value = roleName
+  selectedRolePermissions.value = await fetchPermissionsByRole(roleName)
+  showPermissionsModal.value = true
+}
+
+const closePermissionsModal = () => {
+  showPermissionsModal.value = false
+  selectedRolePermissions.value = []
+  selectedRoleForPermissions.value = ''
+}
 
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr)
@@ -340,15 +373,35 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-3xl font-bold">Usuarios</h1>
-        <p class="text-muted-foreground">{{ totalElements }} usuarios</p>
+        <p class="text-muted-foreground">
+          {{ showDeleted ? 'Usuarios eliminados' : 'Usuarios activos' }}: {{ totalElements }}
+        </p>
       </div>
-      <UButton @click="openCreate" icon="i-lucide-plus">
-        Nuevo Usuario
-      </UButton>
+      <div class="flex items-center gap-2">
+        <USelect
+          v-model="selectedRoleForPermissions"
+          :items="availableRoles"
+          placeholder="Ver permisos del rol"
+          class="w-48"
+          @change="(val: any) => val && viewPermissions(val)"
+        />
+        <UToggle v-model="showDeleted" label="Ver eliminados" />
+        <UButton @click="openCreate" icon="i-lucide-plus">
+          Nuevo Usuario
+        </UButton>
+      </div>
     </div>
 
     <UAlert v-if="loading" color="info" variant="soft" class="mb-4" description="Cargando..." />
     <UAlert v-if="error" color="error" variant="soft" class="mb-4" :description="error" />
+
+    <div v-if="showDeleted" class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+      <div class="flex items-center gap-2 text-amber-800">
+        <UIcon name="i-lucide-alert-triangle" class="size-5" />
+        <span class="font-medium">Vista de usuarios eliminados</span>
+      </div>
+      <p class="text-sm text-amber-700 mt-1">Estos usuarios fueron eliminados (soft delete) y pueden ser restaurados.</p>
+    </div>
 
     <div v-if="viewMode === null" class="bg-background border rounded-lg p-6">
       <UAlert color="neutral" variant="soft" class="mb-4" icon="i-lucide-info">
@@ -686,5 +739,29 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
         </UCard>
       </div>
     </div>
+
+    <UModal v-model:open="showPermissionsModal" title="Permisos del Rol">
+      <div class="p-4">
+        <div class="mb-4">
+          <UBadge :color="getRoleBadgeColor(selectedRoleForPermissions)" variant="soft" size="lg">
+            {{ availableRoles.find(r => r.value === selectedRoleForPermissions)?.label || selectedRoleForPermissions }}
+          </UBadge>
+        </div>
+        <div v-if="selectedRolePermissions.length > 0" class="grid grid-cols-2 gap-2">
+          <div
+            v-for="permission in selectedRolePermissions"
+            :key="permission"
+            class="flex items-center gap-2 p-2 bg-muted/50 rounded text-sm"
+          >
+            <UIcon name="i-lucide-check-circle" class="size-4 text-green-600" />
+            <span class="font-mono">{{ permission }}</span>
+          </div>
+        </div>
+        <p v-else class="text-muted-foreground text-center py-4">No se encontraron permisos para este rol</p>
+      </div>
+      <template #footer>
+        <UButton color="neutral" variant="outline" @click="closePermissionsModal">Cerrar</UButton>
+      </template>
+    </UModal>
   </div>
 </template>

@@ -238,6 +238,48 @@ export const useUsers = () => {
     }
   }
 
+  const fetchDeletedUsers = async (page = 0, size = 20) => {
+    loading.value = true
+    error.value = null
+
+    try {
+      const response = await $fetch<ApiResponse<UsersPage>>('/api/cpanel/users/deleted', {
+        params: { page, size }
+      })
+
+      if (response.success && response.data) {
+        users.value = [...(response.data.content || [])]
+        totalElements.value = response.data.totalElements || 0
+        totalPages.value = response.data.totalPages || 0
+        currentPage.value = response.data.number || 0
+      }
+      error.value = response.message || null
+    } catch (err: unknown) {
+      const e = err as { data?: { message?: string } }
+      error.value = e.data?.message || 'Error al cargar usuarios eliminados'
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const fetchPermissionsByRole = async (roleName: string): Promise<string[]> => {
+    loading.value = true
+    error.value = null
+
+    try {
+      const response = await $fetch<ApiResponse<string[]>>('/api/cpanel/users/roles/permissions', {
+        params: { roleName }
+      })
+      loading.value = false
+      return response.success && response.data ? response.data : []
+    } catch (err: unknown) {
+      const e = err as { data?: { message?: string } }
+      error.value = e.data?.message || 'Error al obtener permisos'
+      loading.value = false
+      return []
+    }
+  }
+
   return {
     loading,
     error,
@@ -253,6 +295,8 @@ export const useUsers = () => {
     revokeSessions,
     unlockUser,
     lockUser,
-    banUser
+    banUser,
+    fetchDeletedUsers,
+    fetchPermissionsByRole
   }
 }
