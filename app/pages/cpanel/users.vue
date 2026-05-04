@@ -29,11 +29,11 @@ const availableRoles = [
 ]
 
 onMounted(() => {
-  fetchUsers(0, 20)
+  fetchUsers(0, 5)
 })
 
 const handlePageChange = (page: number) => {
-  fetchUsers(page - 1, 20)
+  fetchUsers(page - 1, 5)
 }
 
 const formatDate = (dateStr: string) => {
@@ -152,7 +152,7 @@ const handleCreateUser = async () => {
     createForm.curp = ''
     createForm.roles = []
     closePanel()
-    fetchUsers(currentPage.value, 20)
+    fetchUsers(currentPage.value, 5)
   } else {
     toast.add({ title: result.message, color: 'error' })
   }
@@ -173,7 +173,7 @@ const handleUpdateUser = async () => {
   if (result.success) {
     toast.add({ title: result.message, color: 'success' })
     closePanel()
-    fetchUsers(currentPage.value, 20)
+    fetchUsers(currentPage.value, 5)
   } else {
     toast.add({ title: result.message, color: 'error' })
   }
@@ -183,7 +183,7 @@ const handleToggleActive = async (user: User) => {
   const result = await updateUser(user.id, { isActive: !user.isActive })
   if (result.success) {
     toast.add({ title: result.message, color: 'success' })
-    fetchUsers(currentPage.value, 20)
+    fetchUsers(currentPage.value, 5)
   } else {
     toast.add({ title: result.message, color: 'error' })
   }
@@ -193,7 +193,7 @@ const handleForcePassword = async (user: User) => {
   const result = await updateUser(user.id, { mustChangePassword: true })
   if (result.success) {
     toast.add({ title: result.message, color: 'success' })
-    fetchUsers(currentPage.value, 20)
+    fetchUsers(currentPage.value, 5)
   } else {
     toast.add({ title: result.message, color: 'error' })
   }
@@ -208,7 +208,7 @@ const handleDelete = async (user: User) => {
     const result = await deleteUser(user.id)
     if (result.success) {
       toast.add({ title: result.message, color: 'success' })
-      fetchUsers(currentPage.value, 20)
+      fetchUsers(currentPage.value, 5)
     } else {
       toast.add({ title: result.message, color: 'error' })
     }
@@ -337,12 +337,12 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
         </UPageCard>
       </UPageList>
 
-      <div v-if="totalPages > 1" class="flex justify-center mt-6">
+      <div class="flex items-center justify-center">
         <UPagination 
           :page="currentPage + 1" 
           :total="totalElements" 
-          :page-size="20"
-          :items-per-page="20"
+          :page-size="5"
+          :items-per-page="5"
           @change="handlePageChange" 
         />
       </div>
@@ -352,21 +352,22 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
       </div>
     </div>
 
-    <div v-if="viewMode !== null" class="w-2/5 min-w-[500px] max-w-xl">
-      <UCard>
-        <template #header>
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <UIcon :name="viewMode === 'create' ? 'i-lucide-user-plus' : viewMode === 'view' ? 'i-lucide-user' : 'i-lucide-pencil'" class="size-5" />
-              <span class="font-semibold">
-                {{ viewMode === 'create' ? 'Crear Usuario' : viewMode === 'view' ? `Usuario: ${selectedUser?.username}` : `Editar: ${selectedUser?.username}` }}
-              </span>
+    <div v-if="viewMode !== null" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div class="w-full max-w-xl">
+        <UCard class="shadow-2xl">
+          <template #header>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <UIcon :name="viewMode === 'create' ? 'i-lucide-user-plus' : viewMode === 'view' ? 'i-lucide-user' : 'i-lucide-pencil'" class="size-5" />
+                <span class="font-semibold">
+                  {{ viewMode === 'create' ? 'Crear Usuario' : viewMode === 'view' ? `Usuario: ${selectedUser?.username}` : `Editar: ${selectedUser?.username}` }}
+                </span>
+              </div>
+              <UButton size="xs" variant="ghost" @click="closePanel">
+                <UIcon name="i-lucide-x" class="size-4" />
+              </UButton>
             </div>
-            <UButton size="xs" variant="ghost" @click="closePanel">
-              <UIcon name="i-lucide-x" class="size-4" />
-            </UButton>
-          </div>
-        </template>
+          </template>
 
         <div v-if="viewMode === 'create'" class="space-y-4">
           <UAlert color="info" variant="soft" icon="i-lucide-info">
@@ -601,7 +602,8 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
             <UButton v-if="viewMode === 'edit'" @click="handleUpdateUser" :loading="submitting" icon="i-lucide-save">Guardar</UButton>
           </div>
         </template>
-      </UCard>
+        </UCard>
+      </div>
     </div>
   </div>
 </template>
