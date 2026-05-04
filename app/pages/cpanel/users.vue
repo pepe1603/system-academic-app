@@ -60,10 +60,11 @@ watch(showDeleted, (isDeleted) => {
   }
 })
 
-const viewPermissions = async (roleName: string) => {
-  selectedRoleForPermissions.value = roleName
-  selectedRolePermissions.value = await fetchPermissionsByRole(roleName)
-  showPermissionsModal.value = true
+const viewPermissions = async () => {
+  if (selectedRoleForPermissions.value) {
+    selectedRolePermissions.value = await fetchPermissionsByRole(selectedRoleForPermissions.value)
+    showPermissionsModal.value = true
+  }
 }
 
 const closePermissionsModal = () => {
@@ -383,9 +384,9 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
           :items="availableRoles"
           placeholder="Ver permisos del rol"
           class="w-48"
-          @change="(val: any) => val && viewPermissions(val)"
+          @update:model-value="viewPermissions"
         />
-        <UToggle v-model="showDeleted" label="Ver eliminados" />
+        <UCheckbox v-model="showDeleted" label="Ver eliminados" />
         <UButton @click="openCreate" icon="i-lucide-plus">
           Nuevo Usuario
         </UButton>
@@ -747,7 +748,10 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
             {{ availableRoles.find(r => r.value === selectedRoleForPermissions)?.label || selectedRoleForPermissions }}
           </UBadge>
         </div>
-        <div v-if="selectedRolePermissions.length > 0" class="grid grid-cols-2 gap-2">
+        <div v-if="loading" class="text-center py-4">
+          <UIcon name="i-lucide-loader-2" class="animate-spin size-6 mx-auto text-muted-foreground" />
+        </div>
+        <div v-else-if="selectedRolePermissions.length > 0" class="grid grid-cols-2 gap-2">
           <div
             v-for="permission in selectedRolePermissions"
             :key="permission"
