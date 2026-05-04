@@ -18,7 +18,7 @@ type ViewMode = 'create' | 'view' | 'edit' | null
 const viewMode = ref<ViewMode>(null)
 const selectedUser = ref<User | null>(null)
 
-const { users, loading, error, totalElements, currentPage, totalPages, fetchUsers, getUser, createUser, updateUser, deleteUser, revokeSessions, unlockUser, lockUser } = useUsers()
+const { users, loading, error, totalElements, currentPage, totalPages, fetchUsers, getUser, createUser, updateUser, deleteUser, revokeSessions, unlockUser, lockUser, banUser } = useUsers()
 
 const availableRoles = [
   { label: 'Administrador', value: 'ADMIN' },
@@ -259,6 +259,22 @@ const handleLock = async (user: User) => {
   }
 }
 
+const handleBan = async (user: User) => {
+  const confirmed = await confirm({
+    title: 'Banear usuario',
+    description: `¿Desactivar a ${user.username} sin eliminarlo?`
+  })
+  if (confirmed) {
+    const result = await banUser(user.id)
+    if (result.success) {
+      toast.add({ title: result.message, color: 'success' })
+      fetchUsers(pageModel.value - 1, 5)
+    } else {
+      toast.add({ title: result.message, color: 'error' })
+    }
+  }
+}
+
 const getUserActions = (user: User): DropdownMenuItem[][] => {
   return [
     [
@@ -300,6 +316,11 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
         label: 'Bloquear',
         icon: 'i-lucide-lock',
         onSelect: () => handleLock(user)
+      },
+      {
+        label: 'Banear',
+        icon: 'i-lucide-gavel',
+        onSelect: () => handleBan(user)
       }
     ],
     [

@@ -219,6 +219,25 @@ export const useUsers = () => {
     }
   }
 
+  const banUser = async (id: string): Promise<ApiResult<void>> => {
+    loading.value = true
+    error.value = null
+
+    try {
+      const response = await $fetch<ApiResponse<void>>(`/api/cpanel/users/${id}/ban`, {
+        method: 'PUT'
+      })
+      return { success: response.success, message: response.message }
+    } catch (err: unknown) {
+      const e = err as { data?: { message?: string } }
+      const msg = e.data?.message || 'Error al banear usuario'
+      error.value = msg
+      return { success: false, message: msg }
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     loading,
     error,
@@ -233,6 +252,7 @@ export const useUsers = () => {
     deleteUser,
     revokeSessions,
     unlockUser,
-    lockUser
+    lockUser,
+    banUser
   }
 }
