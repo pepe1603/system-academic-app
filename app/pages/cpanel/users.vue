@@ -33,8 +33,17 @@ onMounted(() => {
 })
 
 const handlePageChange = (page: number) => {
-  fetchUsers(page - 1, 5)
+  currentPageModel.value = page - 1
 }
+
+const currentPageModel = computed({
+  get: () => currentPage.value + 1,
+  set: (val: number) => {
+    if (val !== currentPage.value + 1) {
+      fetchUsers(val - 1, 5)
+    }
+  }
+})
 
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr)
@@ -339,11 +348,10 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
 
       <div class="flex items-center justify-center">
         <UPagination 
-          :page="currentPage + 1" 
+          v-model="currentPageModel" 
           :total="totalElements" 
           :page-size="5"
           :items-per-page="5"
-          @change="handlePageChange" 
         />
       </div>
 
@@ -458,7 +466,7 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
             </div>
           </div>
 
-          <UDivider />
+          <USeparator />
 
           <div class="grid grid-cols-2 gap-4">
             <div class="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
