@@ -59,19 +59,29 @@ export const useUsers = () => {
     loading.value = true
     error.value = null
 
+    console.log('[useUsers] fetchUsers called:', { page, size })
+
     try {
       const response = await $fetch<ApiResponse<UsersPage>>('/api/cpanel/users', {
         params: { page, size }
       })
+
+      console.log('[useUsers] API response:', response)
 
       if (response.success && response.data) {
         users.value = response.data.content || []
         totalElements.value = response.data.totalElements || 0
         totalPages.value = response.data.totalPages || 0
         currentPage.value = response.data.number || 0
+        console.log('[useUsers] Data loaded:', { 
+          usersCount: users.value.length, 
+          totalElements: totalElements.value,
+          currentPage: currentPage.value 
+        })
       }
       error.value = response.message || null
     } catch (err: unknown) {
+      console.error('[useUsers] Error:', err)
       const e = err as { data?: { message?: string } }
       error.value = e.data?.message || 'Error al cargar usuarios'
     } finally {

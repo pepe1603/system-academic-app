@@ -270,6 +270,10 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
 
     <UAlert v-if="loading" color="info" variant="soft" class="mb-4" description="Cargando..." />
     <UAlert v-if="error" color="error" variant="soft" class="mb-4" :description="error" />
+    
+    <div class="text-sm text-muted-foreground mb-4 p-2 bg-muted rounded">
+      Debug: users={{ users.length }}, totalElements={{ totalElements }}, currentPage={{ currentPage }}, pageModel={{ pageModel }}
+    </div>
 
     <div v-if="viewMode === null" class="bg-background border rounded-lg p-6">
       <UAlert color="neutral" variant="soft" class="mb-4" icon="i-lucide-info">
