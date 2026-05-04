@@ -162,6 +162,63 @@ export const useUsers = () => {
     }
   }
 
+  const revokeSessions = async (id: string): Promise<ApiResult<void>> => {
+    loading.value = true
+    error.value = null
+
+    try {
+      const response = await $fetch<ApiResponse<void>>(`/api/cpanel/users/${id}/sessions`, {
+        method: 'DELETE'
+      })
+      return { success: response.success, message: response.message }
+    } catch (err: unknown) {
+      const e = err as { data?: { message?: string } }
+      const msg = e.data?.message || 'Error al revocar sesiones'
+      error.value = msg
+      return { success: false, message: msg }
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const unlockUser = async (id: string): Promise<ApiResult<void>> => {
+    loading.value = true
+    error.value = null
+
+    try {
+      const response = await $fetch<ApiResponse<void>>(`/api/cpanel/users/${id}/unlock`, {
+        method: 'PUT'
+      })
+      return { success: response.success, message: response.message }
+    } catch (err: unknown) {
+      const e = err as { data?: { message?: string } }
+      const msg = e.data?.message || 'Error al desbloquear usuario'
+      error.value = msg
+      return { success: false, message: msg }
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const lockUser = async (id: string): Promise<ApiResult<void>> => {
+    loading.value = true
+    error.value = null
+
+    try {
+      const response = await $fetch<ApiResponse<void>>(`/api/cpanel/users/${id}/lock`, {
+        method: 'PUT'
+      })
+      return { success: response.success, message: response.message }
+    } catch (err: unknown) {
+      const e = err as { data?: { message?: string } }
+      const msg = e.data?.message || 'Error al bloquear usuario'
+      error.value = msg
+      return { success: false, message: msg }
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     loading,
     error,
@@ -173,6 +230,9 @@ export const useUsers = () => {
     getUser,
     createUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    revokeSessions,
+    unlockUser,
+    lockUser
   }
 }

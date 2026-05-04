@@ -18,7 +18,7 @@ type ViewMode = 'create' | 'view' | 'edit' | null
 const viewMode = ref<ViewMode>(null)
 const selectedUser = ref<User | null>(null)
 
-const { users, loading, error, totalElements, currentPage, totalPages, fetchUsers, getUser, createUser, updateUser, deleteUser } = useUsers()
+const { users, loading, error, totalElements, currentPage, totalPages, fetchUsers, getUser, createUser, updateUser, deleteUser, revokeSessions, unlockUser, lockUser } = useUsers()
 
 const availableRoles = [
   { label: 'Administrador', value: 'ADMIN' },
@@ -218,6 +218,47 @@ const handleDelete = async (user: User) => {
   }
 }
 
+const handleRevokeSessions = async (user: User) => {
+  const confirmed = await confirm({
+    title: 'Revocar sesiones',
+    description: `¿Invalidar todas las sesiones de ${user.username}?`
+  })
+  if (confirmed) {
+    const result = await revokeSessions(user.id)
+    if (result.success) {
+      toast.add({ title: result.message, color: 'success' })
+    } else {
+      toast.add({ title: result.message, color: 'error' })
+    }
+  }
+}
+
+const handleUnlock = async (user: User) => {
+  const result = await unlockUser(user.id)
+  if (result.success) {
+    toast.add({ title: result.message, color: 'success' })
+    fetchUsers(pageModel.value - 1, 5)
+  } else {
+    toast.add({ title: result.message, color: 'error' })
+  }
+}
+
+const handleLock = async (user: User) => {
+  const confirmed = await confirm({
+    title: 'Bloquear usuario',
+    description: `¿Bloquear a ${user.username}?`
+  })
+  if (confirmed) {
+    const result = await lockUser(user.id)
+    if (result.success) {
+      toast.add({ title: result.message, color: 'success' })
+      fetchUsers(pageModel.value - 1, 5)
+    } else {
+      toast.add({ title: result.message, color: 'error' })
+    }
+  }
+}
+
 const getUserActions = (user: User): DropdownMenuItem[][] => {
   return [
     [
@@ -242,6 +283,23 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
         label: 'Forzar cambio contraseña',
         icon: 'i-lucide-key',
         onSelect: () => handleForcePassword(user)
+      }
+    ],
+    [
+      {
+        label: 'Revocar sesiones',
+        icon: 'i-lucide-log-out',
+        onSelect: () => handleRevokeSessions(user)
+      },
+      {
+        label: 'Desbloquear',
+        icon: 'i-lucide-unlock',
+        onSelect: () => handleUnlock(user)
+      },
+      {
+        label: 'Bloquear',
+        icon: 'i-lucide-lock',
+        onSelect: () => handleLock(user)
       }
     ],
     [
