@@ -184,7 +184,7 @@ const handleCreateUser = async () => {
   if (createForm.curp) data.curp = createForm.curp
   const result = await createUser(data)
   submitting.value = false
-  
+
   if (result.success) {
     toast.add({ title: result.message, color: 'success' })
     createForm.username = ''
@@ -201,7 +201,7 @@ const handleCreateUser = async () => {
 
 const handleUpdateUser = async () => {
   if (!selectedUser.value) return
-  
+
   submitting.value = true
   const result = await updateUser(selectedUser.value.id, {
     roles: editForm.roles,
@@ -210,7 +210,7 @@ const handleUpdateUser = async () => {
     curp: editForm.curp || undefined
   })
   submitting.value = false
-  
+
   if (result.success) {
     toast.add({ title: result.message, color: 'success' })
     closePanel()
@@ -396,21 +396,16 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
 
 <template>
   <div class="space-y-6">
-    <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2 justify-between">
       <div>
         <h1 class="text-3xl font-bold">Usuarios</h1>
         <p class="text-muted-foreground">
           {{ showDeleted ? 'Usuarios eliminados' : 'Usuarios activos' }}: {{ totalElements }}
         </p>
       </div>
-      <div class="flex items-center gap-2">
-        <USelect
-          v-model="selectedRoleForPermissions"
-          :items="availableRoles"
-          placeholder="Ver permisos del rol"
-          class="w-48"
-          @update:model-value="viewPermissions"
-        />
+      <div class="flex items-center gap-2  md:gap-6 ">
+        <USelect variant="subtle" v-model="selectedRoleForPermissions" :items="availableRoles"
+          placeholder="Ver permisos del rol" class="w-48" @update:model-value="viewPermissions" />
         <UCheckbox v-model="showDeleted" label="Ver eliminados" />
         <UButton @click="openCreate" icon="i-lucide-plus">
           Nuevo Usuario
@@ -421,15 +416,11 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
     <UAlert v-if="loading" color="info" variant="soft" class="mb-4" description="Cargando..." />
     <UAlert v-if="error" color="error" variant="soft" class="mb-4" :description="error" />
 
-    <div v-if="showDeleted" class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
-      <div class="flex items-center gap-2 text-amber-800">
-        <UIcon name="i-lucide-alert-triangle" class="size-5" />
-        <span class="font-medium">Vista de usuarios eliminados</span>
-      </div>
-      <p class="text-sm text-amber-700 mt-1">Estos usuarios fueron eliminados (soft delete) y pueden ser restaurados.</p>
-    </div>
+    <UAlert v-if="showDeleted" color="warning" variant="soft" icon="i-lucide-alert-triangle"
+      title="Vista de usuarios eliminados"
+      description="Estos usuarios fueron eliminados (soft delete) y pueden ser restaurados." class="mb-4" />
 
-    <div v-if="viewMode === null" class="bg-background border rounded-lg p-6">
+    <div v-if="viewMode === null" class="bg-background rounded-lg p-6">
       <UAlert color="neutral" variant="soft" class="mb-4" icon="i-lucide-info">
         <template #title>Guía de acciones</template>
         <template #description>
@@ -468,7 +459,8 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
           <template #body>
             <div class="space-y-3">
               <div class="flex flex-wrap gap-2">
-                <UBadge v-for="role in user.roles" :key="role" :color="getRoleBadgeColor(role)" variant="soft" size="sm">
+                <UBadge v-for="role in user.roles" :key="role" :color="getRoleBadgeColor(role)" variant="soft"
+                  size="sm">
                   {{ role }}
                 </UBadge>
               </div>
@@ -499,28 +491,29 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
       </UPageList>
 
       <div class="flex items-center justify-center mt-4">
-        <UPagination 
-          v-model:page="pageModel" 
-          :total="totalElements" 
-          :items-per-page="5"
-          :sibling-count="1"
-        />
+        <UPagination v-model:page="pageModel" :total="totalElements" :items-per-page="5" :sibling-count="1" />
       </div>
 
       <div v-if="totalElements > 0" class="text-center text-sm text-muted-foreground mt-2">
-        Mostrando {{ users.length }} de {{ totalElements }} usuarios · Página {{ pageModel }} de {{ Math.ceil(totalElements / 5) }}
+        Mostrando {{ users.length }} de {{ totalElements }} usuarios · Página {{ pageModel }} de {{
+          Math.ceil(totalElements /
+        5) }}
       </div>
     </div>
 
-    <div v-if="viewMode !== null" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div v-if="viewMode !== null"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
       <div class="w-full max-w-xl">
         <UCard class="shadow-2xl">
           <template #header>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
-                <UIcon :name="viewMode === 'create' ? 'i-lucide-user-plus' : viewMode === 'view' ? 'i-lucide-user' : 'i-lucide-pencil'" class="size-5" />
+                <UIcon
+                  :name="viewMode === 'create' ? 'i-lucide-user-plus' : viewMode === 'view' ? 'i-lucide-user' : 'i-lucide-pencil'"
+                  class="size-5" />
                 <span class="font-semibold">
-                  {{ viewMode === 'create' ? 'Crear Usuario' : viewMode === 'view' ? `Usuario: ${selectedUser?.username}` : `Editar: ${selectedUser?.username}` }}
+                  {{ viewMode === 'create' ? 'Crear Usuario' : viewMode === 'view' ? `Usuario:
+                  ${selectedUser?.username}` : `Editar: ${selectedUser?.username}` }}
                 </span>
               </div>
               <UButton size="xs" variant="ghost" @click="closePanel">
@@ -529,40 +522,177 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
             </div>
           </template>
 
-        <div v-if="viewMode === 'create'" class="space-y-4">
-          <UAlert color="info" variant="soft" icon="i-lucide-info">
-            <template #title>Credenciales iniciales</template>
-            <template #description>El usuario deberá cambiar su contraseña al iniciar sesión por primera vez.</template>
-          </UAlert>
+          <div v-if="viewMode === 'create'" class="space-y-4">
+            <UAlert color="info" variant="soft" icon="i-lucide-info">
+              <template #title>Credenciales iniciales</template>
+              <template #description>El usuario deberá cambiar su contraseña al iniciar sesión por primera
+                vez.</template>
+            </UAlert>
 
-          <UForm :state="createForm" class="space-y-4" @submit="handleCreateUser">
-            <UFormField label="Nombre de usuario" name="username" required>
-              <UInput v-model="createForm.username" placeholder="Ingresa el nombre de usuario" icon="i-lucide-user" />
-            </UFormField>
+            <UForm :state="createForm" class="space-y-4" @submit="handleCreateUser">
+              <UFormField label="Nombre de usuario" name="username" required>
+                <UInput v-model="createForm.username" placeholder="Ingresa el nombre de usuario" icon="i-lucide-user" />
+              </UFormField>
 
-            <UFormField label="Correo electrónico" name="email" required>
-              <UInput v-model="createForm.email" type="email" placeholder="correo@ejemplo.com" icon="i-lucide-mail" />
-            </UFormField>
+              <UFormField label="Correo electrónico" name="email" required>
+                <UInput v-model="createForm.email" type="email" placeholder="correo@ejemplo.com" icon="i-lucide-mail" />
+              </UFormField>
 
-            <UFormField label="Contraseña inicial" name="password" required>
-              <UInput v-model="createForm.password" type="password" placeholder="Contraseña provisional" icon="i-lucide-lock" />
-            </UFormField>
+              <UFormField label="Contraseña inicial" name="password" required>
+                <UInput v-model="createForm.password" type="password" placeholder="Contraseña provisional"
+                  icon="i-lucide-lock" />
+              </UFormField>
 
-            <UAccordion :items="[{ label: 'Vincular con registro académico (CURP)', slot: 'curp-vinculation' }]">
-              <template #curp-vinculation>
+              <UAccordion :items="[{ label: 'Vincular con registro académico (CURP)', slot: 'curp-vinculation' }]">
+                <template #curp-vinculation>
+                  <div class="space-y-4 py-2">
+                    <p class="text-sm text-muted-foreground">
+                      Opcionalmente puedes vincular este usuario con un registro académico existente proporcionando su
+                      CURP.
+                    </p>
+                    <UFormField label="CURP" name="curp" description="Clave única de registro de población">
+                      <UInput v-model="createForm.curp" placeholder="Ingresa la CURP del usuario"
+                        icon="i-lucide-id-card" />
+                    </UFormField>
+                    <UAlert color="warning" variant="soft" icon="i-lucide-alert-triangle">
+                      <template #description>
+                        <div class="space-y-1 text-sm">
+                          <p>• La CURP vincula al usuario con un registro académico existente.</p>
+                          <p>• Si la CURP ya está asociada a otro usuario, no podrá ser reutilizada.</p>
+                          <p>• <strong>No modifiques</strong> usuarios con CURP sin consultar con Control Escolar.</p>
+                        </div>
+                      </template>
+                    </UAlert>
+                  </div>
+                </template>
+              </UAccordion>
+
+              <UAlert color="info" variant="soft" icon="i-lucide-info">
+                <template #title>Credenciales y seguridad</template>
+                <template #description>
+                  <div class="space-y-1 text-sm">
+                    <p>• El usuario deberá cambiar su contraseña temporal al iniciar sesión por primera vez.</p>
+                    <p>• La contraseña temporal será enviada al correo electrónico del usuario.</p>
+                    <p>• Los usuarios inactivos <strong>no podrán iniciar sesión</strong> en el sistema.</p>
+                    <p>• Se recomienda usar contraseñas temporales seguras (mínimo 8 caracteres).</p>
+                  </div>
+                </template>
+              </UAlert>
+
+              <UFormField label="Roles" name="roles">
+                <USelect v-model="createForm.roles" :items="availableRoles" multiple placeholder="Selecciona los roles"
+                  icon="i-lucide-shield" />
+              </UFormField>
+            </UForm>
+          </div>
+
+          <div v-else-if="viewMode === 'view' && selectedUser" class="space-y-4">
+            <div class="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
+              <UChip :color="selectedUser.isActive ? 'success' : 'error'" :show="selectedUser.isActive" inset>
+                <UAvatar :src="`https://api.dicebear.com/7.x/initials/svg?seed=${selectedUser.username}`" size="2xl" />
+              </UChip>
+              <div>
+                <h3 class="text-xl font-bold flex items-center gap-2">
+                  {{ selectedUser.username }}
+                  <UTooltip v-if="selectedUser.mustChangePassword" text="Debe cambiar contraseña">
+                    <UIcon name="i-lucide-key" class="text-amber-500 size-5" />
+                  </UTooltip>
+                </h3>
+                <p class="text-muted-foreground">{{ selectedUser.email }}</p>
+                <div class="flex flex-wrap gap-2 mt-2">
+                  <UBadge :color="selectedUser.isActive ? 'success' : 'error'" variant="soft">
+                    {{ selectedUser.isActive ? 'Activo' : 'Inactivo' }}
+                  </UBadge>
+                  <UBadge :color="selectedUser.isVerified ? 'info' : 'warning'" variant="soft">
+                    {{ selectedUser.isVerified ? 'Verificado' : 'Pendiente de verificación' }}
+                  </UBadge>
+                  <UBadge v-if="selectedUser.curp" color="primary" variant="soft">
+                    CURP: {{ selectedUser.curp }}
+                  </UBadge>
+                  <UBadge v-else color="neutral" variant="soft">
+                    Sin CURP
+                  </UBadge>
+                </div>
+              </div>
+            </div>
+
+            <USeparator />
+
+            <div class="grid grid-cols-2 gap-4">
+              <div class="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                <UIcon name="i-lucide-hash" class="size-5 text-muted-foreground" />
+                <div>
+                  <p class="text-xs text-muted-foreground uppercase">ID</p>
+                  <p class="font-mono text-sm">{{ selectedUser.id }}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                <UIcon name="i-lucide-calendar" class="size-5 text-muted-foreground" />
+                <div>
+                  <p class="text-xs text-muted-foreground uppercase">Creado</p>
+                  <p class="text-sm">{{ formatDate(selectedUser.createdAt) }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <p class="text-sm font-medium mb-2">Roles asignados</p>
+              <div class="space-y-3">
+                <div v-for="role in selectedUser.roles" :key="role"
+                  class="flex items-start gap-3 p-4 border rounded-lg">
+                  <UBadge :color="getRoleBadgeColor(role)" variant="solid" size="sm" class="mt-1">{{ role }}</UBadge>
+                  <div>
+                    <p class="font-medium text-sm">{{ getRoleLabel(role) }}</p>
+                    <p class="text-xs text-muted-foreground">{{ getRoleDescription(role) }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-else-if="viewMode === 'edit' && selectedUser" class="space-y-4">
+            <div class="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
+              <UChip :color="selectedUser.isActive ? 'success' : 'error'" :show="selectedUser.isActive" inset>
+                <UAvatar :src="`https://api.dicebear.com/7.x/initials/svg?seed=${selectedUser.username}`" size="2xl" />
+              </UChip>
+              <div>
+                <h3 class="text-xl font-bold flex items-center gap-2">
+                  {{ selectedUser.username }}
+                  <UTooltip v-if="selectedUser.mustChangePassword" text="Debe cambiar contraseña">
+                    <UIcon name="i-lucide-key" class="text-amber-500 size-5" />
+                  </UTooltip>
+                </h3>
+                <p class="text-sm text-muted-foreground">{{ selectedUser.email }}</p>
+                <div class="flex flex-wrap gap-2 mt-2">
+                  <UBadge :color="selectedUser.isActive ? 'success' : 'error'" variant="soft">
+                    {{ selectedUser.isActive ? 'Activo' : 'Inactivo' }}
+                  </UBadge>
+                  <UBadge :color="selectedUser.isVerified ? 'info' : 'warning'" variant="soft">
+                    {{ selectedUser.isVerified ? 'Verificado' : 'Pendiente de verificación' }}
+                  </UBadge>
+                  <UBadge v-if="selectedUser.curp" color="primary" variant="soft">
+                    CURP: {{ selectedUser.curp }}
+                  </UBadge>
+                  <UBadge v-else color="neutral" variant="soft">
+                    Sin CURP
+                  </UBadge>
+                </div>
+              </div>
+            </div>
+
+            <USeparator />
+
+            <UAccordion :items="[{ label: 'Vincular/modificar CURP (opcional)', slot: 'curp-edit' }]">
+              <template #curp-edit>
                 <div class="space-y-4 py-2">
-                  <p class="text-sm text-muted-foreground">
-                    Opcionalmente puedes vincular este usuario con un registro académico existente proporcionando su CURP.
-                  </p>
-                  <UFormField label="CURP" name="curp" description="Clave única de registro de población">
-                    <UInput v-model="createForm.curp" placeholder="Ingresa la CURP del usuario" icon="i-lucide-id-card" />
+                  <UFormField label="CURP" name="editCurp" description="Clave única de registro de población">
+                    <UInput v-model="editForm.curp" placeholder="Ingresa o modifica la CURP" icon="i-lucide-id-card" />
                   </UFormField>
                   <UAlert color="warning" variant="soft" icon="i-lucide-alert-triangle">
                     <template #description>
                       <div class="space-y-1 text-sm">
-                        <p>• La CURP vincula al usuario con un registro académico existente.</p>
-                        <p>• Si la CURP ya está asociada a otro usuario, no podrá ser reutilizada.</p>
-                        <p>• <strong>No modifiques</strong> usuarios con CURP sin consultar con Control Escolar.</p>
+                        <p>• Modificar la CURP puede afectar el vínculo con el registro académico.</p>
+                        <p>• <strong>No modifiques</strong> la CURP sin consultar con Control Escolar.</p>
                       </div>
                     </template>
                   </UAlert>
@@ -570,198 +700,67 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
               </template>
             </UAccordion>
 
-            <UAlert color="info" variant="soft" icon="i-lucide-info">
-              <template #title>Credenciales y seguridad</template>
-              <template #description>
-                <div class="space-y-1 text-sm">
-                  <p>• El usuario deberá cambiar su contraseña temporal al iniciar sesión por primera vez.</p>
-                  <p>• La contraseña temporal será enviada al correo electrónico del usuario.</p>
-                  <p>• Los usuarios inactivos <strong>no podrán iniciar sesión</strong> en el sistema.</p>
-                  <p>• Se recomienda usar contraseñas temporales seguras (mínimo 8 caracteres).</p>
-                </div>
-              </template>
-            </UAlert>
-
-            <UFormField label="Roles" name="roles">
-              <USelect v-model="createForm.roles" :items="availableRoles" multiple placeholder="Selecciona los roles" icon="i-lucide-shield" />
-            </UFormField>
-          </UForm>
-        </div>
-
-        <div v-else-if="viewMode === 'view' && selectedUser" class="space-y-4">
-          <div class="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-            <UChip :color="selectedUser.isActive ? 'success' : 'error'" :show="selectedUser.isActive" inset>
-              <UAvatar :src="`https://api.dicebear.com/7.x/initials/svg?seed=${selectedUser.username}`" size="2xl" />
-            </UChip>
-            <div>
-              <h3 class="text-xl font-bold flex items-center gap-2">
-                {{ selectedUser.username }}
-                <UTooltip v-if="selectedUser.mustChangePassword" text="Debe cambiar contraseña">
-                  <UIcon name="i-lucide-key" class="text-amber-500 size-5" />
-                </UTooltip>
-              </h3>
-              <p class="text-muted-foreground">{{ selectedUser.email }}</p>
-              <div class="flex flex-wrap gap-2 mt-2">
-                <UBadge :color="selectedUser.isActive ? 'success' : 'error'" variant="soft">
-                  {{ selectedUser.isActive ? 'Activo' : 'Inactivo' }}
-                </UBadge>
-                <UBadge :color="selectedUser.isVerified ? 'info' : 'warning'" variant="soft">
-                  {{ selectedUser.isVerified ? 'Verificado' : 'Pendiente de verificación' }}
-                </UBadge>
-                <UBadge v-if="selectedUser.curp" color="primary" variant="soft">
-                  CURP: {{ selectedUser.curp }}
-                </UBadge>
-                <UBadge v-else color="neutral" variant="soft">
-                  Sin CURP
-                </UBadge>
-              </div>
-            </div>
-          </div>
-
-          <USeparator />
-
-          <div class="grid grid-cols-2 gap-4">
-            <div class="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-              <UIcon name="i-lucide-hash" class="size-5 text-muted-foreground" />
-              <div>
-                <p class="text-xs text-muted-foreground uppercase">ID</p>
-                <p class="font-mono text-sm">{{ selectedUser.id }}</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-              <UIcon name="i-lucide-calendar" class="size-5 text-muted-foreground" />
-              <div>
-                <p class="text-xs text-muted-foreground uppercase">Creado</p>
-                <p class="text-sm">{{ formatDate(selectedUser.createdAt) }}</p>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <p class="text-sm font-medium mb-2">Roles asignados</p>
-            <div class="space-y-3">
-              <div v-for="role in selectedUser.roles" :key="role" class="flex items-start gap-3 p-4 border rounded-lg">
-                <UBadge :color="getRoleBadgeColor(role)" variant="solid" size="sm" class="mt-1">{{ role }}</UBadge>
-                <div>
-                  <p class="font-medium text-sm">{{ getRoleLabel(role) }}</p>
-                  <p class="text-xs text-muted-foreground">{{ getRoleDescription(role) }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div v-else-if="viewMode === 'edit' && selectedUser" class="space-y-4">
-          <div class="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-            <UChip :color="selectedUser.isActive ? 'success' : 'error'" :show="selectedUser.isActive" inset>
-              <UAvatar :src="`https://api.dicebear.com/7.x/initials/svg?seed=${selectedUser.username}`" size="2xl" />
-            </UChip>
-            <div>
-              <h3 class="text-xl font-bold flex items-center gap-2">
-                {{ selectedUser.username }}
-                <UTooltip v-if="selectedUser.mustChangePassword" text="Debe cambiar contraseña">
-                  <UIcon name="i-lucide-key" class="text-amber-500 size-5" />
-                </UTooltip>
-              </h3>
-              <p class="text-sm text-muted-foreground">{{ selectedUser.email }}</p>
-              <div class="flex flex-wrap gap-2 mt-2">
-                <UBadge :color="selectedUser.isActive ? 'success' : 'error'" variant="soft">
-                  {{ selectedUser.isActive ? 'Activo' : 'Inactivo' }}
-                </UBadge>
-                <UBadge :color="selectedUser.isVerified ? 'info' : 'warning'" variant="soft">
-                  {{ selectedUser.isVerified ? 'Verificado' : 'Pendiente de verificación' }}
-                </UBadge>
-                <UBadge v-if="selectedUser.curp" color="primary" variant="soft">
-                  CURP: {{ selectedUser.curp }}
-                </UBadge>
-                <UBadge v-else color="neutral" variant="soft">
-                  Sin CURP
-                </UBadge>
-              </div>
-            </div>
-          </div>
-
-          <USeparator />
-
-          <UAccordion :items="[{ label: 'Vincular/modificar CURP (opcional)', slot: 'curp-edit' }]">
-            <template #curp-edit>
-              <div class="space-y-4 py-2">
-                <UFormField label="CURP" name="editCurp" description="Clave única de registro de población">
-                  <UInput 
-                    v-model="editForm.curp"
-                    placeholder="Ingresa o modifica la CURP" 
-                    icon="i-lucide-id-card" 
-                  />
-                </UFormField>
-                <UAlert color="warning" variant="soft" icon="i-lucide-alert-triangle">
-                  <template #description>
-                    <div class="space-y-1 text-sm">
-                      <p>• Modificar la CURP puede afectar el vínculo con el registro académico.</p>
-                      <p>• <strong>No modifiques</strong> la CURP sin consultar con Control Escolar.</p>
+            <div v-if="selectedUser.curp">
+              <UAccordion :items="[{ label: 'Información de registro académico actual', slot: 'curp-info' }]">
+                <template #curp-info>
+                  <div class="space-y-3 py-2">
+                    <div class="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                      <UIcon name="i-lucide-id-card" class="size-5 text-primary" />
+                      <div>
+                        <p class="text-xs text-muted-foreground uppercase">CURP Vinculada</p>
+                        <p class="font-mono font-medium">{{ selectedUser.curp }}</p>
+                      </div>
                     </div>
-                  </template>
-                </UAlert>
-              </div>
-            </template>
-          </UAccordion>
-
-          <div v-if="selectedUser.curp">
-            <UAccordion :items="[{ label: 'Información de registro académico actual', slot: 'curp-info' }]">
-              <template #curp-info>
-                <div class="space-y-3 py-2">
-                  <div class="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-                    <UIcon name="i-lucide-id-card" class="size-5 text-primary" />
-                    <div>
-                      <p class="text-xs text-muted-foreground uppercase">CURP Vinculada</p>
-                      <p class="font-mono font-medium">{{ selectedUser.curp }}</p>
-                    </div>
+                    <UAlert color="warning" variant="soft" icon="i-lucide-alert-triangle">
+                      <template #description>
+                        <div class="space-y-1 text-sm">
+                          <p>• Este usuario tiene CURP vinculada a su registro académico.</p>
+                          <p>• <strong>No modifiques</strong> sus roles o estado sin consultar con Control Escolar.</p>
+                          <p>• Cambios incorrectos pueden afectar el acceso a calificaciones, grupos y horarios.</p>
+                        </div>
+                      </template>
+                    </UAlert>
                   </div>
-                  <UAlert color="warning" variant="soft" icon="i-lucide-alert-triangle">
-                    <template #description>
-                      <div class="space-y-1 text-sm">
-                        <p>• Este usuario tiene CURP vinculada a su registro académico.</p>
-                        <p>• <strong>No modifiques</strong> sus roles o estado sin consultar con Control Escolar.</p>
-                        <p>• Cambios incorrectos pueden afectar el acceso a calificaciones, grupos y horarios.</p>
-                      </div>
-                    </template>
-                  </UAlert>
+                </template>
+              </UAccordion>
+            </div>
+
+            <UForm :state="editForm" class="space-y-4" @submit="handleUpdateUser">
+              <UFormField label="Roles" name="roles" description="Selecciona los roles asignados">
+                <USelect v-model="editForm.roles" :items="availableRoles" multiple placeholder="Selecciona los roles"
+                  icon="i-lucide-shield" />
+              </UFormField>
+
+              <UFormField label="Estado" name="isActive" description="Controla si el usuario puede iniciar sesión">
+                <div class="flex items-center gap-3">
+                  <USwitch v-model="editForm.isActive" />
+                  <span :class="editForm.isActive ? 'text-green-600 font-medium' : 'text-red-600 font-medium'">
+                    {{ editForm.isActive ? 'Activo' : 'Inactivo' }}
+                  </span>
                 </div>
-              </template>
-            </UAccordion>
+              </UFormField>
+
+              <UFormField label="Cambio de contraseña" name="mustChangePassword"
+                description="Fuerza al usuario a cambiar su contraseña">
+                <div class="flex items-center gap-3">
+                  <USwitch v-model="editForm.mustChangePassword" />
+                  <span :class="editForm.mustChangePassword ? 'text-amber-600 font-medium' : 'text-muted-foreground'">
+                    {{ editForm.mustChangePassword ? 'Requerido' : 'No requerido' }}
+                  </span>
+                </div>
+              </UFormField>
+            </UForm>
           </div>
 
-          <UForm :state="editForm" class="space-y-4" @submit="handleUpdateUser">
-            <UFormField label="Roles" name="roles" description="Selecciona los roles asignados">
-              <USelect v-model="editForm.roles" :items="availableRoles" multiple placeholder="Selecciona los roles" icon="i-lucide-shield" />
-            </UFormField>
-
-            <UFormField label="Estado" name="isActive" description="Controla si el usuario puede iniciar sesión">
-              <div class="flex items-center gap-3">
-                <USwitch v-model="editForm.isActive" />
-                <span :class="editForm.isActive ? 'text-green-600 font-medium' : 'text-red-600 font-medium'">
-                  {{ editForm.isActive ? 'Activo' : 'Inactivo' }}
-                </span>
-              </div>
-            </UFormField>
-
-            <UFormField label="Cambio de contraseña" name="mustChangePassword" description="Fuerza al usuario a cambiar su contraseña">
-              <div class="flex items-center gap-3">
-                <USwitch v-model="editForm.mustChangePassword" />
-                <span :class="editForm.mustChangePassword ? 'text-amber-600 font-medium' : 'text-muted-foreground'">
-                  {{ editForm.mustChangePassword ? 'Requerido' : 'No requerido' }}
-                </span>
-              </div>
-            </UFormField>
-          </UForm>
-        </div>
-
-        <template #footer>
-          <div class="flex justify-end gap-2">
-            <UButton color="neutral" variant="outline" @click="closePanel">Cerrar</UButton>
-            <UButton v-if="viewMode === 'create'" @click="handleCreateUser" :loading="submitting" icon="i-lucide-save">Crear</UButton>
-            <UButton v-if="viewMode === 'edit'" @click="handleUpdateUser" :loading="submitting" icon="i-lucide-save">Guardar</UButton>
-          </div>
-        </template>
+          <template #footer>
+            <div class="flex justify-end gap-2">
+              <UButton color="neutral" variant="outline" @click="closePanel">Cerrar</UButton>
+              <UButton v-if="viewMode === 'create'" @click="handleCreateUser" :loading="submitting"
+                icon="i-lucide-save">Crear</UButton>
+              <UButton v-if="viewMode === 'edit'" @click="handleUpdateUser" :loading="submitting" icon="i-lucide-save">
+                Guardar</UButton>
+            </div>
+          </template>
         </UCard>
       </div>
     </div>
@@ -772,18 +771,16 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
           <div class="p-4">
             <div class="mb-4">
               <UBadge :color="getRoleBadgeColor(selectedRoleForPermissions)" variant="soft" size="lg">
-                {{ availableRoles.find(r => r.value === selectedRoleForPermissions)?.label || selectedRoleForPermissions }}
+                {{availableRoles.find(r => r.value === selectedRoleForPermissions)?.label || selectedRoleForPermissions
+                }}
               </UBadge>
             </div>
             <div v-if="loading" class="text-center py-4">
               <UIcon name="i-lucide-loader-2" class="animate-spin size-6 mx-auto text-muted-foreground" />
             </div>
             <div v-else-if="selectedRolePermissions.length > 0" class="grid grid-cols-2 gap-2">
-              <div
-                v-for="permission in selectedRolePermissions"
-                :key="permission"
-                class="flex items-center gap-2 p-2 bg-muted/50 rounded text-sm"
-              >
+              <div v-for="permission in selectedRolePermissions" :key="permission"
+                class="flex items-center gap-2 p-2 bg-muted/50 rounded text-sm">
                 <UIcon name="i-lucide-check-circle" class="size-4 text-green-600" />
                 <span class="font-mono">{{ permission }}</span>
               </div>
@@ -796,7 +793,9 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
         </template>
       </UModal>
 
-      <UModal v-model:open="showProfileModal" :title="`Perfil de ${selectedUserProfile?.firstName || ''} ${selectedUserProfile?.lastName || ''}`" class="max-w-2xl">
+      <UModal v-model:open="showProfileModal"
+        :title="`Perfil de ${selectedUserProfile?.firstName || ''} ${selectedUserProfile?.lastName || ''}`"
+        class="max-w-2xl">
         <template #body>
           <div v-if="profileLoading" class="flex items-center justify-center py-12">
             <UIcon name="i-lucide-loader-2" class="animate-spin size-8 text-muted-foreground" />
@@ -805,12 +804,13 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
             <div class="flex items-center gap-4">
               <UAvatar
                 :src="selectedUserProfile.profilePictureUrl ? `http://localhost:8080${selectedUserProfile.profilePictureUrl}` : `https://api.dicebear.com/7.x/initials/svg?seed=${selectedUserProfile.firstName || 'U'}`"
-                size="2xl"
-              />
+                size="2xl" />
               <div>
-                <h3 class="text-xl font-bold">{{ selectedUserProfile.firstName }} {{ selectedUserProfile.lastName }}</h3>
+                <h3 class="text-xl font-bold">{{ selectedUserProfile.firstName }} {{ selectedUserProfile.lastName }}
+                </h3>
                 <div class="flex flex-wrap gap-2 mt-1">
-                  <UBadge v-for="role in selectedUserProfile.roles" :key="role" :color="getRoleBadgeColor(role)" variant="soft">
+                  <UBadge v-for="role in selectedUserProfile.roles" :key="role" :color="getRoleBadgeColor(role)"
+                    variant="soft">
                     {{ role }}
                   </UBadge>
                 </div>
@@ -866,7 +866,8 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
               <p class="text-muted-foreground">
                 {{ selectedUserProfile.address || 'No registrada' }}
                 <span v-if="selectedUserProfile.city || selectedUserProfile.state">
-                  {{ selectedUserProfile.city }}{{ selectedUserProfile.city && selectedUserProfile.state ? ', ' : '' }}{{ selectedUserProfile.state }} {{ selectedUserProfile.postalCode }}
+                  {{ selectedUserProfile.city }}{{ selectedUserProfile.city && selectedUserProfile.state ? ', ' : ''
+                  }}{{ selectedUserProfile.state }} {{ selectedUserProfile.postalCode }}
                 </span>
               </p>
             </div>
@@ -884,7 +885,8 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
                 </div>
                 <div>
                   <span class="text-muted-foreground">Estatus:</span>
-                  <UBadge :color="selectedUserProfile.studentInfo.isActive ? 'success' : 'error'" variant="soft" size="sm" class="ml-2">
+                  <UBadge :color="selectedUserProfile.studentInfo.isActive ? 'success' : 'error'" variant="soft"
+                    size="sm" class="ml-2">
                     {{ selectedUserProfile.studentInfo.isActive ? 'Activo' : 'Inactivo' }}
                   </UBadge>
                 </div>
@@ -904,7 +906,8 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
                 </div>
                 <div>
                   <span class="text-muted-foreground">Estatus:</span>
-                  <UBadge :color="selectedUserProfile.teacherInfo.isActive ? 'success' : 'error'" variant="soft" size="sm" class="ml-2">
+                  <UBadge :color="selectedUserProfile.teacherInfo.isActive ? 'success' : 'error'" variant="soft"
+                    size="sm" class="ml-2">
                     {{ selectedUserProfile.teacherInfo.isActive ? 'Activo' : 'Inactivo' }}
                   </UBadge>
                 </div>
