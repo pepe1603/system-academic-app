@@ -768,146 +768,150 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
 
     <ClientOnly>
       <UModal v-model:open="showPermissionsModal" title="Permisos del Rol">
-        <div class="p-4">
-          <div class="mb-4">
-            <UBadge :color="getRoleBadgeColor(selectedRoleForPermissions)" variant="soft" size="lg">
-              {{ availableRoles.find(r => r.value === selectedRoleForPermissions)?.label || selectedRoleForPermissions }}
-            </UBadge>
-          </div>
-          <div v-if="loading" class="text-center py-4">
-            <UIcon name="i-lucide-loader-2" class="animate-spin size-6 mx-auto text-muted-foreground" />
-          </div>
-          <div v-else-if="selectedRolePermissions.length > 0" class="grid grid-cols-2 gap-2">
-            <div
-              v-for="permission in selectedRolePermissions"
-              :key="permission"
-              class="flex items-center gap-2 p-2 bg-muted/50 rounded text-sm"
-            >
-              <UIcon name="i-lucide-check-circle" class="size-4 text-green-600" />
-              <span class="font-mono">{{ permission }}</span>
+        <template #body>
+          <div class="p-4">
+            <div class="mb-4">
+              <UBadge :color="getRoleBadgeColor(selectedRoleForPermissions)" variant="soft" size="lg">
+                {{ availableRoles.find(r => r.value === selectedRoleForPermissions)?.label || selectedRoleForPermissions }}
+              </UBadge>
             </div>
+            <div v-if="loading" class="text-center py-4">
+              <UIcon name="i-lucide-loader-2" class="animate-spin size-6 mx-auto text-muted-foreground" />
+            </div>
+            <div v-else-if="selectedRolePermissions.length > 0" class="grid grid-cols-2 gap-2">
+              <div
+                v-for="permission in selectedRolePermissions"
+                :key="permission"
+                class="flex items-center gap-2 p-2 bg-muted/50 rounded text-sm"
+              >
+                <UIcon name="i-lucide-check-circle" class="size-4 text-green-600" />
+                <span class="font-mono">{{ permission }}</span>
+              </div>
+            </div>
+            <p v-else class="text-muted-foreground text-center py-4">No se encontraron permisos para este rol</p>
           </div>
-          <p v-else class="text-muted-foreground text-center py-4">No se encontraron permisos para este rol</p>
-        </div>
+        </template>
         <template #footer>
           <UButton color="neutral" variant="outline" @click="closePermissionsModal">Cerrar</UButton>
         </template>
       </UModal>
 
       <UModal v-model:open="showProfileModal" :title="`Perfil de ${selectedUserProfile?.firstName || ''} ${selectedUserProfile?.lastName || ''}`" class="max-w-2xl">
-        <div v-if="profileLoading" class="flex items-center justify-center py-12">
-          <UIcon name="i-lucide-loader-2" class="animate-spin size-8 text-muted-foreground" />
-        </div>
-        <div v-else-if="selectedUserProfile" class="p-4 space-y-6">
-          <div class="flex items-center gap-4">
-            <UAvatar
-              :src="selectedUserProfile.profilePictureUrl ? `http://localhost:8080${selectedUserProfile.profilePictureUrl}` : `https://api.dicebear.com/7.x/initials/svg?seed=${selectedUserProfile.firstName || 'U'}`"
-              size="2xl"
-            />
+        <template #body>
+          <div v-if="profileLoading" class="flex items-center justify-center py-12">
+            <UIcon name="i-lucide-loader-2" class="animate-spin size-8 text-muted-foreground" />
+          </div>
+          <div v-else-if="selectedUserProfile" class="p-4 space-y-6">
+            <div class="flex items-center gap-4">
+              <UAvatar
+                :src="selectedUserProfile.profilePictureUrl ? `http://localhost:8080${selectedUserProfile.profilePictureUrl}` : `https://api.dicebear.com/7.x/initials/svg?seed=${selectedUserProfile.firstName || 'U'}`"
+                size="2xl"
+              />
+              <div>
+                <h3 class="text-xl font-bold">{{ selectedUserProfile.firstName }} {{ selectedUserProfile.lastName }}</h3>
+                <div class="flex flex-wrap gap-2 mt-1">
+                  <UBadge v-for="role in selectedUserProfile.roles" :key="role" :color="getRoleBadgeColor(role)" variant="soft">
+                    {{ role }}
+                  </UBadge>
+                </div>
+              </div>
+            </div>
+
+            <USeparator />
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="text-xs text-muted-foreground uppercase">CURP</p>
+                <p class="font-mono">{{ selectedUserProfile.curp || 'No registrado' }}</p>
+              </div>
+              <div>
+                <p class="text-xs text-muted-foreground uppercase">RFC</p>
+                <p class="font-mono">{{ selectedUserProfile.rfc || 'No registrado' }}</p>
+              </div>
+              <div>
+                <p class="text-xs text-muted-foreground uppercase">Teléfono</p>
+                <p>{{ selectedUserProfile.phone || 'No registrado' }}</p>
+              </div>
+              <div>
+                <p class="text-xs text-muted-foreground uppercase">Teléfono secundario</p>
+                <p>{{ selectedUserProfile.secondaryPhone || 'No registrado' }}</p>
+              </div>
+              <div>
+                <p class="text-xs text-muted-foreground uppercase">Fecha de nacimiento</p>
+                <p>{{ selectedUserProfile.birthDate || 'No registrado' }}</p>
+              </div>
+              <div>
+                <p class="text-xs text-muted-foreground uppercase">Género</p>
+                <p>{{ selectedUserProfile.gender || 'No registrado' }}</p>
+              </div>
+            </div>
+
+            <USeparator />
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="text-xs text-muted-foreground uppercase">Email institucional</p>
+                <p>{{ selectedUserProfile.institutionalEmail || 'No registrado' }}</p>
+              </div>
+              <div>
+                <p class="text-xs text-muted-foreground uppercase">Email secundario</p>
+                <p>{{ selectedUserProfile.secondaryEmail || 'No registrado' }}</p>
+              </div>
+            </div>
+
+            <USeparator />
+
             <div>
-              <h3 class="text-xl font-bold">{{ selectedUserProfile.firstName }} {{ selectedUserProfile.lastName }}</h3>
-              <div class="flex flex-wrap gap-2 mt-1">
-                <UBadge v-for="role in selectedUserProfile.roles" :key="role" :color="getRoleBadgeColor(role)" variant="soft">
-                  {{ role }}
-                </UBadge>
+              <p class="text-sm font-medium mb-2">Dirección</p>
+              <p class="text-muted-foreground">
+                {{ selectedUserProfile.address || 'No registrada' }}
+                <span v-if="selectedUserProfile.city || selectedUserProfile.state">
+                  {{ selectedUserProfile.city }}{{ selectedUserProfile.city && selectedUserProfile.state ? ', ' : '' }}{{ selectedUserProfile.state }} {{ selectedUserProfile.postalCode }}
+                </span>
+              </p>
+            </div>
+
+            <div v-if="selectedUserProfile.studentInfo" class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p class="text-sm font-medium text-blue-800 mb-2">Información de Estudiante</p>
+              <div class="grid grid-cols-2 gap-2 text-sm">
+                <div>
+                  <span class="text-muted-foreground">Matrícula:</span>
+                  <span class="font-mono ml-2">{{ selectedUserProfile.studentInfo.enrollmentNumber }}</span>
+                </div>
+                <div>
+                  <span class="text-muted-foreground">Fecha de inscripción:</span>
+                  <span class="ml-2">{{ selectedUserProfile.studentInfo.enrollmentDate }}</span>
+                </div>
+                <div>
+                  <span class="text-muted-foreground">Estatus:</span>
+                  <UBadge :color="selectedUserProfile.studentInfo.isActive ? 'success' : 'error'" variant="soft" size="sm" class="ml-2">
+                    {{ selectedUserProfile.studentInfo.isActive ? 'Activo' : 'Inactivo' }}
+                  </UBadge>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="selectedUserProfile.teacherInfo" class="bg-green-50 border border-green-200 rounded-lg p-4">
+              <p class="text-sm font-medium text-green-800 mb-2">Información de Profesor</p>
+              <div class="grid grid-cols-2 gap-2 text-sm">
+                <div>
+                  <span class="text-muted-foreground">No. Empleado:</span>
+                  <span class="font-mono ml-2">{{ selectedUserProfile.teacherInfo.employeeNumber }}</span>
+                </div>
+                <div>
+                  <span class="text-muted-foreground">RFC:</span>
+                  <span class="font-mono ml-2">{{ selectedUserProfile.teacherInfo.rfc }}</span>
+                </div>
+                <div>
+                  <span class="text-muted-foreground">Estatus:</span>
+                  <UBadge :color="selectedUserProfile.teacherInfo.isActive ? 'success' : 'error'" variant="soft" size="sm" class="ml-2">
+                    {{ selectedUserProfile.teacherInfo.isActive ? 'Activo' : 'Inactivo' }}
+                  </UBadge>
+                </div>
               </div>
             </div>
           </div>
-
-          <USeparator />
-
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <p class="text-xs text-muted-foreground uppercase">CURP</p>
-              <p class="font-mono">{{ selectedUserProfile.curp || 'No registrado' }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-muted-foreground uppercase">RFC</p>
-              <p class="font-mono">{{ selectedUserProfile.rfc || 'No registrado' }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-muted-foreground uppercase">Teléfono</p>
-              <p>{{ selectedUserProfile.phone || 'No registrado' }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-muted-foreground uppercase">Teléfono secundario</p>
-              <p>{{ selectedUserProfile.secondaryPhone || 'No registrado' }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-muted-foreground uppercase">Fecha de nacimiento</p>
-              <p>{{ selectedUserProfile.birthDate || 'No registrado' }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-muted-foreground uppercase">Género</p>
-              <p>{{ selectedUserProfile.gender || 'No registrado' }}</p>
-            </div>
-          </div>
-
-          <USeparator />
-
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <p class="text-xs text-muted-foreground uppercase">Email institucional</p>
-              <p>{{ selectedUserProfile.institutionalEmail || 'No registrado' }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-muted-foreground uppercase">Email secundario</p>
-              <p>{{ selectedUserProfile.secondaryEmail || 'No registrado' }}</p>
-            </div>
-          </div>
-
-          <USeparator />
-
-          <div>
-            <p class="text-sm font-medium mb-2">Dirección</p>
-            <p class="text-muted-foreground">
-              {{ selectedUserProfile.address || 'No registrada' }}
-              <span v-if="selectedUserProfile.city || selectedUserProfile.state">
-                {{ selectedUserProfile.city }}{{ selectedUserProfile.city && selectedUserProfile.state ? ', ' : '' }}{{ selectedUserProfile.state }} {{ selectedUserProfile.postalCode }}
-              </span>
-            </p>
-          </div>
-
-          <div v-if="selectedUserProfile.studentInfo" class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p class="text-sm font-medium text-blue-800 mb-2">Información de Estudiante</p>
-            <div class="grid grid-cols-2 gap-2 text-sm">
-              <div>
-                <span class="text-muted-foreground">Matrícula:</span>
-                <span class="font-mono ml-2">{{ selectedUserProfile.studentInfo.enrollmentNumber }}</span>
-              </div>
-              <div>
-                <span class="text-muted-foreground">Fecha de inscripción:</span>
-                <span class="ml-2">{{ selectedUserProfile.studentInfo.enrollmentDate }}</span>
-              </div>
-              <div>
-                <span class="text-muted-foreground">Estatus:</span>
-                <UBadge :color="selectedUserProfile.studentInfo.isActive ? 'success' : 'error'" variant="soft" size="sm" class="ml-2">
-                  {{ selectedUserProfile.studentInfo.isActive ? 'Activo' : 'Inactivo' }}
-                </UBadge>
-              </div>
-            </div>
-          </div>
-
-          <div v-if="selectedUserProfile.teacherInfo" class="bg-green-50 border border-green-200 rounded-lg p-4">
-            <p class="text-sm font-medium text-green-800 mb-2">Información de Profesor</p>
-            <div class="grid grid-cols-2 gap-2 text-sm">
-              <div>
-                <span class="text-muted-foreground">No. Empleado:</span>
-                <span class="font-mono ml-2">{{ selectedUserProfile.teacherInfo.employeeNumber }}</span>
-              </div>
-              <div>
-                <span class="text-muted-foreground">RFC:</span>
-                <span class="font-mono ml-2">{{ selectedUserProfile.teacherInfo.rfc }}</span>
-              </div>
-              <div>
-                <span class="text-muted-foreground">Estatus:</span>
-                <UBadge :color="selectedUserProfile.teacherInfo.isActive ? 'success' : 'error'" variant="soft" size="sm" class="ml-2">
-                  {{ selectedUserProfile.teacherInfo.isActive ? 'Activo' : 'Inactivo' }}
-                </UBadge>
-              </div>
-            </div>
-          </div>
-        </div>
+        </template>
         <template #footer>
           <UButton color="neutral" variant="outline" @click="closeProfileModal">Cerrar</UButton>
         </template>
