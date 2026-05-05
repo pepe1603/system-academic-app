@@ -1,27 +1,19 @@
 <script setup lang="ts">
+import type { DropdownMenuItem } from '@nuxt/ui'
+
 const route = useRoute()
 const { user, logout } = useAuth()
 
 const isCollapsed = ref(false)
-const isDropdownOpen = ref(false)
+const portalOpen = ref(false)
 
 const handleLogout = async () => {
-  isDropdownOpen.value = false
   await logout()
   await navigateTo('/auth')
 }
 
-const goToProfile = () => {
-  isDropdownOpen.value = false
-  navigateTo('/cpanel/profile')
-}
-
 const navigation = [
-  {
-    title: 'Dashboard',
-    to: '/cpanel',
-    icon: 'i-lucide-layout-dashboard'
-  },
+  { title: 'Dashboard', to: '/cpanel', icon: 'i-lucide-layout-dashboard' },
   {
     title: 'Portal',
     to: '/cpanel/portal',
@@ -34,47 +26,91 @@ const navigation = [
       { title: 'Institución', to: '/cpanel/portal/institucion', icon: 'i-lucide-building-2' }
     ]
   },
-  {
-    title: 'Usuarios',
-    to: '/cpanel/users',
-    icon: 'i-lucide-users'
-  },
-  {
-    title: 'Estudiantes',
-    to: '/cpanel/students',
-    icon: 'i-lucide-user-round'
-  },
-  {
-    title: 'Docentes',
-    to: '/cpanel/teachers',
-    icon: 'i-lucide-graduation-cap'
-  },
-  {
-    title: 'Configuración',
-    to: '/cpanel/settings',
-    icon: 'i-lucide-settings'
-  }
+  { title: 'Usuarios', to: '/cpanel/users', icon: 'i-lucide-users' },
+  { title: 'Estudiantes', to: '/cpanel/students', icon: 'i-lucide-user-round' },
+  { title: 'Docentes', to: '/cpanel/teachers', icon: 'i-lucide-graduation-cap' },
+  { title: 'Configuración', to: '/cpanel/settings', icon: 'i-lucide-settings' }
 ]
 
-const portalOpen = ref(false)
-
-const notifications = ref([
-  { id: 1, title: 'Nuevo mensaje', description: 'Tienes un nuevo mensaje de contacto', time: '5 min', read: false, icon: 'i-lucide-mail' },
-  { id: 2, title: 'Alumno matriculado', description: 'Nuevo estudiante matriculado', time: '1 hora', read: true, icon: 'i-lucide-user-plus' },
-  { id: 3, title: 'Evento próximo', description: 'Evento "Graduación 2024" mañana', time: '2 horas', read: false, icon: 'i-lucide-calendar' }
+// ✅ Items del dropdown de usuario con type: 'label' para el encabezado
+const userMenuItems = computed<DropdownMenuItem[][]>(() => [
+  [
+    {
+      label: user.value?.username || 'Usuario',
+      // El email como descripción debajo del username
+      icon: 'i-lucide-circle-user',
+      type: 'label' // No es clickeable, solo informativo
+    }
+  ],
+  [
+    {
+      label: 'Mi Perfil',
+      icon: 'i-lucide-user',
+      to: '/cpanel/profile'
+    },
+    {
+      label: 'Configuración',
+      icon: 'i-lucide-settings',
+      to: '/cpanel/settings'
+    }
+  ],
+  [
+    {
+      label: 'Cerrar Sesión',
+      icon: 'i-lucide-log-out',
+      color: 'error' as const,
+      onSelect: handleLogout
+    }
+  ]
 ])
 
-const showNotifications = ref(false)
+// ✅ Items del dropdown de notificaciones usando slot personalizado
+const notifications = ref([
+  { id: 1, title: 'Nuevo mensaje', description: 'Tienes un nuevo mensaje de contacto', time: '5 min', read: false, icon: 'i-lucide-mail', slot: 'notif-1' },
+  { id: 2, title: 'Alumno matriculado', description: 'Nuevo estudiante matriculado', time: '1 hora', read: true, icon: 'i-lucide-user-plus', slot: 'notif-2' },
+  { id: 3, title: 'Evento próximo', description: 'Evento "Graduación 2024" mañana', time: '2 horas', read: false, icon: 'i-lucide-calendar', slot: 'notif-3' }
+])
+
 const unreadCount = computed(() => notifications.value.filter(n => !n.read).length)
+
+const markAllRead = () => {
+  notifications.value.forEach(n => n.read = true)
+}
+
+// ✅ Items del dropdown de notificaciones - cada notif con slot custom
+const notificationItems = computed<DropdownMenuItem[][]>(() => [
+  [
+    {
+      label: 'Notificaciones',
+      type: 'label' as const
+    }
+  ],
+  notifications.value.map(n => ({
+    label: n.title,
+    icon: n.icon,
+    slot: n.slot as string,
+  })),
+  [
+    {
+      label: 'Marcar todas como leídas',
+      icon: 'i-lucide-check-check',
+      disabled: unreadCount.value === 0,
+      onSelect: markAllRead
+    },
+    {
+      label: 'Ver todas las notificaciones',
+      icon: 'i-lucide-bell',
+      to: '/cpanel/notifications'
+    }
+  ]
+])
 
 const breadcrumbs = computed(() => {
   const crumbs = [{ label: 'Panel de Control', to: '/cpanel', icon: 'i-lucide-home' }]
-
   const currentNav = navigation.find(n => n.to === route.path)
   if (currentNav && route.path !== '/cpanel') {
     crumbs.push({ label: currentNav.title, to: route.path, icon: currentNav.icon })
   }
-
   return crumbs
 })
 
@@ -83,170 +119,169 @@ const isActive = (path: string) => route.path === path
 
 <template>
   <UApp>
+    <!-- HEADER -->
     <header class="h-16 border-b border-default bg-background px-6 flex items-center justify-between sticky top-0 z-50">
       <div class="flex items-center gap-4">
         <UBreadcrumb :items="breadcrumbs" />
       </div>
 
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-1">
         <UColorModeButton />
 
-        <div class="relative">
+        <!-- ✅ Notificaciones con UDropdownMenu + UChip para el badge -->
+        <UDropdownMenu
+          :items="notificationItems"
+          :content="{ align: 'end', side: 'bottom', sideOffset: 8 }"
+          :ui="{ content: 'w-80' }"
+        >
+          <!-- Trigger: campana con chip de conteo -->
+          <UChip
+            :text="unreadCount"
+            color="error"
+            size="sm"
+            :show="unreadCount > 0"
+          >
+            <UButton
+              icon="i-lucide-bell"
+              color="neutral"
+              variant="ghost"
+              aria-label="Notificaciones"
+            />
+          </UChip>
+
+          <!-- Slot custom para cada notificación -->
+          <template
+            v-for="notif in notifications"
+            :key="notif.id"
+            #[notif.slot]
+          >
+            <div
+              class="flex items-start gap-3 py-1 w-full"
+              :class="{ 'opacity-50': notif.read }"
+            >
+              <UAvatar
+                :icon="notif.icon"
+                size="sm"
+                color="primary"
+                variant="soft"
+              />
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium leading-tight">{{ notif.title }}</p>
+                <p class="text-xs text-muted-foreground line-clamp-1 mt-0.5">{{ notif.description }}</p>
+                <p class="text-xs text-muted-foreground/70 mt-0.5">{{ notif.time }}</p>
+              </div>
+              <div v-if="!notif.read" class="size-2 rounded-full bg-primary shrink-0 mt-1.5" />
+            </div>
+          </template>
+        </UDropdownMenu>
+
+        <!-- ✅ Menú de usuario con UDropdownMenu + UAvatar como trigger -->
+        <UDropdownMenu
+          :items="userMenuItems"
+          :content="{ align: 'end', side: 'bottom', sideOffset: 8 }"
+        >
+          <!-- Trigger: avatar con nombre del usuario -->
+          <UButton color="neutral" variant="ghost" class="gap-2">
+            <UAvatar
+              :src="`https://api.dicebear.com/7.x/initials/svg?seed=${user?.username}`"
+              size="xs"
+            />
+            <span class="hidden sm:block text-sm font-medium">
+              {{ user?.username || 'Usuario' }}
+            </span>
+            <UIcon name="i-lucide-chevron-down" class="size-3.5 text-muted-foreground" />
+          </UButton>
+        </UDropdownMenu>
+
+        <!-- Colapsar sidebar -->
+        <UTooltip :text="isCollapsed ? 'Expandir menú' : 'Colapsar menú'">
           <UButton
-            icon="i-lucide-bell"
+            :icon="isCollapsed ? 'i-lucide-panel-left-open' : 'i-lucide-panel-left-close'"
             color="neutral"
             variant="ghost"
-            @click="showNotifications = !showNotifications"
-          >
-            <template #icon>
-              <div class="relative">
-                <UIcon name="i-lucide-bell" class="w-5 h-5" />
-                <span
-                  v-if="unreadCount > 0"
-                  class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"
-                >
-                  {{ unreadCount }}
-                </span>
-              </div>
-            </template>
-          </UButton>
-
-          <div
-            v-if="showNotifications"
-            class="absolute right-0 mt-2 w-80 bg-background border border-default rounded-lg shadow-lg z-50"
-          >
-            <div class="p-3 border-b border-default">
-              <h3 class="font-semibold">Notificaciones</h3>
-            </div>
-            <div class="max-h-80 overflow-y-auto">
-              <div
-                v-for="notif in notifications"
-                :key="notif.id"
-                class="p-3 border-b border-default hover:bg-muted/50 cursor-pointer"
-                :class="{ 'bg-primary/5': !notif.read }"
-              >
-                <div class="flex gap-3">
-                  <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <UIcon :name="notif.icon" class="w-4 h-4 text-primary" />
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium">{{ notif.title }}</p>
-                    <p class="text-xs text-muted-foreground line-clamp-1">{{ notif.description }}</p>
-                    <p class="text-xs text-muted-foreground mt-1">{{ notif.time }}</p>
-                  </div>
-                  <div v-if="!notif.read" class="w-2 h-2 rounded-full bg-primary shrink-0 mt-2" />
-                </div>
-              </div>
-            </div>
-            <div class="p-3 border-t border-default">
-              <UButton variant="ghost" block size="sm">
-                Ver todas las notificaciones
-              </UButton>
-            </div>
-          </div>
-        </div>
-
-        <div class="relative">
-          <UButton
-            icon="i-lucide-user"
-            color="neutral"
-            variant="ghost"
-            @click="isDropdownOpen = !isDropdownOpen"
-          >
-            {{ user?.username || 'Usuario' }}
-          </UButton>
-
-          <div
-            v-if="isDropdownOpen"
-            class="absolute right-0 mt-2 w-48 bg-background border border-default rounded-lg shadow-lg py-1 z-50"
-          >
-            <button
-              class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2"
-              @click="goToProfile"
-            >
-              <UIcon name="i-lucide-user" class="w-4 h-4" />
-              Mi Perfil
-            </button>
-            <hr class="my-1 border-default" />
-            <button
-              class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2 text-red-500"
-              @click="handleLogout"
-            >
-              <UIcon name="i-lucide-log-out" class="w-4 h-4" />
-              Cerrar Sesión
-            </button>
-          </div>
-        </div>
-
-        <UButton
-          :icon="isCollapsed ? 'i-lucide-chevron-right' : 'i-lucide-chevron-left'"
-          variant="ghost"
-          @click="isCollapsed = !isCollapsed"
-        />
+            @click="isCollapsed = !isCollapsed"
+          />
+        </UTooltip>
       </div>
     </header>
 
     <div class="flex">
+      <!-- SIDEBAR -->
       <aside
-        class="border-r border-default bg-default transition-all duration-300 shrink-0"
+        class="border-r border-default bg-background transition-all duration-300 shrink-0 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto"
         :class="isCollapsed ? 'w-16' : 'w-64'"
       >
-        <nav class="p-2">
+        <nav class="p-2 space-y-0.5">
           <template v-for="item in navigation" :key="item.to">
-            <div v-if="item.children" class="mb-1">
-              <button
-                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
-                @click="portalOpen = !portalOpen"
-              >
-                <UIcon :name="item.icon" class="w-5 h-5 shrink-0" />
-                <span v-if="!isCollapsed" class="text-sm font-medium flex-1 text-left">{{ item.title }}</span>
-                <UIcon v-if="!isCollapsed" :name="portalOpen ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'" class="w-4 h-4" />
-              </button>
-              <div v-if="portalOpen && !isCollapsed" class="ml-6 mt-1 space-y-1">
-                <NuxtLink
+
+            <!-- Item con hijos (Portal) -->
+            <template v-if="item.children">
+              <UTooltip :text="item.title" :disabled="!isCollapsed" side="right">
+                <UButton
+                  color="neutral"
+                  variant="ghost"
+                  block
+                  class="justify-start"
+                  @click="portalOpen = !portalOpen"
+                >
+                  <template #leading>
+                    <UIcon :name="item.icon" class="size-5 shrink-0" />
+                  </template>
+                  <span v-if="!isCollapsed" class="flex-1 text-left text-sm">{{ item.title }}</span>
+                  <template v-if="!isCollapsed" #trailing>
+                    <UIcon
+                      :name="portalOpen ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+                      class="size-4 text-muted-foreground"
+                    />
+                  </template>
+                </UButton>
+              </UTooltip>
+
+              <div v-if="portalOpen && !isCollapsed" class="ml-4 pl-3 border-l border-default space-y-0.5 mt-0.5">
+                <UButton
                   v-for="child in item.children"
                   :key="child.to"
                   :to="child.to"
-                  class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors"
-                  :class="[
-                    isActive(child.to)
-                      ? 'bg-primary/10 text-primary'
-                      : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-muted-foreground'
-                  ]"
+                  :color="isActive(child.to) ? 'primary' : 'neutral'"
+                  :variant="isActive(child.to) ? 'soft' : 'ghost'"
+                  block
+                  class="justify-start"
+                  size="sm"
                 >
-                  <UIcon :name="child.icon" class="w-4 h-4" />
-                  {{ child.title }}
-                </NuxtLink>
+                  <template #leading>
+                    <UIcon :name="child.icon" class="size-4 shrink-0" />
+                  </template>
+                  <span class="text-sm">{{ child.title }}</span>
+                </UButton>
               </div>
-            </div>
-            <div v-else class="mb-1">
-              <NuxtLink
-                :to="item.to"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors"
-                :class="[
-                  isActive(item.to)
-                    ? 'bg-primary text-primary-foreground'
-                    : 'hover:bg-gray-100 dark:hover:bg-gray-800'
-                ]"
-              >
-                <UIcon :name="item.icon" class="w-5 h-5 shrink-0" />
-                <span v-if="!isCollapsed" class="text-sm font-medium">{{ item.title }}</span>
-              </NuxtLink>
-            </div>
+            </template>
+
+            <!-- Item simple -->
+            <template v-else>
+              <UTooltip :text="item.title" :disabled="!isCollapsed" side="right">
+                <UButton
+                  :to="item.to"
+                  :color="isActive(item.to) ? 'primary' : 'neutral'"
+                  :variant="isActive(item.to) ? 'solid' : 'ghost'"
+                  block
+                  class="justify-start"
+                >
+                  <template #leading>
+                    <UIcon :name="item.icon" class="size-5 shrink-0" />
+                  </template>
+                  <span v-if="!isCollapsed" class="text-sm">{{ item.title }}</span>
+                </UButton>
+              </UTooltip>
+            </template>
+
           </template>
         </nav>
       </aside>
 
-      <main class="flex-1 p-6 min-h-[calc(100vh-64px)]">
+      <!-- MAIN CONTENT -->
+      <main class="flex-1 p-6 min-h-[calc(100vh-4rem)] overflow-auto">
         <slot />
       </main>
     </div>
-
-    <div
-      v-if="isDropdownOpen"
-      class="fixed inset-0 z-40"
-      @click="isDropdownOpen = false"
-    />
-
-    </UApp>
+  </UApp>
 </template>

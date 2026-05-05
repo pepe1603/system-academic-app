@@ -413,8 +413,42 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
       </div>
     </div>
 
-    <UAlert v-if="loading" color="info" variant="soft" class="mb-4" description="Cargando..." />
-    <UAlert v-if="error" color="error" variant="soft" class="mb-4" :description="error" />
+    <UAlert
+      v-if="loading"
+      color="info"
+      variant="soft"
+      class="mb-4"
+      title="Cargando usuarios"
+      description="Por favor espera, estamos obteniendo la información..."
+    >
+      <template #icon>
+        <UIcon
+          name="i-lucide-loader-circle"
+          class="size-5 animate-spin"
+        />
+      </template>
+    </UAlert>
+
+    <UAlert
+      v-if="error"
+      color="error"
+      variant="soft"
+      class="mb-4"
+      icon="i-lucide-circle-x"
+      title="Ocurrió un error"
+      :description="error"
+    >
+      <template #actions>
+        <UButton
+          color="error"
+          variant="soft"
+          size="xs"
+          icon="i-lucide-refresh-cw"
+          label="Reintentar"
+          @click="fetchUsers(pageModel - 1, 5)"
+        />
+      </template>
+    </UAlert>
 
     <UAlert v-if="showDeleted" color="warning" variant="soft" icon="i-lucide-alert-triangle"
       title="Vista de usuarios eliminados"
