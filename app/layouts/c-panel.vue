@@ -1,14 +1,86 @@
 <script setup lang="ts">
 const route = useRoute()
 const { user, logout } = useAuth()
+const { profile, loading: profileLoading, fetchMyProfile, updateMyProfile } = useProfile()
 
 const isCollapsed = ref(false)
 const isDropdownOpen = ref(false)
+const showProfileModal = ref(false)
+const profileForm = ref({
+  firstName: '',
+  lastName: '',
+  curp: '',
+  rfc: '',
+  phone: '',
+  secondaryPhone: '',
+  birthDate: '',
+  gender: '',
+  institutionalEmail: '',
+  secondaryEmail: '',
+  address: '',
+  city: '',
+  state: '',
+  postalCode: ''
+})
+const savingProfile = ref(false)
 
 const handleLogout = async () => {
   isDropdownOpen.value = false
   await logout()
   await navigateTo('/auth')
+}
+
+const openProfileModal = async () => {
+  isDropdownOpen.value = false
+  const data = await fetchMyProfile()
+  if (data) {
+    profileForm.value = {
+      firstName: data.firstName || '',
+      lastName: data.lastName || '',
+      curp: data.curp || '',
+      rfc: data.rfc || '',
+      phone: data.phone || '',
+      secondaryPhone: data.secondaryPhone || '',
+      birthDate: data.birthDate || '',
+      gender: data.gender || '',
+      institutionalEmail: data.institutionalEmail || '',
+      secondaryEmail: data.secondaryEmail || '',
+      address: data.address || '',
+      city: data.city || '',
+      state: data.state || '',
+      postalCode: data.postalCode || ''
+    }
+    showProfileModal.value = true
+  } else {
+    showProfileModal.value = true
+    profileForm.value = {
+      firstName: '',
+      lastName: '',
+      curp: '',
+      rfc: '',
+      phone: '',
+      secondaryPhone: '',
+      birthDate: '',
+      gender: '',
+      institutionalEmail: '',
+      secondaryEmail: '',
+      address: '',
+      city: '',
+      state: '',
+      postalCode: ''
+    }
+  }
+}
+
+const saveProfile = async () => {
+  savingProfile.value = true
+  const success = await updateMyProfile(profileForm.value)
+  savingProfile.value = false
+  if (success) {
+    showProfileModal.value = false
+    const toast = useToast()
+    toast.add({ title: 'Perfil actualizado', color: 'success' })
+  }
 }
 
 const navigation = [
@@ -157,6 +229,7 @@ const isActive = (path: string) => route.path === path
           >
             <button
               class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center gap-2"
+              @click="openProfileModal"
             >
               <UIcon name="i-lucide-user" class="w-4 h-4" />
               Perfil
@@ -241,5 +314,98 @@ const isActive = (path: string) => route.path === path
       class="fixed inset-0 z-40"
       @click="isDropdownOpen = false; showNotifications = false"
     />
+
+    <ClientOnly>
+      <UModal v-model:open="showProfileModal" title="Mi Perfil" class="max-w-2xl">
+        <div class="p-4 space-y-6">
+          <div class="flex items-center gap-4">
+            <UAvatar
+              :src="profile?.profilePictureUrl ? `http://localhost:8080${profile.profilePictureUrl}` : `https://api.dicebear.com/7.x/initials/svg?seed=${profileForm.firstName || user?.username || 'U'}`"
+              size="2xl"
+            />
+            <div>
+              <h3 class="text-xl font-bold">{{ profileForm.firstName || user?.username }}</h3>
+              <p class="text-muted-foreground text-sm">{{ profileForm.institutionalEmail || user?.email }}</p>
+              <div class="flex flex-wrap gap-1 mt-1">
+                <UBadge v-for="role in user?.roles" :key="role" :color="role === 'ADMIN' ? 'error' : role === 'TEACHER' ? 'info' : role === 'STUDENT' ? 'success' : 'neutral'" variant="soft" size="sm">
+                  {{ role }}
+                </UBadge>
+              </div>
+            </div>
+          </div>
+
+          <USeparator />
+
+          <div class="grid grid-cols-2 gap-4">
+            <UFormField label="Nombre" name="firstName">
+              <UInput v-model="profileForm.firstName" placeholder="Nombre" />
+            </UFormField>
+            <UFormField label="Apellidos" name="lastName">
+              <UInput v-model="profileForm.lastName" placeholder="Apellidos" />
+            </UFormField>
+            <UFormField label="CURP" name="curp">
+              <UInput v-model="profileForm.curp" placeholder="CURP" />
+            </UFormField>
+            <UFormField label="RFC" name="rfc">
+              <UInput v-model="profileForm.rfc" placeholder="RFC" />
+            </UFormField>
+            <UFormField label="Teléfono" name="phone">
+              <UInput v-model="profileForm.phone" placeholder="Teléfono" />
+            </UFormField>
+            <UFormField label="Teléfono secundario" name="secondaryPhone">
+              <UInput v-model="profileForm.secondaryPhone" placeholder="Teléfono secundario" />
+            </UFormField>
+            <UFormField label="Fecha de nacimiento" name="birthDate">
+              <UInput v-model="profileForm.birthDate" type="date" />
+            </UFormField>
+            <UFormField label="Género" name="gender">
+              <USelect
+                v-model="profileForm.gender"
+                :items="[
+                  { label: 'Masculino', value: 'M' },
+                  { label: 'Femenino', value: 'F' },
+                  { label: 'Otro', value: 'O' }
+                ]"
+                placeholder="Seleccionar"
+              />
+            </UFormField>
+          </div>
+
+          <USeparator />
+
+          <div class="grid grid-cols-2 gap-4">
+            <UFormField label="Email institucional" name="institutionalEmail">
+              <UInput v-model="profileForm.institutionalEmail" type="email" placeholder="Email institucional" />
+            </UFormField>
+            <UFormField label="Email secundario" name="secondaryEmail">
+              <UInput v-model="profileForm.secondaryEmail" type="email" placeholder="Email secundario" />
+            </UFormField>
+          </div>
+
+          <USeparator />
+
+          <UFormField label="Dirección" name="address">
+            <UInput v-model="profileForm.address" placeholder="Dirección" />
+          </UFormField>
+          <div class="grid grid-cols-3 gap-4">
+            <UFormField label="Ciudad" name="city">
+              <UInput v-model="profileForm.city" placeholder="Ciudad" />
+            </UFormField>
+            <UFormField label="Estado" name="state">
+              <UInput v-model="profileForm.state" placeholder="Estado" />
+            </UFormField>
+            <UFormField label="Código postal" name="postalCode">
+              <UInput v-model="profileForm.postalCode" placeholder="CP" />
+            </UFormField>
+          </div>
+        </div>
+        <template #footer>
+          <div class="flex justify-end gap-2">
+            <UButton color="neutral" variant="outline" @click="showProfileModal = false">Cancelar</UButton>
+            <UButton @click="saveProfile" :loading="savingProfile" icon="i-lucide-save">Guardar</UButton>
+          </div>
+        </template>
+      </UModal>
+    </ClientOnly>
   </UApp>
 </template>
