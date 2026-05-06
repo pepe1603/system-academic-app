@@ -30,7 +30,8 @@ const profileForm = ref({
   address: '',
   city: '',
   state: '',
-  postalCode: ''
+  postalCode: '',
+  profilePictureUrl: ''
 })
 
 const passwordForm = ref({
@@ -63,7 +64,8 @@ const loadProfileData = (data: EnrichedProfile) => {
     address: data.address || '',
     city: data.city || '',
     state: data.state || '',
-    postalCode: data.postalCode || ''
+    postalCode: data.postalCode || '',
+    profilePictureUrl: data.profilePictureUrl || ''
   }
 }
 
@@ -281,10 +283,24 @@ const getGenderLabel = (gender: string): string => {
           </div>
 
           <div v-if="activeTab === 'contact'" class="space-y-4">
-            <UAlert color="info" variant="soft" icon="i-lucide-camera" class="mb-4">
-              <template #title>Foto de perfil</template>
-              <template #description>La funcionalidad de subir foto de perfil estará disponible próximamente con integración a Supabase Storage.</template>
-            </UAlert>
+            <div class="p-4 bg-muted/30 rounded-lg border">
+              <div class="flex items-center gap-4">
+                <UAvatar
+                  :src="profileForm.profilePictureUrl ? profileForm.profilePictureUrl : `https://api.dicebear.com/7.x/initials/svg?seed=${profileForm.firstName || 'U'}`"
+                  size="lg"
+                />
+                <div class="flex-1">
+                  <p class="text-sm font-medium">URL de foto de perfil</p>
+                  <p class="text-xs text-muted-foreground mb-2">Próximamente: Subir foto directamente. Por ahora, pega una URL de imagen.</p>
+                  <UInput 
+                    v-model="profileForm.profilePictureUrl" 
+                    placeholder="https://ejemplo.com/foto.jpg"
+                    size="sm"
+                    icon="i-lucide-link"
+                  />
+                </div>
+              </div>
+            </div>
             
             <div class="grid grid-cols-2 gap-4">
               <UFormField label="Teléfono principal" name="phone">
