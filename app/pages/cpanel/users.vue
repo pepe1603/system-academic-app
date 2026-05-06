@@ -19,7 +19,9 @@ const viewMode = ref<ViewMode>(null)
 const selectedUser = ref<User | null>(null)
 
 const { users, loading, error, totalElements, currentPage, totalPages, fetchUsers, getUser, createUser, updateUser, deleteUser, revokeSessions, unlockUser, lockUser, banUser, fetchDeletedUsers, fetchPermissionsByRole } = useUsers()
-const { fetchUserProfile } = useUserProfile()
+const { fetchUserProfile, searchProfileByCurp } = useUserProfile()
+const { migrateProfiles } = useAdmin()
+const { user: authUser } = useAuth()
 
 const showDeleted = ref(false)
 const selectedRolePermissions = ref<string[]>([])
@@ -28,6 +30,12 @@ const selectedRoleForPermissions = ref('')
 const showProfileModal = ref(false)
 const selectedUserProfile = ref<any>(null)
 const profileLoading = ref(false)
+const showSearchModal = ref(false)
+const searchCurp = ref('')
+const searchResult = ref<any>(null)
+const searching = ref(false)
+const showMigrationModal = ref(false)
+const migrating = ref(false)
 
 const availableRoles = [
   { label: 'Administrador', value: 'ADMIN' },
@@ -329,6 +337,62 @@ const closeProfileModal = () => {
   selectedUserProfile.value = null
 }
 
+const openSearchModal = () => {
+  searchCurp.value = ''
+  searchResult.value = null
+  showSearchModal.value = true
+}
+
+const closeSearchModal = () => {
+  showSearchModal.value = false
+  searchCurp.value = ''
+  searchResult.value = null
+}
+
+const handleSearchByCurp = async () => {
+  if (!searchCurp.value || searchCurp.value.length < 18) {
+    toast.add({ title: 'Ingresa una CURP válida (18 caracteres)', color: 'warning' })
+    return
+  }
+  
+  searching.value = true
+  searchResult.value = await searchProfileByCurp(searchCurp.value.toUpperCase())
+  searching.value = false
+  
+  if (!searchResult.value) {
+    toast.add({ title: 'No se encontró perfil con esa CURP', color: 'warning' })
+  }
+}
+
+const handleViewSearchResult = () => {
+  if (searchResult.value) {
+    showProfileModal.value = true
+    selectedUserProfile.value = searchResult.value
+    closeSearchModal()
+  }
+}
+
+const openMigrationModal = () => {
+  showMigrationModal.value = true
+}
+
+const closeMigrationModal = () => {
+  showMigrationModal.value = false
+}
+
+const handleMigrateProfiles = async () => {
+  migrating.value = true
+  const result = await migrateProfiles()
+  migrating.value = false
+  
+  if (result.success) {
+    toast.add({ title: result.message, color: 'success' })
+    closeMigrationModal()
+  } else {
+    toast.add({ title: result.message, color: 'error' })
+  }
+}
+
 const getUserActions = (user: User): DropdownMenuItem[][] => {
   return [
     [
@@ -407,6 +471,12 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
         <USelect variant="subtle" v-model="selectedRoleForPermissions" :items="availableRoles"
           placeholder="Ver permisos del rol" class="w-48" @update:model-value="viewPermissions" />
         <UCheckbox v-model="showDeleted" label="Ver eliminados" />
+        <UButton @click="openSearchModal" variant="outline" icon="i-lucide-search" class="hidden md:flex">
+          Buscar por CURP
+        </UButton>
+        <UButton v-if="authUser?.roles?.includes('ADMIN')" @click="openMigrationModal" variant="outline" color="warning" icon="i-lucide-database" class="hidden md:flex">
+          Migrar perfiles
+        </UButton>
         <UButton @click="openCreate" icon="i-lucide-plus">
           Nuevo Usuario
         </UButton>
@@ -951,6 +1021,92 @@ const getUserActions = (user: User): DropdownMenuItem[][] => {
         </template>
         <template #footer>
           <UButton color="neutral" variant="outline" @click="closeProfileModal">Cerrar</UButton>
+        </template>
+      </UModal>
+
+      <UModal v-model:open="showSearchModal" title="Buscar perfil por CURP">
+        <template #body>
+          <div class="space-y-4">
+            <UAlert color="info" variant="soft" icon="i-lucide-info">
+              <template #description>Ingresa la CURP del usuario para buscar su perfil académico.</template>
+            </UAlert>
+            
+            <UFormField label="CURP" name="curp" description="18 caracteres">
+              <UInput 
+                v-model="searchCurp" 
+                placeholder="Ejemplo: PERJ800101HDFXXX00" 
+                icon="i-lucide-id-card"
+                maxlength="18"
+                @keyup.enter="handleSearchByCurp"
+              />
+            </UFormField>
+
+            <UButton 
+              @click="handleSearchByCurp" 
+              :loading="searching" 
+              :disabled="!searchCurp || searchCurp.length < 18"
+              icon="i-lucide-search"
+              class="w-full"
+            >
+              Buscar
+            </UButton>
+
+            <div v-if="searchResult" class="mt-4 p-4 bg-muted/50 rounded-lg border">
+              <div class="flex items-center gap-3 mb-3">
+                <UAvatar
+                  :src="searchResult.profilePictureUrl ? `http://localhost:8080${searchResult.profilePictureUrl}` : `https://api.dicebear.com/7.x/initials/svg?seed=${searchResult.firstName || 'U'}`"
+                  size="md"
+                />
+                <div>
+                  <p class="font-semibold">{{ searchResult.firstName }} {{ searchResult.lastName }}</p>
+                  <p class="text-sm text-muted-foreground">{{ searchResult.institutionalEmail || searchResult.curp }}</p>
+                </div>
+              </div>
+              <div class="flex flex-wrap gap-2 mb-3">
+                <UBadge v-for="role in searchResult.roles" :key="role" :color="getRoleBadgeColor(role)" variant="soft" size="sm">
+                  {{ getRoleLabel(role) }}
+                </UBadge>
+              </div>
+              <UButton @click="handleViewSearchResult" variant="soft" size="sm" icon="i-lucide-eye" class="w-full">
+                Ver perfil completo
+              </UButton>
+            </div>
+          </div>
+        </template>
+        <template #footer>
+          <UButton color="neutral" variant="outline" @click="closeSearchModal">Cerrar</UButton>
+        </template>
+      </UModal>
+
+      <UModal v-model:open="showMigrationModal" title="Migrar perfiles académicos">
+        <template #body>
+          <div class="space-y-4">
+            <UAlert color="warning" variant="soft" icon="i-lucide-alert-triangle">
+              <template #title>¿Qué es la migración?</template>
+              <template #description>
+                Esta función migra los datos de estudiantes y profesores existentes a la nueva tabla de perfiles de usuario. 
+                La migración copia: nombre, CURP, RFC, teléfono, email y más.
+              </template>
+            </UAlert>
+
+            <UAlert color="info" variant="soft" icon="i-lucide-info">
+              <template #description>
+                <div class="space-y-1">
+                  <p>• La migración es idempotente (puede ejecutarse varias veces sin duplicar datos)</p>
+                  <p>• Solo se migran usuarios que aún no tienen un perfil</p>
+                  <p>• Se recomienda ejecutar esta función una sola vez</p>
+                </div>
+              </template>
+            </UAlert>
+          </div>
+        </template>
+        <template #footer>
+          <div class="flex gap-2 w-full justify-end">
+            <UButton color="neutral" variant="outline" @click="closeMigrationModal">Cancelar</UButton>
+            <UButton color="warning" @click="handleMigrateProfiles" :loading="migrating" icon="i-lucide-database">
+              Ejecutar migración
+            </UButton>
+          </div>
         </template>
       </UModal>
     </ClientOnly>
