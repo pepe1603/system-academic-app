@@ -50,8 +50,6 @@ const hasChanges = computed(() => {
   return (
     form.firstName !== (orig.firstName || '') ||
     form.lastName !== (orig.lastName || '') ||
-    form.curp !== (orig.curp || '') ||
-    form.rfc !== (orig.rfc || '') ||
     form.phone !== (orig.phone || '') ||
     form.secondaryPhone !== (orig.secondaryPhone || '') ||
     form.birthDate !== (orig.birthDate || '') ||
@@ -318,6 +316,11 @@ const getGenderLabel = (gender: string): string => {
           </template>
 
           <div v-if="activeTab === 'personal'" class="space-y-4">
+            <UAlert color="info" variant="soft" icon="i-lucide-info" class="mb-4">
+              <template #title>Campos del registro académico</template>
+              <template #description>La CURP y RFC se vinculan automáticamente con tu registro académico (estudiante o profesor). Estos campos no son editables.</template>
+            </UAlert>
+
             <div class="grid grid-cols-2 gap-4">
               <UFormField label="Nombre(s)" name="firstName">
                 <UInput v-model="profileForm.firstName" placeholder="Nombre" />
@@ -328,11 +331,39 @@ const getGenderLabel = (gender: string): string => {
             </div>
 
             <div class="grid grid-cols-2 gap-4">
-              <UFormField label="CURP" name="curp">
-                <UInput v-model="profileForm.curp" placeholder="Clave Única de Registro de Población" />
+              <UFormField label="CURP" name="curp" description="Vincular con registro académico">
+                <UInput 
+                  v-model="profileForm.curp" 
+                  placeholder="Clave Única de Registro de Población"
+                  disabled
+                  class="bg-muted/30"
+                >
+                  <template #leading>
+                    <UIcon v-if="profileForm.curp" name="i-lucide-check-circle" class="text-green-500" />
+                    <UIcon v-else name="i-lucide-x-circle" class="text-muted-foreground" />
+                  </template>
+                </UInput>
+                <template #hint>
+                  <span v-if="profileForm.curp" class="text-green-600 text-xs">Vinculado con registro académico</span>
+                  <span v-else class="text-amber-600 text-xs">Sin vincular - Contacta a Control Escolar</span>
+                </template>
               </UFormField>
-              <UFormField label="RFC" name="rfc">
-                <UInput v-model="profileForm.rfc" placeholder="Registro Federal de Contribuyentes" />
+              <UFormField label="RFC" name="rfc" description="Vincular con registro de profesor">
+                <UInput 
+                  v-model="profileForm.rfc" 
+                  placeholder="Registro Federal de Contribuyentes"
+                  disabled
+                  class="bg-muted/30"
+                >
+                  <template #leading>
+                    <UIcon v-if="profileForm.rfc" name="i-lucide-check-circle" class="text-green-500" />
+                    <UIcon v-else name="i-lucide-x-circle" class="text-muted-foreground" />
+                  </template>
+                </UInput>
+                <template #hint>
+                  <span v-if="user?.roles?.includes('TEACHER') && !profileForm.rfc" class="text-amber-600 text-xs">Requerido para profesores</span>
+                  <span v-else-if="profileForm.rfc" class="text-green-600 text-xs">Válido</span>
+                </template>
               </UFormField>
             </div>
 
