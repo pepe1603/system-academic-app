@@ -73,12 +73,16 @@ export const useProfile = () => {
 
     try {
       const response = await $fetch<ApiResponse<EnrichedProfile>>('/api/profile/me')
+      console.log('[useProfile] Response:', JSON.stringify(response, null, 2))
       if (response.success && response.data) {
-        profile.value = normalizeProfileData(response.data)
+        const normalized = normalizeProfileData(response.data)
+        console.log('[useProfile] Normalized data:', JSON.stringify(normalized, null, 2))
+        profile.value = normalized
       }
       return profile.value
     } catch (err: unknown) {
       const e = err as { data?: { message?: string } }
+      console.error('[useProfile] Error:', e)
       error.value = e.data?.message || 'Error al cargar perfil'
       return null
     } finally {

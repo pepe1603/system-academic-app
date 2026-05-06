@@ -74,16 +74,22 @@ const discardChanges = () => {
 }
 
 onMounted(async () => {
+  console.log('[Profile] Mounting...')
   const data = await fetchMyProfile()
+  console.log('[Profile] Data received:', JSON.stringify(data, null, 2))
   if (data) {
+    console.log('[Profile] Loading profile data...')
     originalProfileData.value = data
     loadProfileData(data)
+    console.log('[Profile] profileForm after load:', JSON.stringify(profileForm.value, null, 2))
   } else {
+    console.log('[Profile] No data, loading empty profile')
     loadEmptyProfile()
   }
 })
 
 const loadProfileData = (data: EnrichedProfile) => {
+  console.log('[Profile] loadProfileData input:', JSON.stringify(data, null, 2))
   profileForm.value = {
     firstName: data.firstName || '',
     lastName: data.lastName || '',
@@ -101,6 +107,7 @@ const loadProfileData = (data: EnrichedProfile) => {
     postalCode: data.postalCode || '',
     profilePictureUrl: data.profilePictureUrl || ''
   }
+  console.log('[Profile] Form after assignment:', JSON.stringify(profileForm.value, null, 2))
 }
 
 const loadEmptyProfile = () => {
