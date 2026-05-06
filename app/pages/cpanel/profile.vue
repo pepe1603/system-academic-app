@@ -66,6 +66,12 @@ const hasChanges = computed(() => {
   )
 })
 
+const isProfileEmpty = computed(() => {
+  const d = originalProfileData.value
+  if (!d) return true
+  return !d.firstName && !d.lastName && !d.curp && !d.phone && !d.institutionalEmail
+})
+
 const discardChanges = () => {
   if (originalProfileData.value) {
     loadProfileData(originalProfileData.value)
@@ -74,32 +80,26 @@ const discardChanges = () => {
 }
 
 onMounted(async () => {
-  console.log('[Profile] Mounting...')
   const data = await fetchMyProfile()
-  console.log('[Profile] Data received:', JSON.stringify(data, null, 2))
   if (data) {
-    console.log('[Profile] Loading profile data...')
     originalProfileData.value = data
     loadProfileData(data)
-    console.log('[Profile] profileForm after load:', JSON.stringify(profileForm.value, null, 2))
   } else {
-    console.log('[Profile] No data, loading empty profile')
     loadEmptyProfile()
   }
 })
 
 const loadProfileData = (data: EnrichedProfile) => {
-  console.log('[Profile] loadProfileData input:', JSON.stringify(data, null, 2))
   profileForm.value = {
-    firstName: data.firstName || '',
-    lastName: data.lastName || '',
+    firstName: data.firstName || user.value?.username?.split(' ')[0] || '',
+    lastName: data.lastName || user.value?.username?.split(' ').slice(1).join(' ') || '',
     curp: data.curp || '',
     rfc: data.rfc || '',
     phone: data.phone || '',
     secondaryPhone: data.secondaryPhone || '',
     birthDate: data.birthDate || '',
     gender: data.gender || '',
-    institutionalEmail: data.institutionalEmail || '',
+    institutionalEmail: data.institutionalEmail || user.value?.email || '',
     secondaryEmail: data.secondaryEmail || '',
     address: data.address || '',
     city: data.city || '',
@@ -107,7 +107,6 @@ const loadProfileData = (data: EnrichedProfile) => {
     postalCode: data.postalCode || '',
     profilePictureUrl: data.profilePictureUrl || ''
   }
-  console.log('[Profile] Form after assignment:', JSON.stringify(profileForm.value, null, 2))
 }
 
 const loadEmptyProfile = () => {
@@ -266,6 +265,10 @@ const getGenderLabel = (gender: string): string => {
       <div class="lg:col-span-3">
         <UAlert v-if="loading" color="info" variant="soft" class="mb-4" description="Cargando perfil..." />
         <UAlert v-if="error" color="error" variant="soft" class="mb-4" :description="error" />
+        <UAlert v-if="isProfileEmpty && !loading && !error" color="warning" variant="soft" class="mb-4" icon="i-lucide-user-plus">
+          <template #title>Perfil incompleto</template>
+          <template #description>Completa tu perfil para que otros usuarios puedan identificarte. Los campos disponibles han sido pre-llenados con tu información de usuario.</template>
+        </UAlert>
 
         <UCard>
           <template #header>
@@ -281,9 +284,13 @@ const getGenderLabel = (gender: string): string => {
                   <UIcon name="i-lucide-circle-dot" class="size-3 mr-1" />
                   Cambios pendientes
                 </UBadge>
-                <UBadge v-else-if="!loading && originalProfileData" color="success" variant="soft">
+                <UBadge v-else-if="!loading && originalProfileData && !isProfileEmpty" color="success" variant="soft">
                   <UIcon name="i-lucide-check" class="size-3 mr-1" />
                   Sin cambios
+                </UBadge>
+                <UBadge v-else-if="!loading && originalProfileData && isProfileEmpty" color="neutral" variant="soft">
+                  <UIcon name="i-lucide-user-x" class="size-3 mr-1" />
+                  Perfil incompleto
                 </UBadge>
               </div>
               <div class="flex items-center gap-2" v-if="activeTab !== 'security'">
