@@ -11,12 +11,10 @@ useSeoMeta({
 
 const toast = useToast()
 const { user } = useAuth()
-const { profile, loading, error, fetchMyProfile, updateMyProfile, uploadProfilePicture } = useProfile()
+const { profile, loading, error, fetchMyProfile, updateMyProfile } = useProfile()
 
 const activeTab = ref('personal')
 const saving = ref(false)
-const uploadingPhoto = ref(false)
-const fileInput = ref<HTMLInputElement | null>(null)
 
 const profileForm = ref({
   firstName: '',
@@ -107,39 +105,6 @@ const changePassword = async () => {
   toast.add({ title: 'Funcionalidad de cambio de contraseña pendiente', color: 'info' })
 }
 
-const triggerFileInput = () => {
-  fileInput.value?.click()
-}
-
-const handlePhotoUpload = async (event: Event) => {
-  const target = event.target as HTMLInputElement
-  const file = target.files?.[0]
-  
-  if (!file) return
-  
-  if (!file.type.startsWith('image/')) {
-    toast.add({ title: 'Solo se permiten archivos de imagen', color: 'error' })
-    return
-  }
-  
-  if (file.size > 5 * 1024 * 1024) {
-    toast.add({ title: 'La imagen debe ser menor a 5MB', color: 'error' })
-    return
-  }
-  
-  uploadingPhoto.value = true
-  const result = await uploadProfilePicture(file)
-  uploadingPhoto.value = false
-  
-  if (result) {
-    toast.add({ title: 'Foto de perfil actualizada', color: 'success' })
-  } else {
-    toast.add({ title: 'Error al subir la foto', color: 'error' })
-  }
-  
-  target.value = ''
-}
-
 const getRoleBadgeColor = (role: string): 'error' | 'info' | 'success' | 'warning' | 'primary' | 'neutral' => {
   const colors: Record<string, 'error' | 'info' | 'success' | 'warning' | 'primary' | 'neutral'> = {
     ADMIN: 'error',
@@ -185,30 +150,10 @@ const getGenderLabel = (gender: string): string => {
       <div class="lg:col-span-1">
         <UCard>
           <div class="text-center">
-            <div class="relative inline-block">
-              <UAvatar
-                :src="profile?.profilePictureUrl ? `http://localhost:8080${profile.profilePictureUrl}` : `https://api.dicebear.com/7.x/initials/svg?seed=${profileForm.firstName || user?.username || 'U'}`"
-                size="2xl"
-                class="mx-auto mb-4"
-              />
-              <UTooltip text="Cambiar foto de perfil">
-                <UButton
-                  size="xs"
-                  variant="solid"
-                  circle
-                  icon="i-lucide-camera"
-                  class="absolute -bottom-1 -right-1"
-                  :loading="uploadingPhoto"
-                  @click="triggerFileInput"
-                />
-              </UTooltip>
-            </div>
-            <input
-              ref="fileInput"
-              type="file"
-              accept="image/*"
-              class="hidden"
-              @change="handlePhotoUpload"
+            <UAvatar
+              :src="profile?.profilePictureUrl ? `http://localhost:8080${profile.profilePictureUrl}` : `https://api.dicebear.com/7.x/initials/svg?seed=${profileForm.firstName || user?.username || 'U'}`"
+              size="2xl"
+              class="mx-auto mb-4"
             />
             <h3 class="text-lg font-bold">{{ profileForm.firstName || user?.username }} {{ profileForm.lastName }}</h3>
             <p class="text-sm text-muted-foreground">{{ profileForm.institutionalEmail || user?.email }}</p>
@@ -335,7 +280,12 @@ const getGenderLabel = (gender: string): string => {
             </div>
           </div>
 
-          <div v-else-if="activeTab === 'contact'" class="space-y-4">
+          <div v-if="activeTab === 'contact'" class="space-y-4">
+            <UAlert color="info" variant="soft" icon="i-lucide-camera" class="mb-4">
+              <template #title>Foto de perfil</template>
+              <template #description>La funcionalidad de subir foto de perfil estará disponible próximamente con integración a Supabase Storage.</template>
+            </UAlert>
+            
             <div class="grid grid-cols-2 gap-4">
               <UFormField label="Teléfono principal" name="phone">
                 <UInput v-model="profileForm.phone" placeholder="Teléfono" icon="i-lucide-phone" />

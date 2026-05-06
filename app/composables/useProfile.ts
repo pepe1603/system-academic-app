@@ -53,6 +53,7 @@ interface UpdateProfileData {
   city?: string
   state?: string
   postalCode?: string
+  profilePictureUrl?: string
 }
 
 interface ApiResponse<T> {
@@ -109,40 +110,11 @@ export const useProfile = () => {
     }
   }
 
-  const uploadProfilePicture = async (file: File): Promise<string | null> => {
-    loading.value = true
-    error.value = null
-
-    try {
-      const formData = new FormData()
-      formData.append('file', file)
-
-      const response = await $fetch<ApiResponse<EnrichedProfile>>('/api/profile/me/picture', {
-        method: 'POST',
-        body: formData
-      })
-      
-      if (response.success && response.data) {
-        profile.value = response.data
-        return response.data.profilePictureUrl || null
-      }
-      error.value = response.message
-      return null
-    } catch (err: unknown) {
-      const e = err as { data?: { message?: string } }
-      error.value = e.data?.message || 'Error al subir foto de perfil'
-      return null
-    } finally {
-      loading.value = false
-    }
-  }
-
   return {
     loading,
     error,
     profile,
     fetchMyProfile,
-    updateMyProfile,
-    uploadProfilePicture
+    updateMyProfile
   }
 }
