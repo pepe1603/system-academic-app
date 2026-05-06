@@ -68,10 +68,29 @@ export const useUserProfile = () => {
     }
   }
 
+  const searchProfileByCurp = async (curp: string): Promise<EnrichedProfile | null> => {
+    loading.value = true
+    error.value = null
+
+    try {
+      const response = await $fetch<ApiResponse<EnrichedProfile>>('/api/profile/search', {
+        query: { curp }
+      })
+      return response.success && response.data ? response.data : null
+    } catch (err: unknown) {
+      const e = err as { data?: { message?: string } }
+      error.value = e.data?.message || 'Error al buscar perfil por CURP'
+      return null
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     loading,
     error,
     fetchUserProfile,
-    updateUserProfile
+    updateUserProfile,
+    searchProfileByCurp
   }
 }
