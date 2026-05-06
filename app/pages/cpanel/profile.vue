@@ -15,6 +15,7 @@ const { profile, loading, error, fetchMyProfile, updateMyProfile } = useProfile(
 
 const activeTab = ref('personal')
 const saving = ref(false)
+const originalProfileData = ref<EnrichedProfile | null>(null)
 
 const profileForm = ref({
   firstName: '',
@@ -40,9 +41,42 @@ const passwordForm = ref({
   confirmPassword: ''
 })
 
+const hasChanges = computed(() => {
+  if (!originalProfileData.value) return false
+  
+  const orig = originalProfileData.value
+  const form = profileForm.value
+  
+  return (
+    form.firstName !== (orig.firstName || '') ||
+    form.lastName !== (orig.lastName || '') ||
+    form.curp !== (orig.curp || '') ||
+    form.rfc !== (orig.rfc || '') ||
+    form.phone !== (orig.phone || '') ||
+    form.secondaryPhone !== (orig.secondaryPhone || '') ||
+    form.birthDate !== (orig.birthDate || '') ||
+    form.gender !== (orig.gender || '') ||
+    form.institutionalEmail !== (orig.institutionalEmail || '') ||
+    form.secondaryEmail !== (orig.secondaryEmail || '') ||
+    form.address !== (orig.address || '') ||
+    form.city !== (orig.city || '') ||
+    form.state !== (orig.state || '') ||
+    form.postalCode !== (orig.postalCode || '') ||
+    form.profilePictureUrl !== (orig.profilePictureUrl || '')
+  )
+})
+
+const discardChanges = () => {
+  if (originalProfileData.value) {
+    loadProfileData(originalProfileData.value)
+    toast.add({ title: 'Cambios descartados', color: 'neutral' })
+  }
+}
+
 onMounted(async () => {
   const data = await fetchMyProfile()
   if (data) {
+    originalProfileData.value = data
     loadProfileData(data)
   } else {
     loadEmptyProfile()
@@ -94,6 +128,9 @@ const saveProfile = async () => {
   saving.value = false
   if (success) {
     toast.add({ title: 'Perfil actualizado correctamente', color: 'success' })
+    if (profile.value) {
+      originalProfileData.value = { ...profile.value }
+    }
   } else {
     toast.add({ title: 'Error al actualizar el perfil', color: 'error' })
   }
@@ -225,16 +262,44 @@ const getGenderLabel = (gender: string): string => {
 
         <UCard>
           <template #header>
-            <div class="flex items-center justify-between">
-              <h2 class="text-lg font-semibold">
-                <template v-if="activeTab === 'personal'">Datos Personales</template>
-                <template v-else-if="activeTab === 'contact'">Información de Contacto</template>
-                <template v-else-if="activeTab === 'address'">Dirección</template>
-                <template v-else-if="activeTab === 'security'">Seguridad</template>
-              </h2>
-              <UButton v-if="activeTab !== 'security'" @click="saveProfile" :loading="saving" size="sm" icon="i-lucide-save">
-                Guardar
-              </UButton>
+            <div class="flex items-center justify-between gap-4">
+              <div class="flex items-center gap-2">
+                <h2 class="text-lg font-semibold">
+                  <template v-if="activeTab === 'personal'">Datos Personales</template>
+                  <template v-else-if="activeTab === 'contact'">Información de Contacto</template>
+                  <template v-else-if="activeTab === 'address'">Dirección</template>
+                  <template v-else-if="activeTab === 'security'">Seguridad</template>
+                </h2>
+                <UBadge v-if="hasChanges" color="warning" variant="soft" class="animate-pulse">
+                  <UIcon name="i-lucide-circle-dot" class="size-3 mr-1" />
+                  Cambios pendientes
+                </UBadge>
+                <UBadge v-else-if="!loading && originalProfileData" color="success" variant="soft">
+                  <UIcon name="i-lucide-check" class="size-3 mr-1" />
+                  Sin cambios
+                </UBadge>
+              </div>
+              <div class="flex items-center gap-2" v-if="activeTab !== 'security'">
+                <UButton 
+                  v-if="hasChanges" 
+                  @click="discardChanges" 
+                  variant="outline" 
+                  size="sm" 
+                  color="neutral"
+                  icon="i-lucide-undo-2"
+                >
+                  Descartar
+                </UButton>
+                <UButton 
+                  @click="saveProfile" 
+                  :loading="saving" 
+                  size="sm" 
+                  icon="i-lucide-save"
+                  :disabled="!hasChanges"
+                >
+                  Guardar
+                </UButton>
+              </div>
             </div>
           </template>
 
