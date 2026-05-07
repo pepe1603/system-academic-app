@@ -117,8 +117,6 @@ const openEdit = async (generation: Generation) => {
   }
   viewMode.value = 'edit'
 }
-  viewMode.value = 'edit'
-}
 
 const form = ref({
   name: '',
