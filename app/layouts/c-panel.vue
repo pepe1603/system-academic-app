@@ -30,6 +30,7 @@ const navigation = [
   { title: 'Estudiantes', to: '/cpanel/students', icon: 'i-lucide-user-round' },
   { title: 'Docentes', to: '/cpanel/teachers', icon: 'i-lucide-graduation-cap' },
   { title: 'Generaciones', to: '/cpanel/generations', icon: 'i-lucide-calendar-days' },
+  { title: 'Semestres', to: '/cpanel/academic-semesters', icon: 'i-lucide-calendar-range' },
   { title: 'Planes de Estudio', to: '/cpanel/study-plans', icon: 'i-lucide-book-open' },
   { title: 'Configuración', to: '/cpanel/settings', icon: 'i-lucide-settings' }
 ]
