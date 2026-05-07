@@ -1,0 +1,26 @@
+export default defineEventHandler(async (event) => {
+  const config = useRuntimeConfig()
+  const cookie = getCookie(event, 'auth_token')
+  const authHeader = cookie ? `Bearer ${cookie}` : null
+
+  console.log('[PROXY] GET /api/evaluation-types/by-course/:courseId')
+
+  if (!authHeader) {
+    throw createError({ statusCode: 401, message: 'No autorizado' })
+  }
+
+  const courseId = getRouterParam(event, 'courseId')
+
+  try {
+    const response = await $fetch(`${config.public.apiBaseUrl}/evaluation-types/by-course/${courseId}`, {
+      headers: { Authorization: authHeader }
+    })
+    return response
+  } catch (error: unknown) {
+    const err = error as { statusCode?: number, data?: { message?: string } }
+    throw createError({
+      statusCode: err.statusCode || 500,
+      message: err.data?.message || 'Error al obtener tipos de evaluación del curso'
+    })
+  }
+})
