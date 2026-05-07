@@ -19,8 +19,25 @@ type ViewMode = 'create' | 'view' | 'edit' | null
 const viewMode = ref<ViewMode>(null)
 const selectedGeneration = ref<Generation | null>(null)
 const originalGenerationData = ref<Generation | null>(null)
+const showDeleted = ref(false)
 
-const { generations, loading, error, fetchGenerations, getGeneration, createGeneration, updateGeneration, deleteGeneration } = useGenerations()
+const { generations, loading, error, fetchGenerations, fetchDeletedGenerations, getGeneration, createGeneration, updateGeneration, deleteGeneration } = useGenerations()
+
+onMounted(() => {
+  if (showDeleted.value) {
+    fetchDeletedGenerations()
+  } else {
+    fetchGenerations(0, 10)
+  }
+})
+
+watch(showDeleted, (isDeleted) => {
+  if (isDeleted) {
+    fetchDeletedGenerations()
+  } else {
+    fetchGenerations(0, 10)
+  }
+})
 
 const hasChanges = computed(() => {
   if (!originalGenerationData.value || viewMode.value !== 'edit') return false
@@ -224,6 +241,18 @@ const getStatusLabel = (status: string): string => {
 }
 
 const getGenerationActions = (generation: Generation): DropdownMenuItem[][] => {
+  if (showDeleted.value) {
+    return [
+      [
+        {
+          label: 'Ver detalles',
+          icon: 'i-lucide-eye',
+          onSelect: () => openView(generation)
+        }
+      ]
+    ]
+  }
+  
   return [
     [
       {
@@ -254,12 +283,22 @@ const getGenerationActions = (generation: Generation): DropdownMenuItem[][] => {
     <div class="flex items-center gap-2 justify-between">
       <div>
         <h1 class="text-3xl font-bold">Generaciones</h1>
-        <p class="text-muted-foreground">Gestiona las generaciones académicas</p>
+        <p class="text-muted-foreground">
+          {{ showDeleted ? 'Generaciones eliminadas' : 'Generaciones activas' }}: {{ generations.length }}
+        </p>
       </div>
-      <UButton @click="openCreate" icon="i-lucide-plus">
-        Nueva Generación
-      </UButton>
+      <div class="flex items-center gap-4">
+        <UCheckbox v-if="user?.roles?.includes('ADMIN')" v-model="showDeleted" label="Ver eliminados" />
+        <UButton v-if="!showDeleted" @click="openCreate" icon="i-lucide-plus">
+          Nueva Generación
+        </UButton>
+      </div>
     </div>
+
+    <UAlert v-if="showDeleted" color="warning" variant="soft" icon="i-lucide-trash-2" class="mb-4">
+      <template #title>Vista de papelera</template>
+      <template #description>Estás viendo las generaciones eliminadas. No se pueden editar ni restaurar desde aquí.</template>
+    </UAlert>
 
     <UAlert
       v-if="loading"

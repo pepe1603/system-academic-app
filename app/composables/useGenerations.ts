@@ -189,6 +189,28 @@ export const useGenerations = () => {
     return ''
   }
 
+  const fetchDeletedGenerations = async (): Promise<Generation[]> => {
+    loading.value = true
+    error.value = null
+
+    try {
+      const response = await $fetch<ApiResponse<Generation[]>>('/api/cpanel/generations/deleted')
+      
+      if (response.success && response.data) {
+        generations.value = response.data.map(normalizeGeneration)
+        return generations.value
+      }
+      error.value = response.message || 'Error al cargar generaciones eliminadas'
+      return []
+    } catch (err: unknown) {
+      const e = err as { data?: { message?: string } }
+      error.value = e.data?.message || 'Error al cargar generaciones eliminadas'
+      return []
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     generations,
     loading,
@@ -197,6 +219,7 @@ export const useGenerations = () => {
     currentPage,
     totalPages,
     fetchGenerations,
+    fetchDeletedGenerations,
     getGeneration,
     createGeneration,
     updateGeneration,
