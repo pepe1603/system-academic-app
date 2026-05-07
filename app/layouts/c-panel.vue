@@ -29,6 +29,7 @@ const navigation = [
   { title: 'Usuarios', to: '/cpanel/users', icon: 'i-lucide-users' },
   { title: 'Estudiantes', to: '/cpanel/students', icon: 'i-lucide-user-round' },
   { title: 'Docentes', to: '/cpanel/teachers', icon: 'i-lucide-graduation-cap' },
+  { title: 'Generaciones', to: '/cpanel/generations', icon: 'i-lucide-calendar-days' },
   { title: 'Configuración', to: '/cpanel/settings', icon: 'i-lucide-settings' }
 ]
 
