@@ -18,8 +18,39 @@ type ViewMode = 'create' | 'view' | 'edit' | null
 
 const viewMode = ref<ViewMode>(null)
 const selectedGeneration = ref<Generation | null>(null)
+const originalGenerationData = ref<Generation | null>(null)
 
 const { generations, loading, error, fetchGenerations, getGeneration, createGeneration, updateGeneration, deleteGeneration } = useGenerations()
+
+const hasChanges = computed(() => {
+  if (!originalGenerationData.value || viewMode.value !== 'edit') return false
+  
+  const orig = originalGenerationData.value
+  const form = editForm.value
+  
+  return (
+    form.name !== (orig.name || '') ||
+    form.entryYear !== (orig.entryYear || 0) ||
+    form.graduationYear !== (orig.graduationYear || undefined) ||
+    form.status !== (orig.status || 'ACTIVE') ||
+    form.startDate !== (orig.startDate || '') ||
+    form.endDate !== (orig.endDate || '')
+  )
+})
+
+const discardChanges = () => {
+  if (originalGenerationData.value) {
+    editForm.value = {
+      name: originalGenerationData.value.name || '',
+      entryYear: originalGenerationData.value.entryYear || 0,
+      graduationYear: originalGenerationData.value.graduationYear || undefined,
+      status: originalGenerationData.value.status || 'ACTIVE',
+      startDate: originalGenerationData.value.startDate || '',
+      endDate: originalGenerationData.value.endDate || ''
+    }
+    toast.add({ title: 'Cambios descartados', color: 'neutral' })
+  }
+}
 
 const availableStatuses = [
   { label: 'Activa', value: 'ACTIVE' },
@@ -40,6 +71,7 @@ watch(pageModel, (newPage) => {
 const closePanel = () => {
   viewMode.value = null
   selectedGeneration.value = null
+  originalGenerationData.value = null
 }
 
 const openCreate = () => {
@@ -56,13 +88,18 @@ const openView = async (generation: Generation) => {
 const openEdit = async (generation: Generation) => {
   selectedGeneration.value = await getGeneration(generation.id)
   if (selectedGeneration.value) {
-    editForm.name = selectedGeneration.value.name
-    editForm.entryYear = selectedGeneration.value.entryYear
-    editForm.graduationYear = selectedGeneration.value.graduationYear || undefined
-    editForm.status = selectedGeneration.value.status
-    editForm.startDate = selectedGeneration.value.startDate || ''
-    editForm.endDate = selectedGeneration.value.endDate || ''
+    originalGenerationData.value = { ...selectedGeneration.value }
+    editForm.value = {
+      name: selectedGeneration.value.name || '',
+      entryYear: selectedGeneration.value.entryYear || 0,
+      graduationYear: selectedGeneration.value.graduationYear || undefined,
+      status: selectedGeneration.value.status || 'ACTIVE',
+      startDate: selectedGeneration.value.startDate || '',
+      endDate: selectedGeneration.value.endDate || ''
+    }
   }
+  viewMode.value = 'edit'
+}
   viewMode.value = 'edit'
 }
 
@@ -136,6 +173,15 @@ const handleUpdateGeneration = async () => {
 
   if (result.success) {
     toast.add({ title: result.message, color: 'success' })
+    originalGenerationData.value = {
+      ...originalGenerationData.value!,
+      name: editForm.value.name,
+      entryYear: editForm.value.entryYear,
+      graduationYear: editForm.value.graduationYear,
+      status: editForm.value.status as any,
+      startDate: editForm.value.startDate,
+      endDate: editForm.value.endDate
+    }
     closePanel()
     fetchGenerations(0, 10)
   } else {
@@ -323,7 +369,7 @@ const getGenerationActions = (generation: Generation): DropdownMenuItem[][] => {
       <div class="w-full max-w-lg">
         <UCard class="shadow-2xl">
           <template #header>
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between gap-4">
               <div class="flex items-center gap-2">
                 <UIcon
                   :name="viewMode === 'create' ? 'i-lucide-plus' : viewMode === 'view' ? 'i-lucide-calendar' : 'i-lucide-pencil'"
@@ -331,6 +377,14 @@ const getGenerationActions = (generation: Generation): DropdownMenuItem[][] => {
                 <span class="font-semibold">
                   {{ viewMode === 'create' ? 'Nueva Generación' : viewMode === 'view' ? `Generación: ${selectedGeneration?.name}` : `Editar: ${selectedGeneration?.name}` }}
                 </span>
+                <UBadge v-if="viewMode === 'edit' && hasChanges" color="warning" variant="soft" class="animate-pulse">
+                  <UIcon name="i-lucide-circle-dot" class="size-3 mr-1" />
+                  Cambios pendientes
+                </UBadge>
+                <UBadge v-else-if="viewMode === 'edit' && !hasChanges" color="success" variant="soft">
+                  <UIcon name="i-lucide-check" class="size-3 mr-1" />
+                  Sin cambios
+                </UBadge>
               </div>
               <UButton size="xs" variant="ghost" @click="closePanel">
                 <UIcon name="i-lucide-x" class="size-4" />
@@ -450,9 +504,25 @@ const getGenerationActions = (generation: Generation): DropdownMenuItem[][] => {
               <UButton v-if="viewMode === 'create'" @click="handleCreateGeneration" :loading="submitting" icon="i-lucide-save">
                 Crear
               </UButton>
-              <UButton v-if="viewMode === 'edit'" @click="handleUpdateGeneration" :loading="submitting" icon="i-lucide-save">
-                Guardar
-              </UButton>
+              <template v-if="viewMode === 'edit'">
+                <UButton 
+                  v-if="hasChanges" 
+                  @click="discardChanges" 
+                  variant="outline" 
+                  color="neutral"
+                  icon="i-lucide-undo-2"
+                >
+                  Descartar
+                </UButton>
+                <UButton 
+                  @click="handleUpdateGeneration" 
+                  :loading="submitting" 
+                  icon="i-lucide-save"
+                  :disabled="!hasChanges"
+                >
+                  Guardar
+                </UButton>
+              </template>
             </div>
           </template>
         </UCard>
