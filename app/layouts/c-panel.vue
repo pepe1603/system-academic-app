@@ -31,7 +31,9 @@ const navigation = [
   { title: 'Docentes', to: '/cpanel/teachers', icon: 'i-lucide-graduation-cap' },
   { title: 'Generaciones', to: '/cpanel/generations', icon: 'i-lucide-calendar-days' },
   { title: 'Semestres', to: '/cpanel/academic-semesters', icon: 'i-lucide-calendar-range' },
-  { title: 'Planes de Estudio', to: '/cpanel/study-plans', icon: 'i-lucide-book-open' },
+  { title: 'Cursos', to: '/cpanel/courses', icon: 'i-lucide-book-open' },
+  { title: 'Grupos', to: '/cpanel/academic-groups', icon: 'i-lucide-users' },
+  { title: 'Planes de Estudio', to: '/cpanel/study-plans', icon: 'i-lucide-book' },
   { title: 'Configuración', to: '/cpanel/settings', icon: 'i-lucide-settings' }
 ]
 
