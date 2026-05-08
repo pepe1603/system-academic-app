@@ -28,6 +28,7 @@ const navigation = [
   },
   { title: 'Usuarios', to: '/cpanel/users', icon: 'i-lucide-users' },
   { title: 'Estudiantes', to: '/cpanel/students', icon: 'i-lucide-user-round' },
+  { title: 'Inscripciones', to: '/cpanel/enrollments', icon: 'i-lucide-file-text' },
   { title: 'Docentes', to: '/cpanel/teachers', icon: 'i-lucide-graduation-cap' },
   { title: 'Generaciones', to: '/cpanel/generations', icon: 'i-lucide-calendar-days' },
   { title: 'Semestres', to: '/cpanel/academic-semesters', icon: 'i-lucide-calendar-range' },
@@ -35,6 +36,7 @@ const navigation = [
   { title: 'Cursos', to: '/cpanel/courses', icon: 'i-lucide-book-open' },
   { title: 'Grupos', to: '/cpanel/academic-groups', icon: 'i-lucide-users' },
   { title: 'Evaluaciones', to: '/cpanel/evaluation-types', icon: 'i-lucide-clipboard-list' },
+  { title: 'Calificaciones', to: '/cpanel/grades', icon: 'i-lucide-star' },
   { title: 'Planes de Estudio', to: '/cpanel/study-plans', icon: 'i-lucide-book' },
   { title: 'Configuración', to: '/cpanel/settings', icon: 'i-lucide-settings' }
 ]
