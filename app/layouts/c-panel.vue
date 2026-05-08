@@ -31,6 +31,7 @@ const navigation = [
   { title: 'Docentes', to: '/cpanel/teachers', icon: 'i-lucide-graduation-cap' },
   { title: 'Generaciones', to: '/cpanel/generations', icon: 'i-lucide-calendar-days' },
   { title: 'Semestres', to: '/cpanel/academic-semesters', icon: 'i-lucide-calendar-range' },
+  { title: 'Períodos', to: '/cpanel/academic-periods', icon: 'i-lucide-clock' },
   { title: 'Cursos', to: '/cpanel/courses', icon: 'i-lucide-book-open' },
   { title: 'Grupos', to: '/cpanel/academic-groups', icon: 'i-lucide-users' },
   { title: 'Evaluaciones', to: '/cpanel/evaluation-types', icon: 'i-lucide-clipboard-list' },
