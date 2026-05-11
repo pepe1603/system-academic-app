@@ -39,6 +39,7 @@ const navigation = [
   { title: 'Calificaciones', to: '/cpanel/grades', icon: 'i-lucide-star' },
   { title: 'Asistencias', to: '/cpanel/attendances', icon: 'i-lucide-check-check' },
   { title: 'Kardex', to: '/cpanel/kardex', icon: 'i-lucide-notebook-text' },
+  { title: 'Boletas', to: '/cpanel/report-cards', icon: 'i-lucide-file-text' },
   { title: 'Planes de Estudio', to: '/cpanel/study-plans', icon: 'i-lucide-book' },
   { title: 'Configuración', to: '/cpanel/settings', icon: 'i-lucide-settings' }
 ]
