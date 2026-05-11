@@ -38,6 +38,7 @@ const navigation = [
   { title: 'Evaluaciones', to: '/cpanel/evaluation-types', icon: 'i-lucide-clipboard-list' },
   { title: 'Calificaciones', to: '/cpanel/grades', icon: 'i-lucide-star' },
   { title: 'Asistencias', to: '/cpanel/attendances', icon: 'i-lucide-check-check' },
+  { title: 'Conducta', to: '/cpanel/conduct', icon: 'i-lucide-shield' },
   { title: 'Kardex', to: '/cpanel/kardex', icon: 'i-lucide-notebook-text' },
   { title: 'Boletas', to: '/cpanel/report-cards', icon: 'i-lucide-file-text' },
   { title: 'Planes de Estudio', to: '/cpanel/study-plans', icon: 'i-lucide-book' },
