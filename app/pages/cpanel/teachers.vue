@@ -27,6 +27,19 @@ const originalRecordData = ref<Teacher | null>(null)
 const showDeleted = ref(false)
 
 const pageModel = ref(1)
+const searchQuery = ref('')
+
+const filteredRecords = computed(() => {
+  if (!searchQuery.value) return records.value
+  const q = searchQuery.value.toLowerCase()
+  return records.value.filter(r =>
+    r.firstName.toLowerCase().includes(q) ||
+    r.lastName.toLowerCase().includes(q) ||
+    (r.employeeNumber && r.employeeNumber.toLowerCase().includes(q)) ||
+    (r.curp && r.curp.toLowerCase().includes(q)) ||
+    (r.institutionalEmail && r.institutionalEmail.toLowerCase().includes(q))
+  )
+})
 
 onMounted(() => {
   if (showDeleted.value) {
@@ -37,6 +50,7 @@ onMounted(() => {
 })
 
 watch(showDeleted, (isDeleted) => {
+  searchQuery.value = ''
   if (isDeleted) {
     fetchDeletedRecords()
   } else {
@@ -45,7 +59,9 @@ watch(showDeleted, (isDeleted) => {
 })
 
 watch(pageModel, (newPage) => {
-  fetchRecords(newPage - 1, 10)
+  if (!showDeleted.value) {
+    fetchRecords(newPage - 1, 10)
+  }
 })
 
 const closePanel = () => {
@@ -61,7 +77,11 @@ const openCreate = () => {
 }
 
 const openView = async (record: Teacher) => {
-  selectedRecord.value = await getRecord(record.id)
+  if (showDeleted.value) {
+    selectedRecord.value = { ...record }
+  } else {
+    selectedRecord.value = await getRecord(record.id)
+  }
   viewMode.value = 'view'
 }
 
@@ -305,8 +325,12 @@ const getActions = (record: Teacher): DropdownMenuItem[][] => {
 
     <div v-if="viewMode === null">
       <div class="bg-background rounded-lg p-6">
-        <UPageList v-if="records.length > 0" divide>
-          <UPageCard v-for="record in records" :key="record.id" variant="ghost">
+        <div class="flex items-center justify-between mb-4">
+          <UInput v-model="searchQuery" placeholder="Buscar por nombre, empleado, CURP o email..." icon="i-lucide-search" class="w-80" />
+          <span class="text-sm text-muted-foreground">{{ filteredRecords.length }} de {{ records.length }}</span>
+        </div>
+        <UPageList v-if="filteredRecords.length > 0" divide>
+          <UPageCard v-for="record in filteredRecords" :key="record.id" variant="ghost">
             <template #header>
               <div class="flex items-center justify-between w-full">
                 <div class="flex items-center gap-3">
@@ -346,9 +370,20 @@ const getActions = (record: Teacher): DropdownMenuItem[][] => {
         </UPageList>
         <div v-else class="text-center py-12">
           <UIcon name="i-lucide-graduation-cap" class="size-16 mx-auto text-muted-foreground mb-4" />
-          <h3 class="text-lg font-medium mb-2">No hay docentes registrados</h3>
-          <p class="text-muted-foreground mb-4">Agrega el primer docente para comenzar</p>
-          <UButton @click="openCreate" icon="i-lucide-plus">Agregar Docente</UButton>
+          <h3 class="text-lg font-medium mb-2">{{ searchQuery ? 'Sin resultados de búsqueda' : (showDeleted ? 'No hay docentes eliminados' : 'No hay docentes registrados') }}</h3>
+          <p class="text-muted-foreground mb-4">{{ searchQuery ? 'Intenta con otros términos de búsqueda' : (showDeleted ? 'No hay registros en la papelera' : 'Agrega el primer docente para comenzar') }}</p>
+          <UButton v-if="!showDeleted && !searchQuery" @click="openCreate" icon="i-lucide-plus">Agregar Docente</UButton>
+          <UButton v-else-if="searchQuery" variant="outline" @click="searchQuery = ''" icon="i-lucide-x">Limpiar búsqueda</UButton>
+        </div>
+
+        <div v-if="records.length > 0 && !showDeleted" class="flex items-center justify-between mt-6 pt-4 border-t">
+          <UButton size="sm" variant="outline" :disabled="pageModel <= 1" @click="pageModel--" icon="i-lucide-chevron-left">
+            Anterior
+          </UButton>
+          <span class="text-sm text-muted-foreground">Página {{ pageModel }}</span>
+          <UButton size="sm" variant="outline" :disabled="records.length < 10" @click="pageModel++" trailing-icon="i-lucide-chevron-right">
+            Siguiente
+          </UButton>
         </div>
       </div>
     </div>
