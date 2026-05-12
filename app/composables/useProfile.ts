@@ -134,11 +134,55 @@ export const useProfile = () => {
     }
   }
 
+  const searchProfileByCurp = async (curp: string): Promise<EnrichedProfile | null> => {
+    loading.value = true
+    error.value = null
+
+    try {
+      const response = await $fetch<ApiResponse<EnrichedProfile>>('/api/profile/search', {
+        query: { curp }
+      })
+      if (response.success && response.data) {
+        return normalizeProfileData(response.data)
+      }
+      error.value = response.message || 'Perfil no encontrado'
+      return null
+    } catch (err: unknown) {
+      const e = err as { data?: { message?: string } }
+      error.value = e.data?.message || 'Error al buscar perfil'
+      return null
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const getAcademicHistory = async (): Promise<unknown> => {
+    loading.value = true
+    error.value = null
+
+    try {
+      const response = await $fetch<ApiResponse<unknown>>('/api/profile/me/academic-history')
+      if (response.success) {
+        return response.data
+      }
+      error.value = response.message || 'Error al obtener historial académico'
+      return null
+    } catch (err: unknown) {
+      const e = err as { data?: { message?: string } }
+      error.value = e.data?.message || 'Error al obtener historial académico'
+      return null
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     loading,
     error,
     profile,
     fetchMyProfile,
-    updateMyProfile
+    updateMyProfile,
+    searchProfileByCurp,
+    getAcademicHistory
   }
 }

@@ -122,7 +122,8 @@ const loadEmptyProfile = () => {
     address: '',
     city: '',
     state: '',
-    postalCode: ''
+    postalCode: '',
+    profilePictureUrl: ''
   }
 }
 
