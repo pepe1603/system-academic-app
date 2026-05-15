@@ -28,6 +28,7 @@ const navigation = [
   },
   { title: 'Usuarios', to: '/cpanel/users', icon: 'i-lucide-users' },
   { title: 'Estudiantes', to: '/cpanel/students', icon: 'i-lucide-user-round' },
+  { title: 'Documentos', to: '/cpanel/student-documents', icon: 'i-lucide-file' },
   { title: 'Inscripciones', to: '/cpanel/enrollments', icon: 'i-lucide-file-text' },
   { title: 'Docentes', to: '/cpanel/teachers', icon: 'i-lucide-graduation-cap' },
   { title: 'Tutores', to: '/cpanel/guardians', icon: 'i-lucide-shield' },
@@ -43,8 +44,10 @@ const navigation = [
   { title: 'Kardex', to: '/cpanel/kardex', icon: 'i-lucide-notebook-text' },
   { title: 'Certificados', to: '/cpanel/certificates', icon: 'i-lucide-scroll' },
   { title: 'Ex. Extraordinarios', to: '/cpanel/extraordinary-exams', icon: 'i-lucide-file-badge' },
+  { title: 'Retake Exams', to: '/cpanel/retake-exams', icon: 'i-lucide-repeat' },
   { title: 'Boletas', to: '/cpanel/report-cards', icon: 'i-lucide-file-text' },
   { title: 'Planes de Estudio', to: '/cpanel/study-plans', icon: 'i-lucide-book' },
+  { title: 'Semestres (Plan)', to: '/cpanel/semesters', icon: 'i-lucide-list-ordered' },
   { title: 'Configuración', to: '/cpanel/settings', icon: 'i-lucide-settings' }
 ]
 
