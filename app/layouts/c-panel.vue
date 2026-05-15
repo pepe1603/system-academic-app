@@ -42,6 +42,7 @@ const navigation = [
   { title: 'Conducta', to: '/cpanel/conduct', icon: 'i-lucide-shield' },
   { title: 'Kardex', to: '/cpanel/kardex', icon: 'i-lucide-notebook-text' },
   { title: 'Certificados', to: '/cpanel/certificates', icon: 'i-lucide-scroll' },
+  { title: 'Ex. Extraordinarios', to: '/cpanel/extraordinary-exams', icon: 'i-lucide-file-badge' },
   { title: 'Boletas', to: '/cpanel/report-cards', icon: 'i-lucide-file-text' },
   { title: 'Planes de Estudio', to: '/cpanel/study-plans', icon: 'i-lucide-book' },
   { title: 'Configuración', to: '/cpanel/settings', icon: 'i-lucide-settings' }
