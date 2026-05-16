@@ -49,6 +49,8 @@ const navigation = [
   { title: 'Boletas', to: '/cpanel/report-cards', icon: 'i-lucide-file-text' },
   { title: 'Planes de Estudio', to: '/cpanel/study-plans', icon: 'i-lucide-book' },
   { title: 'Semestres (Plan)', to: '/cpanel/semesters', icon: 'i-lucide-list-ordered' },
+  { title: 'Auditoría', to: '/cpanel/access-audit', icon: 'i-lucide-list-checks' },
+  { title: 'Config. Sistema', to: '/cpanel/system-configuration', icon: 'i-lucide-sliders-horizontal' },
   { title: 'Configuración', to: '/cpanel/settings', icon: 'i-lucide-settings' }
 ]
 
