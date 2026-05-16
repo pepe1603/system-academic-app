@@ -36,6 +36,7 @@ const navigation = [
   { title: 'Semestres', to: '/cpanel/academic-semesters', icon: 'i-lucide-calendar-range' },
   { title: 'Períodos', to: '/cpanel/academic-periods', icon: 'i-lucide-clock' },
   { title: 'Cursos', to: '/cpanel/courses', icon: 'i-lucide-book-open' },
+  { title: 'Rec. Educativos', to: '/cpanel/educational-resources', icon: 'i-lucide-library' },
   { title: 'Grupos', to: '/cpanel/academic-groups', icon: 'i-lucide-users' },
   { title: 'Evaluaciones', to: '/cpanel/evaluation-types', icon: 'i-lucide-clipboard-list' },
   { title: 'Calificaciones', to: '/cpanel/grades', icon: 'i-lucide-star' },
