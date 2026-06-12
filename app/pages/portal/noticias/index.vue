@@ -8,13 +8,21 @@ definePageMeta({
   layout: 'portal'
 })
 
+import type { News, NewsPage } from '~/composables/usePortalContent'
+
 const { getNews } = usePortalContent()
 const { data } = await useAsyncData('news', () => getNews(false))
-const news = computed(() => data.value || [])
 
-const selectedNews = ref<any>(null)
+const news = computed<News[]>(() => {
+  if (!data.value) return []
+  if (Array.isArray(data.value)) return data.value
+  if ('content' in data.value) return data.value.content
+  return []
+})
 
-const openNewsModal = (item: any) => {
+const selectedNews = ref<News | null>(null)
+
+const openNewsModal = (item: News) => {
   selectedNews.value = item
 }
 
@@ -50,7 +58,7 @@ const closeNewsModal = () => {
             </div>
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             <div class="absolute bottom-3 left-3">
-              <UBadge color="white" variant="solid">
+              <UBadge color="neutral" variant="solid">
                 {{ new Date(item.createdAt).toLocaleDateString('es-MX', { month: 'short', day: 'numeric' }) }}
               </UBadge>
             </div>

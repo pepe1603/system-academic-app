@@ -95,7 +95,7 @@ const getActions = (log: AccessAudit): DropdownMenuItem[][] => {
   const items: DropdownMenuItem[][] = [
     [{ label: 'Ver detalles', icon: 'i-lucide-eye', onSelect: () => openView(log) }]
   ]
-  if (user?.roles?.includes('ADMIN')) {
+  if (user.value?.roles?.includes('ADMIN')) {
     items.push([{ label: 'Eliminar', icon: 'i-lucide-trash', color: 'error' as const, onSelect: () => handleDelete(log) }])
   }
   return items

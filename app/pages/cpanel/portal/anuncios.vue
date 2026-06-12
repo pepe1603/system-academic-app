@@ -52,8 +52,8 @@ const handleSubmit = async () => {
 
   const data = {
     ...form.value,
-    startDate: form.value.startDate || null,
-    endDate: form.value.endDate || null
+    startDate: form.value.startDate || undefined,
+    endDate: form.value.endDate || undefined
   }
 
   let success = false

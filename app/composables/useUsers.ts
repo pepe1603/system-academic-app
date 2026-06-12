@@ -1,3 +1,6 @@
+import type { ApiResponse, ApiResult } from '~/types/api'
+import { useBaseCRUD } from './useBaseCRUD'
+
 export interface User {
   id: string
   username: string
@@ -20,7 +23,7 @@ interface UsersPage {
   last: boolean
 }
 
-interface CreateUserData {
+export interface CreateUserData {
   username: string
   email: string
   password: string
@@ -28,32 +31,27 @@ interface CreateUserData {
   roles?: string[]
 }
 
-interface UpdateUserData {
+export interface UpdateUserData {
   isActive?: boolean
   roles?: string[]
   mustChangePassword?: boolean
   curp?: string
 }
 
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data?: T
-}
-
-interface ApiResult<T> {
-  success: boolean
-  message: string
-  data?: T
-}
+const baseCRUD = useBaseCRUD<User, CreateUserData, UpdateUserData>({
+  endpoint: '/api/cpanel/users'
+})
 
 export const useUsers = () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
-  const users = ref<User[]>([])
-  const totalElements = ref(0)
-  const currentPage = ref(0)
-  const totalPages = ref(0)
+
+  const handleError = (err: unknown, defaultMessage: string): string => {
+    const e = err as { data?: { message?: string } }
+    const msg = e.data?.message || defaultMessage
+    error.value = msg
+    return msg
+  }
 
   const fetchUsers = async (page = 0, size = 20) => {
     loading.value = true
@@ -65,35 +63,20 @@ export const useUsers = () => {
       })
 
       if (response.success && response.data) {
-        users.value = [...(response.data.content || [])]
-        totalElements.value = response.data.totalElements || 0
-        totalPages.value = response.data.totalPages || 0
-        currentPage.value = response.data.number || 0
+        baseCRUD.items.value = [...(response.data.content || [])]
+        baseCRUD.totalElements.value = response.data.totalElements || 0
+        baseCRUD.totalPages.value = response.data.totalPages || 0
+        baseCRUD.currentPage.value = response.data.number || 0
       }
       error.value = response.message || null
     } catch (err: unknown) {
-      const e = err as { data?: { message?: string } }
-      error.value = e.data?.message || 'Error al cargar usuarios'
+      handleError(err, 'Error al cargar usuarios')
     } finally {
       loading.value = false
     }
   }
 
-  const getUser = async (id: string): Promise<User | null> => {
-    loading.value = true
-    error.value = null
-
-    try {
-      const response = await $fetch<ApiResponse<User>>(`/api/cpanel/users/${id}`)
-      return response.success && response.data ? response.data : null
-    } catch (err: unknown) {
-      const e = err as { data?: { message?: string } }
-      error.value = e.data?.message || 'Error al obtener usuario'
-      return null
-    } finally {
-      loading.value = false
-    }
-  }
+  const getUser = baseCRUD.getById
 
   const createUser = async (data: CreateUserData): Promise<ApiResult<User>> => {
     loading.value = true
@@ -110,9 +93,7 @@ export const useUsers = () => {
       }
       return { success: false, message: response.message }
     } catch (err: unknown) {
-      const e = err as { data?: { message?: string } }
-      const msg = e.data?.message || 'Error al crear usuario'
-      error.value = msg
+      const msg = handleError(err, 'Error al crear usuario')
       return { success: false, message: msg }
     } finally {
       loading.value = false
@@ -134,33 +115,14 @@ export const useUsers = () => {
       }
       return { success: false, message: response.message }
     } catch (err: unknown) {
-      const e = err as { data?: { message?: string } }
-      const msg = e.data?.message || 'Error al actualizar usuario'
-      error.value = msg
+      const msg = handleError(err, 'Error al actualizar usuario')
       return { success: false, message: msg }
     } finally {
       loading.value = false
     }
   }
 
-  const deleteUser = async (id: string): Promise<ApiResult<void>> => {
-    loading.value = true
-    error.value = null
-
-    try {
-      const response = await $fetch<ApiResponse<void>>(`/api/cpanel/users/${id}`, {
-        method: 'DELETE'
-      })
-      return { success: response.success, message: response.message }
-    } catch (err: unknown) {
-      const e = err as { data?: { message?: string } }
-      const msg = e.data?.message || 'Error al eliminar usuario'
-      error.value = msg
-      return { success: false, message: msg }
-    } finally {
-      loading.value = false
-    }
-  }
+  const deleteUser = baseCRUD.delete
 
   const revokeSessions = async (id: string): Promise<ApiResult<void>> => {
     loading.value = true
@@ -172,9 +134,7 @@ export const useUsers = () => {
       })
       return { success: response.success, message: response.message }
     } catch (err: unknown) {
-      const e = err as { data?: { message?: string } }
-      const msg = e.data?.message || 'Error al revocar sesiones'
-      error.value = msg
+      const msg = handleError(err, 'Error al revocar sesiones')
       return { success: false, message: msg }
     } finally {
       loading.value = false
@@ -191,9 +151,7 @@ export const useUsers = () => {
       })
       return { success: response.success, message: response.message }
     } catch (err: unknown) {
-      const e = err as { data?: { message?: string } }
-      const msg = e.data?.message || 'Error al desbloquear usuario'
-      error.value = msg
+      const msg = handleError(err, 'Error al desbloquear usuario')
       return { success: false, message: msg }
     } finally {
       loading.value = false
@@ -210,9 +168,7 @@ export const useUsers = () => {
       })
       return { success: response.success, message: response.message }
     } catch (err: unknown) {
-      const e = err as { data?: { message?: string } }
-      const msg = e.data?.message || 'Error al bloquear usuario'
-      error.value = msg
+      const msg = handleError(err, 'Error al bloquear usuario')
       return { success: false, message: msg }
     } finally {
       loading.value = false
@@ -229,9 +185,7 @@ export const useUsers = () => {
       })
       return { success: response.success, message: response.message }
     } catch (err: unknown) {
-      const e = err as { data?: { message?: string } }
-      const msg = e.data?.message || 'Error al banear usuario'
-      error.value = msg
+      const msg = handleError(err, 'Error al banear usuario')
       return { success: false, message: msg }
     } finally {
       loading.value = false
@@ -248,15 +202,14 @@ export const useUsers = () => {
       })
 
       if (response.success && response.data) {
-        users.value = [...(response.data.content || [])]
-        totalElements.value = response.data.totalElements || 0
-        totalPages.value = response.data.totalPages || 0
-        currentPage.value = response.data.number || 0
+        baseCRUD.items.value = [...(response.data.content || [])]
+        baseCRUD.totalElements.value = response.data.totalElements || 0
+        baseCRUD.totalPages.value = response.data.totalPages || 0
+        baseCRUD.currentPage.value = response.data.number || 0
       }
       error.value = response.message || null
     } catch (err: unknown) {
-      const e = err as { data?: { message?: string } }
-      error.value = e.data?.message || 'Error al cargar usuarios eliminados'
+      handleError(err, 'Error al cargar usuarios eliminados')
     } finally {
       loading.value = false
     }
@@ -273,8 +226,7 @@ export const useUsers = () => {
       loading.value = false
       return response.success && response.data ? response.data : []
     } catch (err: unknown) {
-      const e = err as { data?: { message?: string } }
-      error.value = e.data?.message || 'Error al obtener permisos'
+      const msg = handleError(err, 'Error al obtener permisos')
       loading.value = false
       return []
     }
@@ -283,10 +235,10 @@ export const useUsers = () => {
   return {
     loading,
     error,
-    users,
-    totalElements,
-    currentPage,
-    totalPages,
+    users: baseCRUD.items,
+    totalElements: baseCRUD.totalElements,
+    currentPage: baseCRUD.currentPage,
+    totalPages: baseCRUD.totalPages,
     fetchUsers,
     getUser,
     createUser,

@@ -1,3 +1,5 @@
+import type { ApiResponse } from '~/types/api'
+
 export interface Student {
   id: string
   userId?: string
@@ -44,12 +46,6 @@ interface UpdateStudentData {
   gender?: string
   enrollmentDate?: string
   isActive?: boolean
-}
-
-interface ApiResponse<T> {
-  success: boolean
-  message?: string
-  data?: T
 }
 
 export const useStudents = () => {

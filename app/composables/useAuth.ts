@@ -1,3 +1,5 @@
+import type { ApiResponse } from '~/types/api'
+
 interface LoginDataSuccess {
   userId: string
   username: string
@@ -15,12 +17,6 @@ interface LoginDataTwoFactor {
   requiresTwoFactor: true
   tempToken: string
   message: string
-}
-
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data?: T
 }
 
 interface LoginResponse {

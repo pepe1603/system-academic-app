@@ -34,6 +34,7 @@ const getErrorMessage = (error: unknown): string => {
 
   if (apiError.message) {
     if (apiError.statusCode === 401) {
+      navigateTo('/auth/login')
       return 'Sesión expirada. Por favor inicia sesión nuevamente.'
     }
     if (apiError.statusCode === 403) {

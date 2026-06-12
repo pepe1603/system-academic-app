@@ -304,7 +304,7 @@ const statusBadgeColor = (status: string) => {
     case 'APPROVED': return 'success'
     case 'FAILED': return 'error'
     case 'CANCELLED': return 'neutral'
-    case 'NO_SHOW': return 'dark'
+    case 'NO_SHOW': return 'neutral'
     default: return 'neutral'
   }
 }

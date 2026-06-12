@@ -169,7 +169,8 @@ export const usePortalContent = () => {
     if (!events) return []
     const now = new Date()
     const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate())
-    return (events as Event[])
+    const eventArray = Array.isArray(events) ? events : 'content' in events ? events.content : []
+    return eventArray
       .filter(e => new Date(e.eventDate) >= oneYearAgo)
       .sort((a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime())
       .slice(0, limit)
@@ -180,7 +181,8 @@ export const usePortalContent = () => {
     if (!events) return []
     const now = new Date()
     const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate())
-    return (events as Event[])
+    const eventArray = Array.isArray(events) ? events : 'content' in events ? events.content : []
+    return eventArray
       .filter(e => new Date(e.eventDate) < oneYearAgo)
       .sort((a, b) => new Date(b.eventDate).getTime() - new Date(a.eventDate).getTime())
       .slice(0, limit)

@@ -238,7 +238,7 @@ onUnmounted(() => {
           <input
             v-for="(_, index) in 6"
             :key="index"
-            :ref="(el) => { if (el) otpRefs[index] = el as HTMLInputElement }"
+            :ref="(el: HTMLInputElement | null) => { if (el) otpRefs[index] = el }"
             type="text"
             inputmode="numeric"
             maxlength="1"

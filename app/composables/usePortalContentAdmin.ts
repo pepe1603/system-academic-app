@@ -288,7 +288,7 @@ export const usePortalContentAdmin = () => {
     loading.value = true
     error.value = null
     try {
-      await $fetch(`/api/portal/ads/${id}`, {
+      await $fetch<{ success: boolean }>(`/api/portal/ads/${id}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: data
@@ -307,7 +307,7 @@ export const usePortalContentAdmin = () => {
     loading.value = true
     error.value = null
     try {
-      await $fetch(`/api/portal/ads/${id}`, {
+      await $fetch<{ success: boolean }>(`/api/portal/ads/${id}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       })
@@ -383,9 +383,9 @@ export const usePortalContentAdmin = () => {
         method: 'POST',
         headers: {
           ...getAuthHeaders(),
-          'Content-Type': 'text/plain'
+          'Content-Type': 'application/json'
         },
-        body: response
+        body: JSON.stringify({ message: response })
       })
       return true
     } catch (err: unknown) {

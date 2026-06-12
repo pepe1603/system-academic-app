@@ -23,9 +23,10 @@ export const useFormModal = () => {
     })
 
     return new Promise((resolve) => {
-      modal.onClose((value: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(modal as any).onClose = (value: any) => {
         resolve(value)
-      })
+      }
     })
   }
 

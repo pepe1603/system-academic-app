@@ -46,7 +46,7 @@ const ads = computed(() => adsList.value?.filter(a => a.isPublished) || [])
 
 const currentIndex = ref(0)
 const selectedAd = ref<any>(null)
-let interval: NodeJS.Timeout | null = null
+let interval: ReturnType<typeof setInterval> | null = null
 
 const openAdModal = (ad: any) => {
   selectedAd.value = ad

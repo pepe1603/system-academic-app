@@ -12,6 +12,7 @@ export interface StudentDocument {
   documentNumber?: string
   issueDate?: string
   expirationDate?: string
+  observations?: string
   isVerified: boolean
   isActive: boolean
   isDeleted: boolean

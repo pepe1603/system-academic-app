@@ -8,13 +8,21 @@ definePageMeta({
   layout: 'portal'
 })
 
+import type { News, NewsPage } from '~/composables/usePortalContent'
+
 const { getInstitution, getNews, getUpcomingEvents } = usePortalContent()
 
 const { data: newsData } = await useAsyncData('news-home', () => getNews(false))
 const { data: eventsData } = await useAsyncData('events-home', () => getUpcomingEvents(3))
 const { data: institution } = await useAsyncData('institution-footer', () => getInstitution())
 
-const news = computed(() => newsData.value?.slice(0, 3) || [])
+const news = computed<News[]>(() => {
+  if (!newsData.value) return []
+  if (Array.isArray(newsData.value)) return newsData.value.slice(0, 3)
+  if ('content' in newsData.value) return newsData.value.content.slice(0, 3)
+  return []
+})
+
 const events = computed(() => eventsData.value || [])
 </script>
 
@@ -48,7 +56,7 @@ const events = computed(() => eventsData.value || [])
             />
             <div v-else class="w-full h-full bg-gradient-to-br from-primary/60 to-primary/30" />
             <div class="absolute bottom-0 left-0 right-0 p-5 z-20">
-              <UBadge color="white" variant="solid" class="mb-2">
+              <UBadge color="neutral" variant="solid" class="mb-2">
                 {{ new Date(item.createdAt).toLocaleDateString('es-MX', { month: 'short', day: 'numeric' }) }}
               </UBadge>
               <h3 class="font-bold text-lg text-white mb-1 group-hover:text-primary-200 transition-colors line-clamp-2">

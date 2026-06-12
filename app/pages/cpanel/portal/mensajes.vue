@@ -105,7 +105,7 @@ const unreadCount = computed(() => messages.value?.filter(m => !m.isRead).length
               <p class="text-sm text-muted-foreground">{{ activeMessage.email }}</p>
             </div>
             <div class="ml-auto flex items-center gap-2">
-              <UBadge :color="activeMessage.isRead ? 'gray' : 'primary'">
+              <UBadge :color="activeMessage.isRead ? 'neutral' : 'primary'">
                 {{ activeMessage.isRead ? 'Leído' : 'Sin leer' }}
               </UBadge>
               <UBadge v-if="activeMessage.isResponded" color="success" variant="soft">
